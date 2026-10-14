@@ -51,7 +51,10 @@ export const SITE_CONFIG: SiteConfig = {
   tagline: "यौन एवं प्रजनन स्वास्थ्य की प्रामाणिक, वैज्ञानिक और गोपनीय जानकारी",
   description:
     "हिंदी हेल्थ गाइड भारत के पाठकों के लिए यौन शिक्षा, प्रजनन स्वास्थ्य, सुरक्षित संबंध, मिथक बनाम तथ्य और डॉक्टर-समीक्षित स्वास्थ्य मार्गदर्शन का सबसे विश्वसनीय हिंदी मंच है।",
-  productionUrl: "https://hindihealthguide.org",
+  productionUrl:
+    typeof process !== 'undefined' && (process.env?.NEXT_PUBLIC_APP_URL || process.env?.APP_URL)
+      ? (process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://hindihealthguide.org').replace(/\/$/, '')
+      : 'https://hindihealthguide.org',
   defaultLanguage: "hi-IN",
   contactEmail: "editorial@hindihealthguide.org",
   socialLinks: {
