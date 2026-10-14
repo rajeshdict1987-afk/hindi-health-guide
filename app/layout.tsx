@@ -79,19 +79,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hi" dir="ltr">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
+      <body className="bg-stone-50 text-stone-900 antialiased font-['Mukta',sans-serif]">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredSchema) }}
         />
-      </head>
-      <body className="bg-stone-50 text-stone-900 antialiased font-['Mukta',sans-serif]">
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
