@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "Article": {
+      "title": "Article",
+      "description": "Evidence-based health education article in Hindi",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "minLength": 5, "maxLength": 300 },
+        "slug": { "type": "string", "minLength": 3, "maxLength": 160, "pattern": "^[a-z0-9-]+$" },
+        "quickAnswer": { "type": "string", "maxLength": 1000 },
+        "excerpt": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "content": { "type": "string", "minLength": 50, "maxLength": 50000 },
+        "categorySlug": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "enum": ["draft", "published", "archived"] },
+        "authorId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "publishedAt": { "type": "string" },
+        "readingTimeMinutes": { "type": "number" },
+        "featured": { "type": "boolean" },
+        "viewsCount": { "type": "number" }
+      },
+      "required": ["id", "title", "slug", "excerpt", "content", "categorySlug", "status", "createdAt", "updatedAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Approved category of health education",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "slug": { "type": "string", "maxLength": 80, "pattern": "^[a-z0-9-]+$" },
+        "description": { "type": "string", "maxLength": 500 },
+        "featuredOrder": { "type": "number" }
+      },
+      "required": ["id", "name", "slug", "description"]
+    },
+    "EditorialReview": {
+      "title": "EditorialReview",
+      "description": "Medical professional review verifying scientific accuracy",
+      "type": "object",
+      "properties": {
+        "articleId": { "type": "string", "maxLength": 128 },
+        "isReviewed": { "type": "boolean" },
+        "reviewerName": { "type": "string", "maxLength": 120 },
+        "reviewerRole": { "type": "string", "maxLength": 160 },
+        "reviewerRegistration": { "type": "string", "maxLength": 120 },
+        "reviewedDate": { "type": "string" },
+        "reviewNotes": { "type": "string", "maxLength": 2000 }
+      },
+      "required": ["articleId", "isReviewed", "reviewerName", "reviewerRole", "reviewedDate"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Application user or editor profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 160 },
+        "role": { "type": "string", "enum": ["reader", "editor", "admin"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Media": {
+      "title": "Media",
+      "description": "Media uploaded for health articles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 160 },
+        "url": { "type": "string", "maxLength": 500 },
+        "alt": { "type": "string", "maxLength": 250 },
+        "caption": { "type": "string", "maxLength": 300 },
+        "credit": { "type": "string", "maxLength": 200 },
+        "sizeBytes": { "type": "number" },
+        "uploadedAt": { "type": "string" },
+        "uploadedBy": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "name", "url", "alt", "uploadedAt"]
+    },
+    "SiteSetting": {
+      "title": "SiteSetting",
+      "description": "Public and administrative portal settings",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string", "maxLength": 80 },
+        "value": { "type": "string", "maxLength": 5000 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["key", "value"]
+    }
+  },
+  "firestore": {
+    "/articles/{articleId}": {
+      "schema": { "$ref": "entities.Article" },
+      "description": "Public published articles and private drafts accessible only by authorized editors"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "entities.Category" },
+      "description": "The 7 fixed approved categories for medical content organization"
+    },
+    "/editorialReviews/{reviewId}": {
+      "schema": { "$ref": "entities.EditorialReview" },
+      "description": "Doctor verification records attaching credentials to article IDs"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "entities.User" },
+      "description": "Registered user profile with role restrictions"
+    },
+    "/media/{mediaId}": {
+      "schema": { "$ref": "entities.Media" },
+      "description": "Uploaded media records with alt and credit metadata"
+    },
+    "/siteSettings/{settingId}": {
+      "schema": { "$ref": "entities.SiteSetting" },
+      "description": "Global website configuration parameters"
+    }
+  }
+}

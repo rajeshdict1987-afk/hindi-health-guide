@@ -1,0 +1,6 @@
+{
+  "name": "Hindi Health Guide",
+  "description": "भारत का विश्वसनीय और आधुनिक हिंदी-प्रथम यौन स्वास्थ्य, प्रजनन स्वास्थ्य एवं यौन शिक्षा मंच (Sexual & Reproductive Health Education in Hindi).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
