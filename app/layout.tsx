@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import '../src/index.css';
-import { SITE_CONFIG } from '../src/config/site-config';
-import { Header } from '../src/components/Header';
-import { Footer } from '../src/components/Footer';
-import { RouterProvider } from '../src/context/RouterContext';
+import './globals.css';
+import { SITE_CONFIG } from '../config/site-config';
+import { ClientLayout } from '../components/ClientLayout';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.productionUrl),
@@ -26,11 +24,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'Hindi Health Guide Medical Editorial Team' }],
   creator: 'Hindi Health Guide',
   publisher: 'Hindi Health Guide',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
   alternates: {
     canonical: '/',
   },
@@ -49,6 +42,36 @@ export const metadata: Metadata = {
   },
 };
 
+const structuredSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_CONFIG.productionUrl}#organization`,
+      name: 'Hindi Health Guide',
+      alternateName: 'हिंदी हेल्थ गाइड',
+      url: SITE_CONFIG.productionUrl,
+      description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच।',
+      publishingPrinciples: `${SITE_CONFIG.productionUrl}/editorial-policy`,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_CONFIG.productionUrl}#website`,
+      url: SITE_CONFIG.productionUrl,
+      name: 'Hindi Health Guide',
+      publisher: {
+        '@id': `${SITE_CONFIG.productionUrl}#organization`,
+      },
+      inLanguage: 'hi-IN',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${SITE_CONFIG.productionUrl}/search?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -65,47 +88,11 @@ export default function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@graph': [
-                {
-                  '@type': 'Organization',
-                  '@id': `${SITE_CONFIG.productionUrl}/#organization`,
-                  name: SITE_CONFIG.name,
-                  alternateName: SITE_CONFIG.hindiName,
-                  url: SITE_CONFIG.productionUrl,
-                  description: SITE_CONFIG.description,
-                  publishingPrinciples: `${SITE_CONFIG.productionUrl}/editorial-policy`,
-                },
-                {
-                  '@type': 'WebSite',
-                  '@id': `${SITE_CONFIG.productionUrl}/#website`,
-                  url: SITE_CONFIG.productionUrl,
-                  name: SITE_CONFIG.name,
-                  publisher: {
-                    '@id': `${SITE_CONFIG.productionUrl}/#organization`,
-                  },
-                  inLanguage: 'hi-IN',
-                  potentialAction: {
-                    '@type': 'SearchAction',
-                    target: `${SITE_CONFIG.productionUrl}/search?q={search_term_string}`,
-                    'query-input': 'required name=search_term_string',
-                  },
-                },
-              ],
-            }),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredSchema) }}
         />
       </head>
       <body className="bg-stone-50 text-stone-900 antialiased font-['Mukta',sans-serif]">
-        <RouterProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </RouterProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
