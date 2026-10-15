@@ -40,3 +40,10 @@
     color: #000000 !important;
   }
 }
+
+/* Adsterra Social Bar & Native Ads High Priority Visibility & Z-Index */
+iframe[src*="bicea.org"], div[id*="container-"], script ~ iframe, [id*="adsterra"] {
+  z-index: 9999999 !important;
+  position: relative;
+}
+
