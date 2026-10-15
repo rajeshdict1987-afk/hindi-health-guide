@@ -1,8 +1,15 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import React from 'react';
 import './globals.css';
 import { SITE_CONFIG } from '../src/config/site-config';
 import { ClientLayout } from '../src/components/ClientLayout';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#dc2626',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.productionUrl),
@@ -34,6 +41,14 @@ export const metadata: Metadata = {
     siteName: SITE_CONFIG.hindiName,
     title: `${SITE_CONFIG.hindiName} – यौन एवं प्रजनन स्वास्थ्य की प्रामाणिक जानकारी`,
     description: SITE_CONFIG.description,
+    images: [
+      {
+        url: `${SITE_CONFIG.productionUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: SITE_CONFIG.hindiName,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',

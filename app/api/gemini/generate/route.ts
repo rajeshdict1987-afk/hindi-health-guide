@@ -1,10 +1,25 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 export async function POST(req: NextRequest) {
   try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "Gemini API Key is not configured on the server." },
+        { status: 500 }
+      );
+    }
+
+    const ai = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
+
     const { prompt, history, model } = await req.json();
     if (!prompt) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
@@ -49,3 +64,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
