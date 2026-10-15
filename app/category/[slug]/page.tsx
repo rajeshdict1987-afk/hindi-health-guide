@@ -30,9 +30,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `/category/${category.slug}`,
     },
     openGraph: {
-      title: `${category.name} | ${SITE_CONFIG.hindiName}`,
-      description: category.description,
+      type: 'website',
+      locale: 'hi_IN',
+      siteName: SITE_CONFIG.hindiName,
+      title: `${category.hindiName} - ${SITE_CONFIG.hindiName}`,
+      description: category.seoDescription || category.description,
       url: `${SITE_CONFIG.productionUrl}/category/${category.slug}`,
+      images: [
+        {
+          url: `${SITE_CONFIG.productionUrl}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: category.hindiName,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${category.hindiName} - ${SITE_CONFIG.hindiName}`,
+      description: category.seoDescription || category.description,
     },
   };
 }

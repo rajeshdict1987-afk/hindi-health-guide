@@ -9,6 +9,8 @@ import { getStoredArticles } from '../lib/store';
 import { ArrowLeft, Clock, ArrowRight } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
 
+import { INITIAL_ARTICLES } from '../data/initialArticles';
+
 interface CategoryPageProps {
   slug: string;
 }
@@ -19,7 +21,17 @@ export function CategoryPage({ slug }: CategoryPageProps) {
 
   useEffect(() => {
     const all = getStoredArticles();
-    setArticles(all.filter((a) => a.category === slug));
+    const normalizedCategory = (itemCat: string) => {
+      if (slug === 'sexual-education' && (itemCat === 'sex-education' || itemCat === 'sexual-education')) return true;
+      if (slug === 'expert-advice-qa' && (itemCat === 'expert-advice-faq' || itemCat === 'expert-advice-qa')) return true;
+      return itemCat === slug;
+    };
+    const filtered = all.filter((a) => normalizedCategory(a.category));
+    if (filtered.length > 0) {
+      setArticles(filtered);
+    } else {
+      setArticles(INITIAL_ARTICLES.filter((a) => normalizedCategory(a.category)));
+    }
   }, [slug]);
 
   if (!category) {

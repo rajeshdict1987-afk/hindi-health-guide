@@ -4,8 +4,8 @@ import { Article } from '../types/article';
 import { Advertisement } from '../types/ad';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
 
-const ARTICLES_STORAGE_KEY = 'hindi_health_guide_articles_v2';
-const ADS_STORAGE_KEY = 'hindi_health_guide_ads_v2';
+const ARTICLES_STORAGE_KEY = 'hindi_health_guide_articles_v3';
+const ADS_STORAGE_KEY = 'hindi_health_guide_ads_v3';
 
 export const DEFAULT_ADS: Advertisement[] = [
   {
@@ -49,7 +49,19 @@ export function getStoredArticles(): Article[] {
       return INITIAL_ARTICLES;
     }
     const parsed = JSON.parse(item);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_ARTICLES;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(INITIAL_ARTICLES));
+      return INITIAL_ARTICLES;
+    }
+    // If user has fewer articles than initial seeded set, ensure all initial articles are present
+    if (parsed.length < INITIAL_ARTICLES.length) {
+      const existingSlugs = new Set(parsed.map((a: Article) => a.slug));
+      const missing = INITIAL_ARTICLES.filter(a => !existingSlugs.has(a.slug));
+      const merged = [...parsed, ...missing];
+      localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+    return parsed;
   } catch {
     return INITIAL_ARTICLES;
   }

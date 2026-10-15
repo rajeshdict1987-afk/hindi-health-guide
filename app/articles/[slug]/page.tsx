@@ -27,24 +27,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: article.seo.title || article.title,
-    description: article.seo.metaDescription || article.excerpt,
+    title: article.seo?.title || `${article.title} | ${SITE_CONFIG.hindiName}`,
+    description: article.seo?.metaDescription || article.excerpt,
+    keywords: article.seo?.keywords || article.tags || ['स्वास्थ्य', 'प्रजनन स्वास्थ्य'],
     alternates: {
       canonical: `/articles/${article.slug}`,
     },
     openGraph: {
       type: 'article',
+      locale: 'hi_IN',
+      siteName: SITE_CONFIG.hindiName,
       title: article.title,
       description: article.excerpt,
       url: `${SITE_CONFIG.productionUrl}/articles/${article.slug}`,
       images: [
         {
           url: article.image.url,
-          alt: article.image.alt,
+          width: 1200,
+          height: 630,
+          alt: article.image.alt || article.title,
         },
       ],
       publishedTime: article.publishedAt || article.createdAt,
+      modifiedTime: article.updatedAt || article.publishedAt || article.createdAt,
       authors: [article.author.name],
+      tags: article.tags,
     },
     twitter: {
       card: 'summary_large_image',

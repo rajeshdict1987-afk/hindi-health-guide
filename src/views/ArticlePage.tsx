@@ -28,7 +28,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
     const found = all.find((a) => a.slug === slug);
     if (found) {
       setArticle(found);
-      setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id));
+      setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
     }
   }, [slug]);
 
@@ -61,9 +61,56 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
   const trendingArticles = allArticles.slice(0, 5);
 
+  // Helper to split article content midway for Instance 2 Native Ad
+  const renderContentWithMidAd = (htmlContent: string) => {
+    if (!htmlContent) return null;
+    
+    // Split on paragraph closings to find natural break
+    const parts = htmlContent.split('</p>');
+    if (parts.length >= 3) {
+      const midPoint = Math.ceil(parts.length / 2);
+      const firstHalf = parts.slice(0, midPoint).join('</p>') + '</p>';
+      const secondHalf = parts.slice(midPoint).join('</p>');
+
+      return (
+        <div className="space-y-6">
+          <div 
+            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: firstHalf }}
+          />
+
+          {/* INSTANCE 2: Single Article View (midway through content paragraphs) */}
+          <div className="py-2">
+            <AdsterraNativeAd placement="article-midway" />
+          </div>
+
+          <div 
+            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: secondHalf }}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div 
+          className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+        {/* Fallback Instance 2 */}
+        <div className="py-2">
+          <AdsterraNativeAd placement="article-midway" />
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="bg-stone-50 pb-20">
+    <div className="bg-stone-50 pb-20 w-full overflow-x-hidden">
       <ReadingProgressBar />
+      
+      {/* Breadcrumbs Navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         <Breadcrumbs 
           items={[
@@ -72,8 +119,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
           ]} 
         />
       </div>
+
       {/* Article Header Banner */}
-      <div className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-16 px-4 sm:px-6 lg:px-8">
+      <header className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mt-4">
         <div className="max-w-7xl mx-auto space-y-6">
           <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition">
             <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर वापस जाएं
@@ -84,16 +132,16 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               {article.categoryHindi}
             </span>
             <div className="flex items-center gap-2 text-stone-300 text-xs">
-              <Clock className="w-3.5 h-3.5" />
+              <Clock className="w-3.5 h-3.5 text-rose-400" />
               <span>{article.readTime} पढ़ने का समय</span>
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight max-w-4xl">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight max-w-4xl">
             {article.title}
           </h1>
 
-          <p className="text-lg text-stone-300 leading-relaxed max-w-3xl">
+          <p className="text-base sm:text-lg text-stone-300 leading-relaxed max-w-3xl">
             {article.excerpt}
           </p>
 
@@ -108,10 +156,10 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-xs">
+            <div className="flex flex-wrap items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-rose-400" />
-                {new Date(article.publishedAt).toLocaleDateString('hi-IN')}
+                <time dateTime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString('hi-IN')}</time>
               </span>
               {article.reviewedBy && (
                 <span className="flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 px-3 py-1 rounded-lg">
@@ -130,18 +178,19 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content & Sidebar 70/30 Grid Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Main Article Content (~70% width -> lg:col-span-8) */}
-          <article className="lg:col-span-8 space-y-8">
-            <div className="bg-white rounded-3xl shadow-xl border border-stone-200 overflow-hidden p-6 sm:p-10 space-y-8">
+          <article className="lg:col-span-8 space-y-8 min-w-0">
+            <div className="bg-white rounded-3xl shadow-sm border border-stone-200 overflow-hidden p-6 sm:p-10 space-y-8">
+              
               {/* Featured Image */}
               {article.image?.url && (
-                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-md">
+                <figure className="relative aspect-video rounded-2xl overflow-hidden shadow-md bg-stone-100">
                   <Image
                     src={article.image.url}
                     alt={article.image.alt || article.title}
@@ -150,30 +199,20 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                     referrerPolicy="no-referrer"
                     priority
                   />
-                </div>
+                </figure>
               )}
 
-              {/* Top Adsterra Native Ad */}
-              <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
+              {/* Render Article HTML Content with Instance 2 Midway Native Ad */}
+              {renderContentWithMidAd(article.content)}
 
-              {/* Ad Display Inside Article Mid */}
-              <AdDisplay position="mid" />
-
-              {/* Content HTML */}
-              <div 
-                className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: article.content }}
-              />
-
-              {/* In-Content / Bottom Adsterra Native Ad */}
-              <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
-
-              {/* Ad Display Bottom */}
-              <AdDisplay position="bottom" />
+              {/* INSTANCE 3: Single Article View (end of article before FAQs/related posts) */}
+              <div className="pt-4 border-t border-stone-200/80">
+                <AdsterraNativeAd placement="article-end" />
+              </div>
 
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
-                <div className="pt-8 border-t border-stone-200 flex flex-wrap items-center gap-2">
+                <div className="pt-4 border-t border-stone-100 flex flex-wrap items-center gap-2">
                   <span className="text-xs font-bold text-stone-500 uppercase tracking-wider mr-2">टैग्स:</span>
                   {article.tags.map((tag, idx) => (
                     <span key={idx} className="bg-stone-100 text-stone-700 px-3 py-1 rounded-full text-xs font-medium">
@@ -190,7 +229,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </div>
                 <div className="space-y-1 text-sm text-teal-900">
                   <h4 className="font-bold">विशेषज्ञ चिकित्सा समीक्षा (Medical Review)</h4>
-                  <p className="text-teal-800 leading-relaxed">
+                  <p className="text-teal-800 leading-relaxed text-xs sm:text-sm">
                     यह लेख भारत के प्रमाणित स्वास्थ्य विशेषज्ञों और संपादकीय टीम द्वारा विश्व स्वास्थ्य संगठन (WHO) के दिशा-निर्देशों के तहत सत्यापित किया गया है।
                   </p>
                 </div>
@@ -198,7 +237,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
               {/* FAQ Section */}
               {article.faqs && article.faqs.length > 0 && (
-                <div className="bg-stone-50 border border-stone-200 p-6 sm:p-8 rounded-2xl space-y-6 mt-6">
+                <section className="bg-stone-50 border border-stone-200 p-6 sm:p-8 rounded-2xl space-y-6 mt-6">
                   <h3 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-3">
                     अक्सर पूछे जाने वाले सवाल (FAQs)
                   </h3>
@@ -214,14 +253,14 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
               )}
             </div>
 
             {/* Related Articles in Same Category */}
             {relatedArticles.length > 0 && (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-stone-900">संबंधित लेख</h3>
+              <section className="space-y-6">
+                <h3 className="text-2xl font-bold text-stone-900">संबंधित स्वास्थ्य लेख</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {relatedArticles.map((rel) => (
                     <Link
@@ -243,17 +282,13 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                     </Link>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
           </article>
 
-          {/* Right Sidebar (~30% width -> lg:col-span-4) featuring Related Posts, Categories, and 'article-sidebar' Ads */}
-          <aside className="lg:col-span-4 space-y-8">
+          {/* Right Sidebar (~30% width -> lg:col-span-4) */}
+          <aside className="lg:col-span-4 space-y-8 min-w-0">
             
-            {/* Article Sidebar Ad Display */}
-            <AdDisplay position="article-sidebar" />
-            <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
-
             {/* Categories Widget */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-stone-100 font-bold text-stone-900 text-lg">
@@ -273,6 +308,11 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* INSTANCE 4: Desktop Sidebar (30% area) - De-clustered! */}
+            <div className="py-2">
+              <AdsterraNativeAd placement="sidebar" />
             </div>
 
             {/* Trending Articles Widget */}
@@ -302,7 +342,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </div>
             </div>
 
-            {/* Helplines / Helpline Widget */}
+            {/* Helplines Widget */}
             <div className="bg-gradient-to-br from-rose-900 to-rose-950 text-white rounded-3xl p-6 shadow-md space-y-4">
               <div className="flex items-center gap-2 text-rose-300">
                 <PhoneCall className="w-5 h-5" />
@@ -315,6 +355,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 1075 / 104
               </div>
             </div>
+
+            {/* Standalone Sidebar AdDisplay at bottom if configured */}
+            <AdDisplay position="article-sidebar" />
 
           </aside>
 

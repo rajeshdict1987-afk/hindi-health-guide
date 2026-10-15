@@ -41,25 +41,33 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     function triggerSocialBarAd() {
-      // पुराना ऐड स्क्रिप्ट हटाएँ ताकि डुप्लीकेट न बने
-      const existingAd = document.getElementById('adsterra-social-bar-script');
-      if (existingAd) {
-        existingAd.remove();
+      try {
+        // पुराना ऐड स्क्रिप्ट हटाएँ ताकि डुप्लीकेट न बने
+        const existingScript = document.getElementById('adsterra-social-bar-script');
+        if (existingScript) {
+          existingScript.remove();
+        }
+
+        // पिछले अप्रचलित या फ्रीज कंटेनर को साफ करें
+        const staleElements = document.querySelectorAll(
+          'iframe[src*="14/fdeaeb8e14ab4a9c96943a0503fc28e4"], div[id*="fdeaeb8e14ab4a9c96943a0503fc28e4"]'
+        );
+        staleElements.forEach(el => el.remove());
+
+        // नया स्क्रिप्ट एलिमेंट बनाएं
+        const newScript = document.createElement('script');
+        newScript.id = 'adsterra-social-bar-script';
+        newScript.type = 'text/javascript';
+        newScript.src = 'https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4';
+        newScript.setAttribute('data-cfasync', 'false');
+        newScript.async = true;
+        newScript.crossOrigin = 'anonymous';
+
+        // बॉडी के अंदर जोड़ें ताकि यह हर पेज नेविगेशन पर सक्रिय हो सके
+        document.body.appendChild(newScript);
+      } catch (err) {
+        console.error('Social bar trigger error:', err);
       }
-
-      // नया स्क्रिप्ट एलिमेंट बनाएं
-      const newScript = document.createElement('script');
-      newScript.id = 'adsterra-social-bar-script';
-      newScript.type = 'text/javascript';
-      
-      // यहाँ सिर्फ डायरेक्ट URL डालें (बिना <script> टैग के)
-      newScript.src = 'https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4';
-      
-      // अतिरिक्त एट्रिब्यूट यदि आवश्यक हो
-      newScript.setAttribute('data-cfasync', 'false');
-
-      // बॉडी के अंदर जोड़ें ताकि यह हर जगह फ्लोटिंग रूप में ट्रिगर हो सके
-      document.body.appendChild(newScript);
     }
 
     triggerSocialBarAd();
@@ -464,6 +472,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       )}
+
+      {/* Adsterra Social Bar Global Anchor */}
+      <div id="adsterra-social-bar-container" className="fixed bottom-0 left-0 right-0 z-[2147483647] pointer-events-auto" />
     </div>
   );
 }
