@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
@@ -32,6 +32,32 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    function triggerSocialBarAd() {
+      // पुराना ऐड स्क्रिप्ट हटाएँ ताकि डुप्लीकेट न बने
+      const existingAd = document.getElementById('adsterra-social-bar-script');
+      if (existingAd) {
+        existingAd.remove();
+      }
+
+      // नया स्क्रिप्ट एलिमेंट बनाएं
+      const newScript = document.createElement('script');
+      newScript.id = 'adsterra-social-bar-script';
+      newScript.type = 'text/javascript';
+      
+      // यहाँ सिर्फ डायरेक्ट URL डालें (बिना <script> टैग के)
+      newScript.src = 'https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4';
+      
+      // अतिरिक्त एट्रिब्यूट यदि आवश्यक हो
+      newScript.setAttribute('data-cfasync', 'false');
+
+      // बॉडी के अंदर जोड़ें ताकि यह हर जगह फ्लोटिंग रूप में ट्रिगर हो सके
+      document.body.appendChild(newScript);
+    }
+
+    triggerSocialBarAd();
+  }, [pathname]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
