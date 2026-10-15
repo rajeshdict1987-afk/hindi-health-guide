@@ -28,7 +28,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [askAiOpen, setAskAiOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
-  const [aiResponse, setAiResponse] = useState('');
+  const [selectedModel, setSelectedModel] = useState('gemini-3.8-flash');
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'model', text: string }>>([
+    {
+      role: 'model',
+      text: 'नमस्ते! मैं आपका एआई स्वास्थ्य मित्र हूँ। आप यौन स्वास्थ्य, प्रजनन स्वास्थ्य, और सामान्य कल्याण से संबंधित कोई भी प्रश्न यहाँ पूछ सकते हैं। मैं डब्ल्यूएचओ और एनएसीओ के मानकों पर आधारित वैज्ञानिक जानकारी प्रदान करता हूँ।'
+    }
+  ]);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -66,21 +72,36 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleAskAi = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiPrompt.trim()) return;
+  const handleAskAi = async (e?: React.FormEvent, overridePrompt?: string) => {
+    if (e) e.preventDefault();
+    const promptToSend = overridePrompt !== undefined ? overridePrompt : aiPrompt;
+    if (!promptToSend.trim() || aiLoading) return;
+
+    const userMessage = promptToSend.trim();
+    if (overridePrompt === undefined) {
+      setAiPrompt('');
+    }
+
+    const newMessages = [...messages, { role: 'user' as const, text: userMessage }];
+    setMessages(newMessages);
     setAiLoading(true);
-    setAiResponse('');
+
     try {
+      const historyToSend = messages.map(m => ({ role: m.role, text: m.text }));
       const res = await fetch('/api/gemini/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: `आप 'हिंदी हेल्थ गाइड' के एआई स्वास्थ्य सहायक हैं। उपयोगकर्ता का प्रश्न हिंदी में है: "${aiPrompt}". कृपया डब्ल्यूएचओ और एनएसीओ के मानकों के अनुरूप वैज्ञानिक और सटीक चिकित्सा जानकारी दें, साथ ही यह चेतावनी दें कि यह डॉक्टर की पेशेवर सलाह का विकल्प नहीं है।` })
+        body: JSON.stringify({
+          prompt: userMessage,
+          history: historyToSend,
+          model: selectedModel
+        })
       });
       const data = await res.json();
-      setAiResponse(data.text || data.error || 'उत्तर प्राप्त करने में असमर्थ।');
+      const replyText = data.text || data.error || 'उत्तर प्राप्त करने में असमर्थ।';
+      setMessages([...newMessages, { role: 'model' as const, text: replyText }]);
     } catch {
-      setAiResponse('सर्वर त्रुटि। कृपया पुनः प्रयास करें।');
+      setMessages([...newMessages, { role: 'model' as const, text: 'सर्वर त्रुटि। कृपया पुनः प्रयास करें।' }]);
     } finally {
       setAiLoading(false);
     }
@@ -316,70 +337,130 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       {/* AI Health Assistant Modal */}
       {askAiOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white p-5 flex items-center justify-between">
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh]">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">एआई स्वास्थ्य मित्र (AI Health Assistant)</h3>
-                  <p className="text-xs text-teal-100">यौन और प्रजनन स्वास्थ्य संबंधी वैज्ञानिक उत्तर पाएं</p>
+                  <h3 className="font-bold text-base sm:text-lg">एआई स्वास्थ्य मित्र (AI Health Assistant)</h3>
+                  <p className="text-xs text-teal-100">डब्ल्यूएचओ और एनएसीओ मानकों पर आधारित वैज्ञानिक और सुरक्षित मार्गदर्शन</p>
                 </div>
               </div>
-              <button onClick={() => setAskAiOpen(false)} className="text-white/80 hover:text-white p-1">
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMessages([{ role: 'model', text: 'नमस्ते! मैं आपका एआई स्वास्थ्य मित्र हूँ। आप यौन स्वास्थ्य, प्रजनन स्वास्थ्य, और सामान्य कल्याण से संबंधित कोई भी प्रश्न यहाँ पूछ सकते हैं।' }])}
+                  className="text-xs bg-white/20 hover:bg-white/30 text-white px-2.5 py-1.5 rounded-lg transition"
+                  title="बातचीत साफ़ करें"
+                >
+                  रीसेट
+                </button>
+                <button onClick={() => setAskAiOpen(false)} className="text-white/80 hover:text-white p-1">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-4 flex-1">
-              <div className="bg-teal-50 border border-teal-200 p-4 rounded-xl text-teal-900 text-sm">
-                <strong>नोट:</strong> यह एआई सहायक डब्ल्यूएचओ और एनएसीओ दिशानिर्देशों के आधार पर सामान्य स्वास्थ्य जानकारी प्रदान करता है। आपातकालीन स्थिति में तुरंत डॉक्टर से संपर्क करें।
-              </div>
-
-              <form onSubmit={handleAskAi} className="space-y-3">
-                <textarea
-                  rows={3}
-                  placeholder="अपना प्रश्न यहाँ हिंदी में पूछें (जैसे: कंडोम के क्या लाभ हैं? पीरियड्स में दर्द क्यों होता है?)..."
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  className="w-full p-3 border border-stone-300 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-                <button
-                  type="submit"
-                  disabled={aiLoading}
-                  className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
+            {/* Sub-bar for model & disclaimer notice */}
+            <div className="bg-teal-50 px-4 py-2.5 border-b border-teal-100 flex flex-wrap items-center justify-between gap-2 text-xs text-teal-900 shrink-0">
+              <span className="font-medium">आपातकालीन स्थिति में तुरंत डॉक्टर से संपर्क करें।</span>
+              <div className="flex items-center gap-2">
+                <span className="text-teal-700 font-semibold">मॉडल:</span>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="bg-white border border-teal-200 rounded px-2 py-1 text-xs font-semibold text-teal-800 focus:outline-none"
                 >
-                  {aiLoading ? (
-                    <span>एआई उत्तर तैयार कर रहा है...</span>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      <span>उत्तर प्राप्त करें</span>
-                    </>
-                  )}
-                </button>
-              </form>
+                  <option value="gemini-3.8-flash">Gemini 3.8 Flash (Standard)</option>
+                  <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (Fast)</option>
+                  <option value="gemini-4-argon">Gemini 4 Argon (Advanced)</option>
+                </select>
+              </div>
+            </div>
 
-              {aiResponse && (
-                <div className="bg-stone-50 border border-stone-200 p-4 rounded-xl space-y-2">
-                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-teal-600" />
-                    <span>एआई स्वास्थ्य मित्र का उत्तर:</span>
-                  </h4>
-                  <p className="text-sm text-stone-700 leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
+            {/* Scrollable Message Thread */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1 bg-stone-50">
+              {messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'model' && (
+                    <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center shrink-0 shadow">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                      msg.role === 'user'
+                        ? 'bg-rose-600 text-white rounded-br-none'
+                        : 'bg-white text-stone-800 border border-stone-200 rounded-bl-none'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                  </div>
+                  {msg.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow font-bold text-xs">
+                      आप
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {aiLoading && (
+                <div className="flex gap-3 justify-start items-center">
+                  <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center shrink-0 shadow animate-pulse">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div className="bg-white border border-stone-200 p-3 rounded-2xl rounded-bl-none text-xs text-stone-500 shadow-sm flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-teal-600 animate-bounce"></span>
+                    <span className="w-2 h-2 rounded-full bg-teal-600 animate-bounce delay-100"></span>
+                    <span className="w-2 h-2 rounded-full bg-teal-600 animate-bounce delay-200"></span>
+                    <span>एआई स्वास्थ्य मित्र उत्तर तैयार कर रहा है...</span>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="p-4 bg-stone-50 border-t border-stone-200 text-right">
-              <button
-                onClick={() => setAskAiOpen(false)}
-                className="bg-stone-200 text-stone-800 px-5 py-2 rounded-xl text-xs font-semibold hover:bg-stone-300 transition"
-              >
-                बंद करें
-              </button>
+            {/* Quick Suggestion Pills */}
+            <div className="px-4 py-2 bg-white border-t border-stone-200 flex items-center gap-2 overflow-x-auto shrink-0">
+              <span className="text-xs font-bold text-stone-500 whitespace-nowrap">त्वरित प्रश्न:</span>
+              {[
+                "कंडोम के उपयोग और लाभ",
+                "पीरियड्स में अनियमितता",
+                "एड्स (HIV) लक्षण व बचाव",
+                "गुप्त रोग (STIs) सावधानियां"
+              ].map((suggestion, sIdx) => (
+                <button
+                  key={sIdx}
+                  onClick={() => handleAskAi(undefined, suggestion)}
+                  className="bg-stone-100 hover:bg-teal-50 hover:text-teal-700 text-stone-700 text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition border border-stone-200"
+                >
+                  {suggestion}
+                </button>
+              ))}
             </div>
+
+            {/* Chat Input Form */}
+            <form onSubmit={handleAskAi} className="p-4 bg-white border-t border-stone-200 flex items-center gap-3 shrink-0">
+              <input
+                type="text"
+                placeholder="यहाँ अपना स्वास्थ्य प्रश्न हिंदी में टाइप करें..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="flex-1 px-4 py-3 bg-stone-100 border border-stone-200 rounded-xl text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
+              />
+              <button
+                type="submit"
+                disabled={aiLoading || !aiPrompt.trim()}
+                className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition flex items-center gap-2 shadow disabled:opacity-50 shrink-0"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>भेजें</span>
+              </button>
+            </form>
           </div>
         </div>
       )}

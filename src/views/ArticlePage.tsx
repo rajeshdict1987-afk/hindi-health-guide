@@ -8,6 +8,7 @@ import { getStoredArticles } from '../lib/store';
 import { SITE_CONFIG } from '../config/site-config';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, ShieldCheck, Share2, TrendingUp, FolderTree, PhoneCall } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
+import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
 
 interface ArticlePageProps {
   slug: string;
@@ -141,6 +142,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </div>
               )}
 
+              {/* Top Adsterra Native Ad */}
+              <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
+
               {/* Ad Display Inside Article Mid */}
               <AdDisplay position="mid" />
 
@@ -149,6 +153,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
+
+              {/* In-Content / Bottom Adsterra Native Ad */}
+              <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
 
               {/* Ad Display Bottom */}
               <AdDisplay position="bottom" />
@@ -213,6 +220,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             
             {/* Article Sidebar Ad Display */}
             <AdDisplay position="article-sidebar" />
+            <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
 
             {/* Categories Widget */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">

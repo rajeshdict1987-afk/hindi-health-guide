@@ -21,6 +21,7 @@ import { SITE_CONFIG } from '../config/site-config';
 import { Article } from '../types/article';
 import { getStoredArticles } from '../lib/store';
 import { AdDisplay } from '../components/AdDisplay';
+import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
 
 export function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -142,8 +143,9 @@ export function HomePage() {
       </section>
 
       {/* Mid Ad Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <AdDisplay position="mid" />
+        <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
       </section>
 
       {/* Categories Grid */}
@@ -173,6 +175,11 @@ export function HomePage() {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Inter-Category Adsterra Native Ad */}
+        <div className="mt-10">
+          <AdsterraNativeAd adId="d9642fd6678c07a30a56b2fd136e6cb5" />
         </div>
       </section>
 
