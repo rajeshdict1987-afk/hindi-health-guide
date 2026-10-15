@@ -61,33 +61,86 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
   const trendingArticles = allArticles.slice(0, 5);
 
-  // Helper to split article content midway for Instance 2 Native Ad
-  const renderContentWithMidAd = (htmlContent: string) => {
+  // Step-by-Step / Section-wise Native Ad Placements (Requirement 1)
+  const renderMilestoneContent = (htmlContent: string) => {
     if (!htmlContent) return null;
-    
-    // Split on paragraph closings to find natural break
-    const parts = htmlContent.split('</p>');
-    if (parts.length >= 3) {
-      const midPoint = Math.ceil(parts.length / 2);
-      const firstHalf = parts.slice(0, midPoint).join('</p>') + '</p>';
-      const secondHalf = parts.slice(midPoint).join('</p>');
+
+    // Split by <h2> tags to find natural content milestone boundaries
+    const h2Sections = htmlContent.split(/(?=<h2)/i).filter(s => s.trim().length > 0);
+
+    if (h2Sections.length >= 3) {
+      const introSection = h2Sections[0];
+      const causesSection = h2Sections[1];
+      const solutionsSection = h2Sections.slice(2).join('');
+
+      return (
+        <div className="space-y-6">
+          {/* Milestone 1: Introduction / Overview Section */}
+          <div 
+            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: introSection }}
+          />
+
+          {/* Placement 1: After introduction / overview section */}
+          <div className="py-2">
+            <AdsterraNativeAd placement="article-after-intro" />
+          </div>
+
+          {/* Milestone 2: Problem / Causes description section */}
+          <div 
+            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: causesSection }}
+          />
+
+          {/* Placement 2: After problem / causes description section */}
+          <div className="py-2">
+            <AdsterraNativeAd placement="article-after-causes" />
+          </div>
+
+          {/* Milestone 3: Remedies / Solutions & conclusions section */}
+          <div 
+            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: solutionsSection }}
+          />
+
+          {/* Placement 3: After remedies / solutions section */}
+          <div className="py-2">
+            <AdsterraNativeAd placement="article-after-solutions" />
+          </div>
+        </div>
+      );
+    }
+
+    // Fallback: If no <h2> tags, split by paragraph intervals
+    const paragraphs = htmlContent.split('</p>').filter(p => p.trim().length > 0);
+    if (paragraphs.length >= 4) {
+      const part1 = paragraphs.slice(0, 1).join('</p>') + '</p>';
+      const part2 = paragraphs.slice(1, 3).join('</p>') + '</p>';
+      const part3 = paragraphs.slice(3).join('</p>');
 
       return (
         <div className="space-y-6">
           <div 
             className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: firstHalf }}
+            dangerouslySetInnerHTML={{ __html: part1 }}
           />
-
-          {/* INSTANCE 2: Single Article View (midway through content paragraphs) */}
           <div className="py-2">
-            <AdsterraNativeAd placement="article-midway" />
+            <AdsterraNativeAd placement="article-after-intro" />
           </div>
-
           <div 
             className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: secondHalf }}
+            dangerouslySetInnerHTML={{ __html: part2 }}
           />
+          <div className="py-2">
+            <AdsterraNativeAd placement="article-after-causes" />
+          </div>
+          <div 
+            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: part3 }}
+          />
+          <div className="py-2">
+            <AdsterraNativeAd placement="article-after-solutions" />
+          </div>
         </div>
       );
     }
@@ -98,9 +151,8 @@ export function ArticlePage({ slug }: ArticlePageProps) {
           className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
-        {/* Fallback Instance 2 */}
         <div className="py-2">
-          <AdsterraNativeAd placement="article-midway" />
+          <AdsterraNativeAd placement="article-after-solutions" />
         </div>
       </div>
     );
@@ -182,7 +234,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
       {/* Main Content & Sidebar 70/30 Grid Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Main Article Content (~70% width -> lg:col-span-8) */}
           <article className="lg:col-span-8 space-y-8 min-w-0">
@@ -202,13 +254,8 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </figure>
               )}
 
-              {/* Render Article HTML Content with Instance 2 Midway Native Ad */}
-              {renderContentWithMidAd(article.content)}
-
-              {/* INSTANCE 3: Single Article View (end of article before FAQs/related posts) */}
-              <div className="pt-4 border-t border-stone-200/80">
-                <AdsterraNativeAd placement="article-end" />
-              </div>
+              {/* Render Milestone-Structured Article Content with Placements 1, 2, and 3 */}
+              {renderMilestoneContent(article.content)}
 
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
@@ -255,6 +302,11 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                   </div>
                 </section>
               )}
+
+              {/* Placement 4: At the bottom of the article before related health posts */}
+              <div className="pt-6 border-t border-stone-200/80">
+                <AdsterraNativeAd placement="article-bottom-before-related" />
+              </div>
             </div>
 
             {/* Related Articles in Same Category */}
@@ -286,8 +338,8 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             )}
           </article>
 
-          {/* Right Sidebar (~30% width -> lg:col-span-4) */}
-          <aside className="lg:col-span-4 space-y-8 min-w-0">
+          {/* Right Sidebar (~30% width -> lg:col-span-4) - Sticky Desktop Sidebar Integration */}
+          <aside className="lg:col-span-4 space-y-8 min-w-0 sticky top-24 self-start">
             
             {/* Categories Widget */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
@@ -310,9 +362,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </ul>
             </div>
 
-            {/* INSTANCE 4: Desktop Sidebar (30% area) - De-clustered! */}
-            <div className="py-2">
-              <AdsterraNativeAd placement="sidebar" />
+            {/* Sticky Desktop 30% Sidebar Native Ad (Requirement 3) */}
+            <div className="py-1">
+              <AdsterraNativeAd placement="sidebar-sticky" />
             </div>
 
             {/* Trending Articles Widget */}

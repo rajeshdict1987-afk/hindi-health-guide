@@ -63,13 +63,88 @@ export function HomePage() {
       return found.slice(0, 3);
     }
 
-    // Fallback to initial articles if empty
     const fallback = INITIAL_ARTICLES.filter(a => normalizedCategory(a.category));
     return fallback.slice(0, 3);
   };
 
-  const categoryBlock1 = SITE_CONFIG.categories.slice(0, 4);
-  const categoryBlock2 = SITE_CONFIG.categories.slice(4);
+  // Category Sections grouped for alternating interleaving (Requirement 2)
+  const catGroup1 = SITE_CONFIG.categories.slice(0, 2); // Categories 1 & 2
+  const catGroup2 = SITE_CONFIG.categories.slice(2, 4); // Categories 3 & 4
+  const catGroup3 = SITE_CONFIG.categories.slice(4, 6); // Categories 5 & 6
+  const catGroup4 = SITE_CONFIG.categories.slice(6);    // Category 7
+
+  const renderCategoryCard = (cat: CategoryConfig) => {
+    const catArticles = getCategoryArticles(cat.slug);
+    return (
+      <div 
+        key={cat.slug}
+        className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-200 space-y-6"
+      >
+        {/* Category Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-100">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-stone-100 flex items-center justify-center shrink-0">
+              {getCategoryIcon(cat.icon)}
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-stone-900">{cat.hindiName}</h3>
+              <p className="text-xs text-stone-500 line-clamp-1">{cat.description}</p>
+            </div>
+          </div>
+
+          <Link
+            href={`/category/${cat.slug}`}
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-xl transition self-start sm:self-auto"
+          >
+            <span>सभी {cat.hindiName} लेख देखें</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Direct Articles Grid (2-3 Articles) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {catArticles.map((article) => (
+            <Link
+              key={article.id}
+              href={`/articles/${article.slug}`}
+              className="group bg-stone-50 hover:bg-white rounded-2xl p-4 border border-stone-200/80 hover:border-rose-200 hover:shadow-md transition flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-3">
+                <div className="relative aspect-video rounded-xl overflow-hidden bg-stone-200">
+                  <Image
+                    src={article.image.url}
+                    alt={article.image.alt || article.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition duration-500"
+                    referrerPolicy="no-referrer"
+                  />
+                  <span className="absolute bottom-2 left-2 bg-stone-900/80 backdrop-blur text-white text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-rose-400" />
+                    {article.readTime}
+                  </span>
+                </div>
+
+                <h4 className="font-bold text-stone-900 text-base group-hover:text-rose-600 transition line-clamp-2 leading-snug">
+                  {article.title}
+                </h4>
+
+                <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                  {article.excerpt}
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
+                <span className="font-medium text-stone-700">{article.author.name}</span>
+                <span className="text-rose-600 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition">
+                  पढ़ें &rarr;
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-16 pb-20 overflow-x-hidden w-full">
@@ -171,7 +246,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* HEALTH CATEGORIES SECTION - DIRECT ARTICLE PREVIEW */}
+      {/* HEALTH CATEGORIES SECTION WITH INTERLEAVED NATIVE ADS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-700 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -185,165 +260,43 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* CATEGORY BLOCK 1 (Categories 1-4) */}
-        <div className="space-y-10">
-          {categoryBlock1.map((cat: CategoryConfig) => {
-            const catArticles = getCategoryArticles(cat.slug);
-            return (
-              <div 
-                key={cat.slug}
-                className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-200 space-y-6"
-              >
-                {/* Category Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-stone-100 flex items-center justify-center shrink-0">
-                      {getCategoryIcon(cat.icon)}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-stone-900">{cat.hindiName}</h3>
-                      <p className="text-xs text-stone-500 line-clamp-1">{cat.description}</p>
-                    </div>
-                  </div>
-
-                  <Link
-                    href={`/category/${cat.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-xl transition self-start sm:self-auto"
-                  >
-                    <span>इस श्रेणी के सभी लेख देखें</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-
-                {/* Direct Articles Grid (2-3 Articles) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {catArticles.map((article) => (
-                    <Link
-                      key={article.id}
-                      href={`/articles/${article.slug}`}
-                      className="group bg-stone-50 hover:bg-white rounded-2xl p-4 border border-stone-200/80 hover:border-rose-200 hover:shadow-md transition flex flex-col justify-between space-y-4"
-                    >
-                      <div className="space-y-3">
-                        <div className="relative aspect-video rounded-xl overflow-hidden bg-stone-200">
-                          <Image
-                            src={article.image.url}
-                            alt={article.image.alt || article.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition duration-500"
-                            referrerPolicy="no-referrer"
-                          />
-                          <span className="absolute bottom-2 left-2 bg-stone-900/80 backdrop-blur text-white text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-rose-400" />
-                            {article.readTime}
-                          </span>
-                        </div>
-
-                        <h4 className="font-bold text-stone-900 text-base group-hover:text-rose-600 transition line-clamp-2 leading-snug">
-                          {article.title}
-                        </h4>
-
-                        <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                          {article.excerpt}
-                        </p>
-                      </div>
-
-                      <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
-                        <span className="font-medium text-stone-700">{article.author.name}</span>
-                        <span className="text-rose-600 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition">
-                          पढ़ें &rarr;
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+        {/* Alternating Interleaving: Category Block 1 (Categories 1 & 2) */}
+        <div className="space-y-8">
+          {catGroup1.map(renderCategoryCard)}
         </div>
 
-        {/* NATIVE AD INSTANCE 1: Cleanly placed between category blocks (No clustering!) */}
-        <div className="py-4">
-          <AdsterraNativeAd placement="homepage" />
+        {/* NATIVE AD INTERLEAVING 1 (Between Cat 1-2 and Cat 3-4) */}
+        <div className="py-2">
+          <AdsterraNativeAd placement="homepage-interleave-1" />
         </div>
 
-        {/* CATEGORY BLOCK 2 (Categories 5-7) */}
-        <div className="space-y-10">
-          {categoryBlock2.map((cat: CategoryConfig) => {
-            const catArticles = getCategoryArticles(cat.slug);
-            return (
-              <div 
-                key={cat.slug}
-                className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-200 space-y-6"
-              >
-                {/* Category Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-stone-100 flex items-center justify-center shrink-0">
-                      {getCategoryIcon(cat.icon)}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-stone-900">{cat.hindiName}</h3>
-                      <p className="text-xs text-stone-500 line-clamp-1">{cat.description}</p>
-                    </div>
-                  </div>
+        {/* Alternating Interleaving: Category Block 2 (Categories 3 & 4) */}
+        <div className="space-y-8">
+          {catGroup2.map(renderCategoryCard)}
+        </div>
 
-                  <Link
-                    href={`/category/${cat.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-xl transition self-start sm:self-auto"
-                  >
-                    <span>इस श्रेणी के सभी लेख देखें</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
+        {/* NATIVE AD INTERLEAVING 2 (Between Cat 3-4 and Cat 5-6) */}
+        <div className="py-2">
+          <AdsterraNativeAd placement="homepage-interleave-2" />
+        </div>
 
-                {/* Direct Articles Grid (2-3 Articles) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {catArticles.map((article) => (
-                    <Link
-                      key={article.id}
-                      href={`/articles/${article.slug}`}
-                      className="group bg-stone-50 hover:bg-white rounded-2xl p-4 border border-stone-200/80 hover:border-rose-200 hover:shadow-md transition flex flex-col justify-between space-y-4"
-                    >
-                      <div className="space-y-3">
-                        <div className="relative aspect-video rounded-xl overflow-hidden bg-stone-200">
-                          <Image
-                            src={article.image.url}
-                            alt={article.image.alt || article.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition duration-500"
-                            referrerPolicy="no-referrer"
-                          />
-                          <span className="absolute bottom-2 left-2 bg-stone-900/80 backdrop-blur text-white text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-rose-400" />
-                            {article.readTime}
-                          </span>
-                        </div>
+        {/* Alternating Interleaving: Category Block 3 (Categories 5 & 6) */}
+        <div className="space-y-8">
+          {catGroup3.map(renderCategoryCard)}
+        </div>
 
-                        <h4 className="font-bold text-stone-900 text-base group-hover:text-rose-600 transition line-clamp-2 leading-snug">
-                          {article.title}
-                        </h4>
+        {/* NATIVE AD INTERLEAVING 3 (Between Cat 5-6 and Cat 7) */}
+        <div className="py-2">
+          <AdsterraNativeAd placement="homepage-interleave-3" />
+        </div>
 
-                        <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                          {article.excerpt}
-                        </p>
-                      </div>
-
-                      <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
-                        <span className="font-medium text-stone-700">{article.author.name}</span>
-                        <span className="text-rose-600 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition">
-                          पढ़ें &rarr;
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+        {/* Alternating Interleaving: Category Block 4 (Category 7: Expert Advice & Q&A) */}
+        <div className="space-y-8">
+          {catGroup4.map(renderCategoryCard)}
         </div>
       </section>
 
-      {/* Standalone Mid Sponsor Banner (De-clustered) */}
+      {/* Standalone Sponsor Banner (Separated) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AdDisplay position="mid" />
       </section>
@@ -381,12 +334,12 @@ export function HomePage() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs text-stone-500">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5 text-rose-500" />
                       {article.readTime}
                     </span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5" />
+                      <Calendar className="w-3.5 h-3.5 text-rose-500" />
                       {new Date(article.publishedAt).toLocaleDateString('hi-IN')}
                     </span>
                   </div>
