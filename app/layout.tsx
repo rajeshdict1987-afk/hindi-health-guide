@@ -79,6 +79,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hi" dir="ltr">
+      <head>
+        <script data-cfasync="false" src="https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4"></script>
+      </head>
       <body className="bg-stone-50 text-stone-900 antialiased font-sans">
         <script
           type="application/ld+json"

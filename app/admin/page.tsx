@@ -21,6 +21,11 @@ import { getStoredArticles, saveStoredArticles, getStoredAds, saveStoredAds, res
 import { SITE_CONFIG } from '@/src/config/site-config';
 
 export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loginEmail, setLoginEmail] = useState('rajeshdict.1987@gmail.com');
+  const [loginPin, setLoginPin] = useState('');
+  const [loginError, setLoginError] = useState('');
+
   const [activeTab, setActiveTab] = useState<'articles' | 'ads'>('articles');
   
   // Articles State
@@ -43,6 +48,7 @@ export default function AdminPage() {
 
   // Ads State
   const [ads, setAds] = useState<Advertisement[]>([]);
+  const [editingAdId, setEditingAdId] = useState<string | null>(null);
   const [adForm, setAdForm] = useState({
     title: '',
     description: '',
@@ -56,12 +62,89 @@ export default function AdminPage() {
 
   useEffect(() => {
     try {
+      if (sessionStorage.getItem('admin_auth') === 'true') {
+        setIsAuthenticated(true);
+      }
       setArticles(getStoredArticles());
       setAds(getStoredAds());
     } catch (e) {
       console.error('Error loading stored data:', e);
     }
   }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginPin.trim() === '8492') {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('admin_auth', 'true');
+      setLoginError('');
+    } else {
+      setLoginError('अमान्य पिन (Invalid PIN)। कृपया सही गोपनीय पिन दर्ज करें।');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-stone-900 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-stone-200">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-rose-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg mb-4">
+              <Shield className="w-8 h-8" />
+            </div>
+            <h1 className="text-2xl font-bold text-stone-900">{SITE_CONFIG.hindiName}</h1>
+            <p className="text-sm text-stone-500 mt-1">सुरक्षित एडमिन पोर्टल (Secure Admin Login)</p>
+          </div>
+
+          {loginError && (
+            <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm font-medium">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1.5">एडमिन ईमेल (Admin Email)</label>
+              <input
+                type="email"
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="rajeshdict.1987@gmail.com"
+                className="w-full p-3.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1.5">गोपनीय पिन (Secret Login PIN)</label>
+              <input
+                type="password"
+                required
+                maxLength={6}
+                value={loginPin}
+                onChange={(e) => setLoginPin(e.target.value)}
+                placeholder="गुप्त पिन दर्ज करें"
+                className="w-full p-3.5 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none tracking-widest font-mono"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+            >
+              <span>लॉगिन करें (Secure Login)</span>
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-stone-100 text-center">
+            <Link href="/" className="text-xs text-stone-500 hover:text-stone-800 font-medium flex items-center justify-center gap-1">
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>वेबसाइट पर वापस लौटें</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const showNotification = (msg: string) => {
     setMessage(msg);
@@ -200,20 +283,27 @@ export default function AdminPage() {
       return;
     }
 
-    const newAd: Advertisement = {
-      id: Date.now().toString(),
+    const updatedAd: Advertisement = {
+      id: editingAdId || Date.now().toString(),
       title: adForm.title,
       description: adForm.description,
       imageUrl: adForm.imageUrl,
       targetUrl: adForm.targetUrl,
       position: adForm.position,
       active: adForm.active,
-      createdAt: new Date().toISOString()
+      createdAt: editingAdId ? (ads.find(a => a.id === editingAdId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
     };
 
-    const updated = [newAd, ...ads];
+    let updated: Advertisement[];
+    if (editingAdId) {
+      updated = ads.map(a => a.id === editingAdId ? updatedAd : a);
+    } else {
+      updated = [updatedAd, ...ads];
+    }
+
     setAds(updated);
     saveStoredAds(updated);
+    setEditingAdId(null);
     setAdForm({
       title: '',
       description: '',
@@ -222,7 +312,20 @@ export default function AdminPage() {
       position: 'mid',
       active: true
     });
-    showNotification('विज्ञापन (AdSense) सफलतापूर्वक प्रकाशित हो गया!');
+    showNotification(editingAdId ? 'विज्ञापन सफलतापूर्वक अपडेट कर दिया गया!' : 'विज्ञापन (AdSense) सफलतापूर्वक प्रकाशित हो गया!');
+  };
+
+  const handleEditAd = (ad: Advertisement) => {
+    setEditingAdId(ad.id);
+    setAdForm({
+      title: ad.title,
+      description: ad.description,
+      imageUrl: ad.imageUrl,
+      targetUrl: ad.targetUrl,
+      position: ad.position,
+      active: ad.active
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteAd = (id: string) => {
@@ -492,9 +595,31 @@ export default function AdminPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Ad Creation Form */}
             <div className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-stone-200 h-fit sticky top-24">
-              <div className="pb-4 border-b border-stone-200 mb-6">
-                <h3 className="font-bold text-lg text-stone-900">नया विज्ञापन (AdSense स्टाइल) जोड़ें</h3>
-                <p className="text-xs text-stone-500 mt-1">विज्ञापन फुटर, बॉटम, मिड या साइडबार में दिखाई देगा</p>
+              <div className="flex items-center justify-between pb-4 border-b border-stone-200 mb-6">
+                <div>
+                  <h3 className="font-bold text-lg text-stone-900">
+                    {editingAdId ? 'विज्ञापन संपादित करें' : 'नया विज्ञापन (AdSense स्टाइल) जोड़ें'}
+                  </h3>
+                  <p className="text-xs text-stone-500 mt-1">विज्ञापन फुटर, बॉटम, मिड या साइडबार में दिखाई देगा</p>
+                </div>
+                {editingAdId && (
+                  <button
+                    onClick={() => {
+                      setEditingAdId(null);
+                      setAdForm({
+                        title: '',
+                        description: '',
+                        imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
+                        targetUrl: 'https://www.mohfw.gov.in',
+                        position: 'mid',
+                        active: true
+                      });
+                    }}
+                    className="text-xs text-teal-600 font-semibold hover:underline"
+                  >
+                    रद्द करें
+                  </button>
+                )}
               </div>
 
               <form onSubmit={handleSaveAd} className="space-y-4">
@@ -580,8 +705,8 @@ export default function AdminPage() {
                   type="submit"
                   className="w-full bg-teal-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-teal-700 transition flex items-center justify-center gap-2 shadow"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span>विज्ञापन पोस्ट करें</span>
+                  {editingAdId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                  <span>{editingAdId ? 'विज्ञापन अपडेट करें' : 'विज्ञापन पोस्ट करें'}</span>
                 </button>
               </form>
             </div>
@@ -616,6 +741,13 @@ export default function AdminPage() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleEditAd(ad)}
+                      className="p-2 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-xl text-xs font-semibold flex items-center gap-1"
+                      title="संपादित करें"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={() => toggleAdStatus(ad.id)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold ${ad.active ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`}
