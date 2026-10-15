@@ -104,3 +104,35 @@ export function generateArticleSchema(article: Article) {
     '@graph': graph
   };
 }
+
+export function generateSeoSuggestions(title: string, content: string) {
+  const plainText = (content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const cleanTitle = (title || '').trim();
+
+  // Generate meta description
+  let metaDescription = plainText.slice(0, 150);
+  if (plainText.length > 150) {
+    metaDescription += '...';
+  }
+  if (!metaDescription && cleanTitle) {
+    metaDescription = `${cleanTitle} की विस्तृत जानकारी, लक्षण, कारण और वैज्ञानिक उपाय हिंदी हेल्थ गाइड पर।`;
+  }
+
+  // Generate suggested tags/keywords based on title & common health keywords
+  const defaultKeywords = ['स्वास्थ्य', 'चिकित्सा', 'प्रजनन स्वास्थ्य', 'यौन स्वास्थ्य', 'हिंदी हेल्थ गाइड'];
+  const words = cleanTitle.split(/\s+/).filter(w => w.length > 3);
+  const combined = Array.from(new Set([...words, ...defaultKeywords]));
+  const tags = combined.slice(0, 6).join(', ');
+
+  const slug = cleanTitle
+    .toLowerCase()
+    .replace(/[\s\t]+/g, '-')
+    .replace(/[^\w-]/g, '');
+
+  return {
+    metaDescription,
+    tags,
+    slug
+  };
+}
+

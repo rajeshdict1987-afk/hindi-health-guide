@@ -13,12 +13,14 @@ import {
   CheckCircle2, 
   ExternalLink,
   Save,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
 import { Article } from '@/src/types/article';
 import { Advertisement } from '@/src/types/ad';
 import { getStoredArticles, saveStoredArticles, getStoredAds, saveStoredAds, resetToDefaults } from '@/src/lib/store';
 import { SITE_CONFIG } from '@/src/config/site-config';
+import { generateSeoSuggestions } from '@/src/lib/seoHelper';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -175,6 +177,21 @@ export default function AdminPage() {
       showNotification('फोटो सफलतापूर्वक अपलोड हो गई!');
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleAutoSeoGenerate = () => {
+    if (!articleForm.title && !articleForm.content) {
+      alert('कृपया पहले शीर्षक या सामग्री दर्ज करें।');
+      return;
+    }
+    const suggestion = generateSeoSuggestions(articleForm.title, articleForm.content);
+    setArticleForm(prev => ({
+      ...prev,
+      excerpt: prev.excerpt || suggestion.metaDescription,
+      tags: prev.tags || suggestion.tags,
+      slug: prev.slug || suggestion.slug
+    }));
+    showNotification('✨ AI SEO सुझाव (Meta Description, Tags & Slug) सफलतापूर्वक जनरेट हो गए!');
   };
 
   // Save Article
@@ -512,6 +529,28 @@ export default function AdminPage() {
                     placeholder="<h2>परिचय</h2><p>यहाँ विस्तार से जानकारी लिखें...</p>"
                     className="w-full p-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-mono focus:outline-none"
                   />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-stone-700">टैग्स / कीवर्ड्स (Tags & Keywords)</label>
+                    <button
+                      type="button"
+                      onClick={handleAutoSeoGenerate}
+                      className="text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm transition"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>✨ AI ऑटो SEO जनरेट करें</span>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={articleForm.tags}
+                    onChange={(e) => setArticleForm({ ...articleForm, tags: e.target.value })}
+                    placeholder="जैसे: स्वास्थ्य, चिकित्सा, प्रजनन स्वास्थ्य"
+                    className="w-full p-3 bg-stone-50 border border-stone-300 rounded-xl text-sm focus:outline-none"
+                  />
+                  <p className="text-[11px] text-stone-500 mt-1">शीर्षक और सामग्री के आधार पर स्वचालित टैग और मेटा विवरण (Meta Description) जनरेट करने के लिए ऊपर बटन दबाएं।</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
