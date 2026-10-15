@@ -59,4 +59,30 @@ iframe[src*="14/fdeaeb8e14ab4a9c96943a0503fc28e4"], div[id*="fdeaeb8e14ab4a9c969
   pointer-events: auto !important;
 }
 
+/* Mobile-specific CSS media queries for homepage & article layouts to prevent horizontal scroll */
+@media screen and (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    position: relative;
+  }
+
+  div[id*="container-"],
+  iframe,
+  .ad-container,
+  [class*="ad"],
+  img,
+  table,
+  video {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    word-break: break-word;
+  }
+
+  .grid, .flex {
+    min-width: 0 !important;
+  }
+}
+
 

@@ -30,4 +30,8 @@ export interface Article {
     name: string;
     credentials: string;
   };
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
 }

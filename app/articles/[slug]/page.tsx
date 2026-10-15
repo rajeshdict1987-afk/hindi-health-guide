@@ -4,6 +4,7 @@ import { INITIAL_ARTICLES } from '../../../src/data/initialArticles';
 import { SITE_CONFIG } from '../../../src/config/site-config';
 import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
+import { generateArticleSchema, generateFAQSchema } from '../../../src/lib/seoHelper';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -45,10 +46,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: article.publishedAt || article.createdAt,
       authors: [article.author.name],
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.excerpt,
+      images: [article.image.url],
+    },
   };
 }
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  return <ArticlePage slug={slug} />;
+  const article = INITIAL_ARTICLES.find((a: Article) => a.slug === slug);
+
+  const jsonLd = article ? generateArticleSchema(article) : null;
+  const faqJsonLd = article ? generateFAQSchema(article) : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      <ArticlePage slug={slug} />
+    </>
+  );
 }

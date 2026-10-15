@@ -9,6 +9,8 @@ import { SITE_CONFIG } from '../config/site-config';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, ShieldCheck, Share2, TrendingUp, FolderTree, PhoneCall } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
 import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
+import { Breadcrumbs } from '../components/Breadcrumbs';
+import { ReadingProgressBar } from '../components/ReadingProgressBar';
 
 interface ArticlePageProps {
   slug: string;
@@ -61,6 +63,15 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
   return (
     <div className="bg-stone-50 pb-20">
+      <ReadingProgressBar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <Breadcrumbs 
+          items={[
+            { label: article.categoryHindi, href: `/category/${article.category}` },
+            { label: article.title }
+          ]} 
+        />
+      </div>
       {/* Article Header Banner */}
       <div className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -184,6 +195,27 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                   </p>
                 </div>
               </div>
+
+              {/* FAQ Section */}
+              {article.faqs && article.faqs.length > 0 && (
+                <div className="bg-stone-50 border border-stone-200 p-6 sm:p-8 rounded-2xl space-y-6 mt-6">
+                  <h3 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-3">
+                    अक्सर पूछे जाने वाले सवाल (FAQs)
+                  </h3>
+                  <div className="space-y-4">
+                    {article.faqs.map((faq, index) => (
+                      <div key={index} className="bg-white border border-stone-200 rounded-xl p-4 space-y-2 shadow-sm">
+                        <h4 className="font-bold text-stone-900 text-base flex items-start gap-2">
+                          <span className="text-rose-600 font-black">Q{index + 1}.</span> {faq.question}
+                        </h4>
+                        <p className="text-stone-700 text-sm leading-relaxed pl-6">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Related Articles in Same Category */}
