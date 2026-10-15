@@ -55,6 +55,7 @@ export const metadata: Metadata = {
     title: `${SITE_CONFIG.hindiName} – यौन एवं प्रजनन स्वास्थ्य`,
     description: 'वैज्ञानिक तथ्यों और चिकित्सा दिशानिर्देशों (WHO/NACO/MoHFW) पर आधारित हिंदी स्वास्थ्य जानकारी।',
   },
+  manifest: '/manifest.json',
 };
 
 const structuredSchema = {
@@ -95,6 +96,7 @@ export default function RootLayout({
   return (
     <html lang="hi" dir="ltr">
       <head>
+        <link rel="manifest" href="/manifest.json" />
         <script data-cfasync="false" src="https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4"></script>
       </head>
       <body className="bg-stone-50 text-stone-900 antialiased font-sans">
