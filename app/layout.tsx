@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import './globals.css';
-import { SITE_CONFIG } from '../config/site-config';
-import { ClientLayout } from '../components/ClientLayout';
+import { SITE_CONFIG } from '../src/config/site-config';
+import { ClientLayout } from '../src/components/ClientLayout';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.productionUrl),
@@ -79,7 +79,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hi" dir="ltr">
-      <body className="bg-stone-50 text-stone-900 antialiased font-['Mukta',sans-serif]">
+      <body className="bg-stone-50 text-stone-900 antialiased font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredSchema) }}

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import { INITIAL_ARTICLES } from '../../../src/data/initialArticles';
 import { SITE_CONFIG } from '../../../src/config/site-config';
-import { ArticlePage } from '../../../src/pages/ArticlePage';
+import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
 
 interface Props {

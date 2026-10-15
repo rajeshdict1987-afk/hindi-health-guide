@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { SITE_CONFIG, CategoryConfig } from '../../../src/config/site-config';
-import { CategoryPage } from '../../../src/pages/CategoryPage';
+import { CategoryPage } from '../../../src/views/CategoryPage';
 
 interface Props {
   params: Promise<{ slug: string }>;

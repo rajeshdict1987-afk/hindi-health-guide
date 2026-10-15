@@ -1,0 +1,362 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { 
+  HeartPulse, 
+  BookOpen, 
+  ShieldAlert, 
+  CheckCircle2, 
+  HelpCircle, 
+  Smile, 
+  MessageSquare, 
+  Search, 
+  Menu, 
+  X, 
+  Sparkles,
+  PhoneCall,
+  AlertTriangle,
+  Shield
+} from 'lucide-react';
+import { SITE_CONFIG } from '../config/site-config';
+import { AdDisplay } from './AdDisplay';
+
+export function ClientLayout({ children }: { children: React.ReactNode }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [askAiOpen, setAskAiOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResponse, setAiResponse] = useState('');
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleAskAi = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    setAiResponse('');
+    try {
+      const res = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: `आप 'हिंदी हेल्थ गाइड' के एआई स्वास्थ्य सहायक हैं। उपयोगकर्ता का प्रश्न हिंदी में है: "${aiPrompt}". कृपया डब्ल्यूएचओ और एनएसीओ के मानकों के अनुरूप वैज्ञानिक और सटीक चिकित्सा जानकारी दें, साथ ही यह चेतावनी दें कि यह डॉक्टर की पेशेवर सलाह का विकल्प नहीं है।` })
+      });
+      const data = await res.json();
+      setAiResponse(data.text || data.error || 'उत्तर प्राप्त करने में असमर्थ।');
+    } catch {
+      setAiResponse('सर्वर त्रुटि। कृपया पुनः प्रयास करें।');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const getCategoryIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'HeartPulse': return <HeartPulse className="w-5 h-5 text-rose-600" />;
+      case 'BookOpen': return <BookOpen className="w-5 h-5 text-emerald-600" />;
+      case 'ShieldAlert': return <ShieldAlert className="w-5 h-5 text-amber-600" />;
+      case 'CheckCircle2': return <CheckCircle2 className="w-5 h-5 text-blue-600" />;
+      case 'HelpCircle': return <HelpCircle className="w-5 h-5 text-purple-600" />;
+      case 'Smile': return <Smile className="w-5 h-5 text-indigo-600" />;
+      default: return <MessageSquare className="w-5 h-5 text-teal-600" />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900 font-sans">
+      {/* Top Emergency / Helpline Banner */}
+      <div className="bg-rose-700 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium flex items-center justify-center gap-2 shadow-inner">
+        <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse" />
+        <span>आपातकालीन चिकित्सा सहायता के लिए राष्ट्रीय हेल्पलाइन: <strong>108 / 102</strong> | एड्स हेल्पलाइन (NACO): <strong>1097</strong></span>
+      </div>
+
+      {/* Main Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          {/* Left spacer / mobile hamburger */}
+          <div className="flex items-center gap-3 md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg text-stone-700 hover:bg-stone-150 focus:outline-none"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+          <div className="hidden md:block w-48">
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-rose-600 bg-stone-100 hover:bg-stone-200 px-3 py-2 rounded-xl transition"
+            >
+              <Shield className="w-4 h-4 text-rose-600" />
+              <span>एडमिन पैनल</span>
+            </Link>
+          </div>
+
+          {/* Logo & Name (Bolder & Mid Center on Desktop) */}
+          <Link href="/" className="flex items-center gap-3 group mx-auto md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition">
+              <HeartPulse className="w-7 h-7" />
+            </div>
+            <div className="text-center md:text-left">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight leading-tight">{SITE_CONFIG.hindiName}</h1>
+              <p className="text-xs text-stone-500 font-semibold mt-0.5">वैज्ञानिक एवं प्रामाणिक स्वास्थ्य मार्गदर्शन</p>
+            </div>
+          </Link>
+
+          {/* Right Action Buttons & Search */}
+          <div className="flex items-center gap-3">
+            <form onSubmit={handleSearch} className="hidden lg:flex items-center relative w-64">
+              <input
+                type="text"
+                placeholder="स्वास्थ्य विषय खोजें..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-stone-100 border border-stone-200 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white transition"
+              />
+              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3" />
+            </form>
+
+            <button
+              onClick={() => setAskAiOpen(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-4 py-2 rounded-full text-xs sm:text-sm font-bold shadow hover:opacity-95 transition"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">एआई स्वास्थ्य मित्र</span>
+              <span className="sm:hidden">एआई</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Categories Bar (Desktop) */}
+        <nav className="hidden md:flex items-center justify-center gap-1 bg-stone-50 border-t border-stone-200 px-4 py-2.5 overflow-x-auto text-sm">
+          {SITE_CONFIG.categories.map((cat) => {
+            const isActive = pathname === `/category/${cat.slug}`;
+            return (
+              <Link
+                key={cat.slug}
+                href={`/category/${cat.slug}`}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${
+                  isActive ? 'bg-rose-600 text-white shadow-sm' : 'text-stone-700 hover:bg-stone-200/60'
+                }`}
+              >
+                {getCategoryIcon(cat.icon)}
+                <span>{cat.hindiName}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </header>
+
+      {/* Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end">
+          <div className="w-80 bg-white h-full shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-stone-200">
+                <span className="font-bold text-lg text-stone-900">श्रेणियां और मेनू</span>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-1 rounded-lg text-stone-500 hover:bg-stone-100">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Mobile Search */}
+              <form onSubmit={handleSearch} className="mt-4 relative">
+                <input
+                  type="text"
+                  placeholder="स्वास्थ्य विषय खोजें..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-stone-100 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+                <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+              </form>
+
+              <Link
+                href="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full mt-4 flex items-center justify-center gap-2 bg-stone-900 text-white py-2.5 rounded-lg font-semibold text-sm shadow"
+              >
+                <Shield className="w-4 h-4 text-rose-500" />
+                <span>एडमिन पैनल (आर्टिकल्स और विज्ञापन)</span>
+              </Link>
+
+              <button
+                onClick={() => { setMobileMenuOpen(false); setAskAiOpen(true); }}
+                className="w-full mt-3 flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm shadow"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>एआई स्वास्थ्य मित्र से पूछें</span>
+              </button>
+
+              <div className="mt-6 space-y-1">
+                {SITE_CONFIG.categories.map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    href={`/category/${cat.slug}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-stone-800 hover:bg-stone-100 font-medium text-sm"
+                  >
+                    {getCategoryIcon(cat.icon)}
+                    <span>{cat.hindiName}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-stone-200 text-xs text-stone-500 text-center">
+              &copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित।
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <main className="flex-1">
+        {children}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-stone-900 text-stone-300 mt-16 pt-12 pb-8 border-t border-stone-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Footer Ad Banner */}
+          <div className="mb-10">
+            <AdDisplay position="footer" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-teal-600 flex items-center justify-center text-white">
+                  <HeartPulse className="w-5 h-5" />
+                </div>
+                <span className="font-bold text-lg text-white">{SITE_CONFIG.hindiName}</span>
+              </div>
+              <p className="text-sm text-stone-400 leading-relaxed">
+                भारत का अग्रणी और विश्वसनीय डिजिटल स्वास्थ्य मंच, जो विश्व स्वास्थ्य संगठन (WHO) तथा राष्ट्रीय स्वास्थ्य मिशन के मानकों पर आधारित यौन एवं प्रजनन स्वास्थ्य जानकारी प्रदान करता है।
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white text-base mb-4">त्वरित लिंक</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li><Link href="/about" className="hover:text-white transition">हमारे बारे में</Link></li>
+                <li><Link href="/editorial-policy" className="hover:text-white transition">संपादकीय नीति (Editorial Policy)</Link></li>
+                <li><Link href="/medical-disclaimer" className="hover:text-white transition">चिकित्सा अस्वीकरण (Disclaimer)</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition">संपर्क करें</Link></li>
+                <li><Link href="/admin" className="text-rose-400 font-semibold hover:underline">एडमिन पैनल (Admin Panel)</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white text-base mb-4">कानूनी और गोपनीयता</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li><Link href="/privacy-policy" className="hover:text-white transition">गोपनीयता नीति (Privacy Policy)</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition">नियम एवं शर्तें (Terms)</Link></li>
+                <li><Link href="/sitemap.xml" className="hover:text-white transition">साइटमैप (Sitemap)</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white text-base mb-4">महत्वपूर्ण हेल्पलाइन</h4>
+              <div className="bg-stone-800 p-4 rounded-xl space-y-3 text-sm">
+                <div className="flex items-center gap-2 text-rose-400 font-semibold">
+                  <PhoneCall className="w-4 h-4" />
+                  <span>राष्ट्रीय स्वास्थ्य हेल्पलाइन: 1075</span>
+                </div>
+                <p className="text-xs text-stone-400">
+                  यह पोर्टल पेशेवर चिकित्सीय निदान, सलाह या उपचार का विकल्प नहीं है। किसी भी स्वास्थ्य समस्या के लिए योग्य चिकित्सक से मिलें।
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500">
+            &copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित। Vercel & Next.js पर संचालित।
+          </div>
+        </div>
+      </footer>
+
+      {/* AI Health Assistant Modal */}
+      {askAiOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">एआई स्वास्थ्य मित्र (AI Health Assistant)</h3>
+                  <p className="text-xs text-teal-100">यौन और प्रजनन स्वास्थ्य संबंधी वैज्ञानिक उत्तर पाएं</p>
+                </div>
+              </div>
+              <button onClick={() => setAskAiOpen(false)} className="text-white/80 hover:text-white p-1">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-4 flex-1">
+              <div className="bg-teal-50 border border-teal-200 p-4 rounded-xl text-teal-900 text-sm">
+                <strong>नोट:</strong> यह एआई सहायक डब्ल्यूएचओ और एनएसीओ दिशानिर्देशों के आधार पर सामान्य स्वास्थ्य जानकारी प्रदान करता है। आपातकालीन स्थिति में तुरंत डॉक्टर से संपर्क करें।
+              </div>
+
+              <form onSubmit={handleAskAi} className="space-y-3">
+                <textarea
+                  rows={3}
+                  placeholder="अपना प्रश्न यहाँ हिंदी में पूछें (जैसे: कंडोम के क्या लाभ हैं? पीरियड्स में दर्द क्यों होता है?)..."
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="w-full p-3 border border-stone-300 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  type="submit"
+                  disabled={aiLoading}
+                  className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {aiLoading ? (
+                    <span>एआई उत्तर तैयार कर रहा है...</span>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      <span>उत्तर प्राप्त करें</span>
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {aiResponse && (
+                <div className="bg-stone-50 border border-stone-200 p-4 rounded-xl space-y-2">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-teal-600" />
+                    <span>एआई स्वास्थ्य मित्र का उत्तर:</span>
+                  </h4>
+                  <p className="text-sm text-stone-700 leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 bg-stone-50 border-t border-stone-200 text-right">
+              <button
+                onClick={() => setAskAiOpen(false)}
+                className="bg-stone-200 text-stone-800 px-5 py-2 rounded-xl text-xs font-semibold hover:bg-stone-300 transition"
+              >
+                बंद करें
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
