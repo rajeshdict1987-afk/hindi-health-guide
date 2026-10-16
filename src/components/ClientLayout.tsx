@@ -139,75 +139,83 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900 font-sans pb-16 md:pb-0">
       {/* Top Emergency / Helpline Banner */}
-      <div className="bg-rose-700 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium flex items-center justify-center gap-2 shadow-inner">
-        <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse" />
-        <span>आपातकालीन चिकित्सा सहायता के लिए राष्ट्रीय हेल्पलाइन: <strong>108 / 102</strong> | एड्स हेल्पलाइन (NACO): <strong>1097</strong></span>
+      <div className="bg-slate-900 border-b border-teal-900/60 text-slate-200 text-xs sm:text-sm py-2 px-3 sm:px-4 text-center font-medium flex items-center justify-center gap-2 shadow-inner">
+        <AlertTriangle className="w-4 h-4 shrink-0 text-emerald-400 animate-pulse" />
+        <span>आपातकालीन सहायता: <strong className="text-emerald-300">108 / 102</strong> | एड्स हेल्पलाइन (NACO): <strong className="text-teal-300">1097</strong> | टेली-मानस: <strong className="text-amber-300">14416</strong></span>
       </div>
 
       {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-200 shadow-sm w-full">
-        <div className="w-full max-w-full px-3 sm:px-6 h-20 flex items-center justify-between">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs w-full">
+        <div className="w-full max-w-full px-3 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2">
           {/* Left spacer / mobile hamburger */}
-          <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-2 md:hidden shrink-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-stone-700 hover:bg-stone-150 focus:outline-none"
+              className="p-2 rounded-xl text-slate-700 hover:bg-emerald-50 focus:outline-none transition"
+              aria-label="मेनू खोलें"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
-          <div className="hidden md:block w-48">
+          <div className="hidden md:block w-44 lg:w-48 shrink-0">
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-rose-600 bg-stone-100 hover:bg-stone-200 px-3 py-2 rounded-xl transition"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-teal-800 bg-emerald-50/80 hover:bg-emerald-100/80 border border-emerald-200/60 px-3 py-2 rounded-xl transition"
             >
-              <Shield className="w-4 h-4 text-rose-600" />
+              <Shield className="w-4 h-4 text-teal-700" />
               <span>एडमिन पैनल</span>
             </Link>
           </div>
 
-          {/* Logo & Name (Bolder & Mid Center on Desktop) */}
-          <Link href="/" className="flex items-center gap-3 group mx-auto md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition shrink-0">
-              <HeartPulse className="w-7 h-7" />
+          {/* Logo & Name - Strictly Single Line on Mobile screens without wrapping or layout shift */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 sm:gap-3 group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2"
+          >
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-teal-700 via-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition shrink-0">
+              <HeartPulse className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div className="text-center md:text-left">
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-stone-900 leading-tight">{SITE_CONFIG.hindiName}</h1>
-              <p className="text-xs text-stone-500 font-semibold mt-0.5">वैज्ञानिक एवं प्रामाणिक स्वास्थ्य मार्गदर्शन</p>
+            <div className="min-w-0 flex flex-col justify-center text-left">
+              <span className="text-base sm:text-2xl md:text-3xl font-black tracking-tight text-slate-900 leading-none whitespace-nowrap">
+                {SITE_CONFIG.hindiName}
+              </span>
+              <span className="hidden sm:block text-[11px] md:text-xs text-slate-500 font-semibold mt-1 whitespace-nowrap">
+                वैज्ञानिक एवं प्रामाणिक स्वास्थ्य मार्गदर्शन
+              </span>
             </div>
           </Link>
 
           {/* Right Action Buttons & Search */}
-          <div className="flex items-center gap-3">
-            <form onSubmit={handleSearch} className="hidden lg:flex items-center relative w-64">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <form onSubmit={handleSearch} className="hidden lg:flex items-center relative w-60 xl:w-64">
               <input
                 type="text"
                 placeholder="स्वास्थ्य विषय खोजें..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-stone-100 border border-stone-200 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white transition"
+                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white transition"
               />
-              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3" />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3" />
             </form>
 
             <button
               onClick={() => setAskAiOpen(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-4 py-2 rounded-full text-xs sm:text-sm font-bold shadow hover:opacity-95 transition"
+              className="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-bold shadow hover:opacity-95 transition shrink-0"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-200" />
               <span className="hidden sm:inline">एआई स्वास्थ्य मित्र</span>
-              <span className="sm:hidden">एआई</span>
+              <span className="sm:hidden text-xs">एआई</span>
             </button>
           </div>
         </div>
 
         {/* Categories Bar (Desktop) with Home as first item */}
-        <nav className="hidden md:flex items-center justify-center gap-1 bg-stone-50 border-t border-stone-200 px-3 sm:px-6 py-2.5 overflow-x-auto text-sm w-full max-w-full">
+        <nav className="hidden md:flex items-center justify-center gap-1 bg-emerald-50/40 border-t border-emerald-100 px-3 sm:px-6 py-2.5 overflow-x-auto text-sm w-full max-w-full">
           <Link
             href="/"
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${
-              pathname === '/' ? 'bg-rose-600 text-white shadow-sm' : 'text-stone-700 hover:bg-stone-200/60'
+              pathname === '/' ? 'bg-teal-700 text-white shadow-xs' : 'text-slate-700 hover:bg-emerald-100/70'
             }`}
           >
             <Home className="w-4 h-4" />
@@ -220,7 +228,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${
-                  isActive ? 'bg-rose-600 text-white shadow-sm' : 'text-stone-700 hover:bg-stone-200/60'
+                  isActive ? 'bg-teal-700 text-white shadow-xs' : 'text-slate-700 hover:bg-emerald-100/70'
                 }`}
               >
                 {getCategoryIcon(cat.icon)}
@@ -250,25 +258,25 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   placeholder="स्वास्थ्य विषय खोजें..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-stone-100 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
                 />
-                <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               </form>
 
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full mt-4 flex items-center justify-center gap-2 bg-stone-900 text-white py-2.5 rounded-lg font-semibold text-sm shadow"
+                className="w-full mt-4 flex items-center justify-center gap-2 bg-slate-900 text-white py-2.5 rounded-lg font-semibold text-sm shadow hover:bg-slate-800 transition"
               >
-                <Shield className="w-4 h-4 text-rose-500" />
+                <Shield className="w-4 h-4 text-teal-400" />
                 <span>एडमिन पैनल (आर्टिकल्स और विज्ञापन)</span>
               </Link>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); setAskAiOpen(true); }}
-                className="w-full mt-3 flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm shadow"
+                className="w-full mt-3 flex items-center justify-center gap-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm shadow"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 text-emerald-200" />
                 <span>एआई स्वास्थ्य मित्र से पूछें</span>
               </button>
 
@@ -277,28 +285,33 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition ${
-                    pathname === '/' ? 'bg-rose-600 text-white font-bold' : 'text-stone-800 hover:bg-stone-100'
+                    pathname === '/' ? 'bg-teal-700 text-white font-bold' : 'text-slate-800 hover:bg-emerald-50'
                   }`}
                 >
-                  <Home className={`w-5 h-5 ${pathname === '/' ? 'text-white' : 'text-rose-600'}`} />
+                  <Home className={`w-5 h-5 ${pathname === '/' ? 'text-white' : 'text-teal-700'}`} />
                   <span>होम</span>
                 </Link>
-                {SITE_CONFIG.categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/category/${cat.slug}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-stone-800 hover:bg-stone-100 font-medium text-sm"
-                  >
-                    {getCategoryIcon(cat.icon)}
-                    <span>{cat.hindiName}</span>
-                  </Link>
-                ))}
+                {SITE_CONFIG.categories.map((cat) => {
+                  const isActive = pathname === `/category/${cat.slug}`;
+                  return (
+                    <Link
+                      key={cat.slug}
+                      href={`/category/${cat.slug}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition ${
+                        isActive ? 'bg-teal-700 text-white font-bold' : 'text-slate-800 hover:bg-emerald-50'
+                      }`}
+                    >
+                      {getCategoryIcon(cat.icon)}
+                      <span>{cat.hindiName}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="pt-6 border-t border-stone-200 text-xs text-stone-500 text-center">
-              &copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित।
+            <div className="pt-6 border-t border-slate-200 text-xs text-slate-500 text-center">
+              &copy; {new Date().getFullYear()} हिंदी हेल्थ गाइड (दरभंगा डिजिटल नेटवर्क की इकाई). सर्वाधिकार सुरक्षित।
             </div>
           </div>
         </div>
@@ -310,7 +323,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-stone-900 text-stone-300 mt-16 pt-12 pb-8 border-t border-stone-800 w-full">
+      <footer className="bg-slate-950 text-slate-300 mt-16 pt-12 pb-8 border-t border-slate-800 w-full">
         <div className="w-full max-w-full px-3 sm:px-6">
           {/* Official Adsterra Leaderboard Footer Banner (728x90) */}
           <div className="mb-8 flex justify-center w-full overflow-hidden">
@@ -325,53 +338,52 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-teal-600 flex items-center justify-center text-white">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-700 via-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md">
                   <HeartPulse className="w-5 h-5" />
                 </div>
                 <span className="font-bold text-lg text-white">{SITE_CONFIG.hindiName}</span>
               </div>
-              <p className="text-sm text-stone-400 leading-relaxed">
-                भारत का अग्रणी और विश्वसनीय डिजिटल स्वास्थ्य मंच, जो विश्व स्वास्थ्य संगठन (WHO) तथा राष्ट्रीय स्वास्थ्य मिशन के मानकों पर आधारित यौन एवं प्रजनन स्वास्थ्य जानकारी प्रदान करता है।
+              <p className="text-sm text-slate-400 leading-relaxed">
+                दरभंगा डिजिटल नेटवर्क की इकाई – भारत का अग्रणी और विश्वसनीय डिजिटल स्वास्थ्य मंच, जो विश्व स्वास्थ्य संगठन (WHO) तथा राष्ट्रीय एड्स नियंत्रण संगठन (NACO) के क्लिनिकल मानकों पर आधारित यौन एवं प्रजनन स्वास्थ्य साक्षरता प्रदान करता है।
               </p>
             </div>
 
             <div>
               <h4 className="font-semibold text-white text-base mb-4">त्वरित लिंक</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><Link href="/about" className="hover:text-white transition">हमारे बारे में</Link></li>
-                <li><Link href="/editorial-policy" className="hover:text-white transition">संपादकीय नीति (Editorial Policy)</Link></li>
-                <li><Link href="/medical-disclaimer" className="hover:text-white transition">चिकित्सा अस्वीकरण (Disclaimer)</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition">संपर्क करें</Link></li>
-                <li><Link href="/admin" className="text-rose-400 font-semibold hover:underline">एडमिन पैनल (Admin Panel)</Link></li>
+                <li><Link href="/about" className="hover:text-emerald-400 transition">हमारे बारे में (About Us)</Link></li>
+                <li><Link href="/editorial-policy" className="hover:text-emerald-400 transition">संपादकीय नीति (Editorial Policy)</Link></li>
+                <li><Link href="/medical-disclaimer" className="hover:text-emerald-400 transition">चिकित्सा अस्वीकरण (Disclaimer)</Link></li>
+                <li><Link href="/contact" className="hover:text-emerald-400 transition">संपर्क करें (Contact Us)</Link></li>
+                <li><Link href="/admin" className="text-teal-400 font-semibold hover:underline">एडमिन पैनल (Admin Panel)</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-white text-base mb-4">कानूनी और गोपनीयता</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><Link href="/privacy-policy" className="hover:text-white transition">गोपनीयता नीति (Privacy Policy)</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition">नियम एवं शर्तें (Terms)</Link></li>
-                <li><Link href="/sitemap.xml" className="hover:text-white transition">साइटमैप (Sitemap)</Link></li>
+                <li><Link href="/privacy-policy" className="hover:text-emerald-400 transition">गोपनीयता नीति (Privacy Policy)</Link></li>
+                <li><Link href="/terms" className="hover:text-emerald-400 transition">नियम एवं शर्तें (Terms)</Link></li>
+                <li><Link href="/sitemap.xml" className="hover:text-emerald-400 transition">साइटमैप (Sitemap)</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-white text-base mb-4">महत्वपूर्ण हेल्पलाइन</h4>
-              <div className="bg-stone-800 p-4 rounded-xl space-y-3 text-sm">
-                <div className="flex items-center gap-2 text-rose-400 font-semibold">
+              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-sm">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
                   <PhoneCall className="w-4 h-4" />
                   <span>राष्ट्रीय स्वास्थ्य हेल्पलाइन: 1075</span>
                 </div>
-                <p className="text-xs text-stone-400">
-                  यह पोर्टल पेशेवर चिकित्सीय निदान, सलाह या उपचार का विकल्प नहीं है। किसी भी स्वास्थ्य समस्या के लिए योग्य चिकित्सक से मिलें।
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  यह पोर्टल केवल शैक्षिक उद्देश्यों के लिए है। किसी भी चिकित्सीय आपात स्थिति में तुरंत डॉक्टर से परामर्श लें।
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="w-full max-w-full mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 space-y-1">
-            <div>मुख्य संपादक: <strong>राजेश कुमार साहू (गुरु)</strong> | ईमेल: <a href="mailto:rajeshdict.1987@gmail.com" className="hover:text-rose-400">rajeshdict.1987@gmail.com</a></div>
-            <div>&copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित। Vercel & Next.js पर संचालित।</div>
+          <div className="w-full max-w-full mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-400">
+            &copy; {new Date().getFullYear()} हिंदी हेल्थ गाइड (दरभंगा डिजिटल नेटवर्क) — आधिकारिक ईमेल: <a href="mailto:info@hindihealthguide.org" className="text-emerald-400 hover:underline">info@hindihealthguide.org</a> — सर्वाधिकार सुरक्षित।
           </div>
         </div>
       </footer>

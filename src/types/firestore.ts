@@ -176,7 +176,7 @@ export function articleToFirestore(article: Article): FirestoreArticleDoc {
     readTime: article.readTime || `${readingTimeMinutes} मिनट`,
     readingTimeMinutes,
     author: {
-      name: article.author?.name || 'राजेश कुमार साहू (गुरु)',
+      name: article.author?.name || 'राजेश कुमार साहू',
       role: article.author?.role || 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
       avatar: article.author?.avatar || ''
     },
@@ -226,7 +226,7 @@ export function articleFromFirestore(doc: FirestoreArticleDoc | Record<string, u
     updatedAt: typeof doc.updatedAt === 'string' ? doc.updatedAt : undefined,
     status: (doc.status === 'draft' ? 'draft' : 'published'),
     author: {
-      name: authorObj.name || 'राजेश कुमार साहू (गुरु)',
+      name: authorObj.name || 'राजेश कुमार साहू',
       role: authorObj.role || 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
       avatar: authorObj.avatar
     },
@@ -241,7 +241,7 @@ export function articleFromFirestore(doc: FirestoreArticleDoc | Record<string, u
     },
     tags: Array.isArray(doc.tags) ? doc.tags : [],
     reviewedBy: doc.reviewedBy && typeof doc.reviewedBy === 'object' ? {
-      name: (doc.reviewedBy as any).name || 'राजेश कुमार साहू (गुरु)',
+      name: (doc.reviewedBy as any).name || 'राजेश कुमार साहू',
       credentials: (doc.reviewedBy as any).credentials || 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक'
     } : undefined,
     faqs: Array.isArray(doc.faqs) ? doc.faqs : []

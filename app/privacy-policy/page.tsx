@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
             <span className="text-xs uppercase tracking-wider font-bold text-stone-500">कानूनी एवं अनुपालन दस्तावेज़</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">गोपनीयता नीति (Privacy Policy)</h1>
-          <p className="text-sm text-stone-500 mt-2">अंतिम नवीनीकरण: 15 अक्टूबर 2026 | मुख्य संपादक: राजेश कुमार साहू (गुरु)</p>
+          <p className="text-sm text-stone-500 mt-2">अंतिम नवीनीकरण: 15 अक्टूबर 2026 | मुख्य संपादक: राजेश कुमार साहू</p>
         </div>
 
         <div className="prose prose-stone max-w-none space-y-8 text-stone-800 leading-relaxed text-sm sm:text-base border-t border-stone-100 pt-6">
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
               यदि इस गोपनीयता नीति, विज्ञापन प्रकटीकरण या आपकी व्यक्तिगत जानकारी के संदर्भ में आपका कोई प्रश्न या सुझाव है, तो आप हमारे मुख्य संपादक से सीधे संपर्क कर सकते हैं:
             </p>
             <div className="text-sm font-medium text-stone-900 space-y-1 mt-2">
-              <div><strong>मुख्य संपादक (Chief Editor):</strong> राजेश कुमार साहू (गुरु)</div>
+              <div><strong>मुख्य संपादक (Chief Editor):</strong> राजेश कुमार साहू</div>
               <div><strong>समर्पित ईमेल:</strong> <a href="mailto:rajeshdict.1987@gmail.com" className="text-rose-600 hover:underline">rajeshdict.1987@gmail.com</a></div>
               <div><strong>पोर्टल यूआरएल:</strong> <a href={SITE_CONFIG.productionUrl} className="text-rose-600 hover:underline">{SITE_CONFIG.productionUrl}</a></div>
             </div>

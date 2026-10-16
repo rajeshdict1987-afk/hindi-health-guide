@@ -16,7 +16,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-15T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -30,7 +30,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['प्रजनन स्वास्थ्य', 'मासिक धर्म', 'हार्मोनल संतुलन', 'महिला स्वास्थ्य'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -74,7 +74,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-16T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -88,7 +88,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['पुरुष स्वास्थ्य', 'स्पर्म क्वालिटी', 'फर्टिलिटी', 'प्रजनन स्वास्थ्य'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -128,7 +128,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-17T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -161,7 +161,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-18T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -199,7 +199,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-19T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -233,7 +233,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-20T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -247,7 +247,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['यौन शिक्षा', 'किशोरावस्था', 'मानसिक स्वास्थ्य', 'शारीरिक विकास'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -283,7 +283,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-21T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -320,7 +320,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-22T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -350,7 +350,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-23T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -380,7 +380,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-24T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -414,7 +414,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-25T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -428,7 +428,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['HIV', 'AIDS', 'एसटीआई रोकथाम', 'संक्रामक रोग'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -469,7 +469,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-26T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -502,7 +502,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-27T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -532,7 +532,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-28T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -562,7 +562,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-29T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -596,7 +596,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-30T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -610,7 +610,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['गर्भनिरोधक', 'परिवार नियोजन', 'कंडोम', 'स्वास्थ्य'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -636,7 +636,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-31T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -666,7 +666,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-01T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -696,7 +696,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-02T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -726,7 +726,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-03T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -760,7 +760,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-04T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -774,7 +774,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['मिथक और तथ्य', 'यौन स्वास्थ्य', 'वैज्ञानिक सच्चाई', 'जागरूकता'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -805,7 +805,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-05T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -835,7 +835,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-06T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -865,7 +865,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-07T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -895,7 +895,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-08T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -929,7 +929,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-09T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -943,7 +943,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['मानसिक स्वास्थ्य', 'तनाव', 'यौन स्वास्थ्य', 'भावनात्मक कल्याण'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -969,7 +969,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-10T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -999,7 +999,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-11T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1029,7 +1029,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-12T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1059,7 +1059,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-13T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1093,7 +1093,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-14T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1107,7 +1107,7 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['विशेषज्ञ सलाह', 'प्रश्नोत्तरी', 'स्त्री रोग', 'FAQ'],
     reviewedBy: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
@@ -1133,7 +1133,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-15T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1163,7 +1163,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-16T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1193,7 +1193,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-17T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
@@ -1223,7 +1223,7 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-18T10:00:00Z',
     status: 'published',
     author: {
-      name: 'राजेश कुमार साहू (गुरु)',
+      name: 'राजेश कुमार साहू',
       role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {

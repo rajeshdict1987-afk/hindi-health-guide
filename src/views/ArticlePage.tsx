@@ -210,7 +210,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 {article.author?.name ? article.author.name.charAt(0) : 'र'}
               </div>
               <div className="text-center sm:text-left">
-                <div className="font-semibold text-white">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</div>
+                <div className="font-semibold text-white">{article.author?.name || 'राजेश कुमार साहू'}</div>
                 <div className="text-xs text-rose-300 font-medium">{article.author?.role || 'मुख्य संपादक (Chief Editor)'}</div>
               </div>
             </div>
@@ -278,7 +278,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-emerald-900/90 leading-relaxed">
-                      इस स्वास्थ्य लेख के सभी चिकित्सकीय व वैज्ञानिक तथ्यों को राष्ट्रीय एड्स नियंत्रण संगठन (NACO), विश्व स्वास्थ्य संगठन (WHO) तथा स्वास्थ्य मंत्रालय के क्लिनिकल मानकों के अनुसार विश्लेषित एवं क्रॉस-वेरिफाइड किया गया है। मुख्य संपादक: <strong>राजेश कुमार साहू (गुरु)</strong>।
+                      इस स्वास्थ्य लेख के सभी चिकित्सकीय व वैज्ञानिक तथ्यों को राष्ट्रीय एड्स नियंत्रण संगठन (NACO), विश्व स्वास्थ्य संगठन (WHO) तथा स्वास्थ्य मंत्रालय के क्लिनिकल मानकों के अनुसार विश्लेषित एवं क्रॉस-वेरिफाइड किया गया है। मुख्य संपादक: <strong>राजेश कुमार साहू</strong>।
                     </p>
                   </div>
                 </div>

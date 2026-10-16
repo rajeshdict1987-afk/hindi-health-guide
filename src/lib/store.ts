@@ -65,11 +65,11 @@ export function getStoredArticles(): Article[] {
         return {
           ...art,
           author: {
-            name: 'राजेश कुमार साहू (गुरु)',
+            name: 'राजेश कुमार साहू',
             role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
           },
           reviewedBy: {
-            name: 'राजेश कुमार साहू (गुरु)',
+            name: 'राजेश कुमार साहू',
             credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
           }
         };

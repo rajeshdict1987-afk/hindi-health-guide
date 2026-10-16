@@ -42,7 +42,7 @@ export default function AdminPage() {
     category: SITE_CONFIG.categories[0].slug,
     categoryHindi: SITE_CONFIG.categories[0].hindiName,
     readTime: '5 मिनट',
-    authorName: 'राजेश कुमार साहू (गुरु)',
+    authorName: 'राजेश कुमार साहू',
     authorRole: 'मुख्य संपादक (Chief Editor)',
     imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
     imageAlt: 'स्वास्थ्य स्वास्थ्य लेख',
@@ -86,7 +86,7 @@ export default function AdminPage() {
       setIsAuthenticated(true);
       sessionStorage.setItem('admin_auth', 'true');
       sessionStorage.setItem('admin_email', 'rajeshdict.1987@gmail.com');
-      sessionStorage.setItem('admin_name', 'राजेश कुमार साहू (गुरु)');
+      sessionStorage.setItem('admin_name', 'राजेश कुमार साहू');
       setLoginError('');
     } else {
       setLoginError('अमान्य पिन (Invalid PIN)। कृपया सही गोपनीय पिन दर्ज करें।');
@@ -240,7 +240,7 @@ export default function AdminPage() {
       },
       tags: articleForm.tags.split(',').map(t => t.trim()),
       reviewedBy: {
-        name: 'राजेश कुमार साहू (गुरु)',
+        name: 'राजेश कुमार साहू',
         credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक'
       }
     };
@@ -269,7 +269,7 @@ export default function AdminPage() {
       category: SITE_CONFIG.categories[0].slug,
       categoryHindi: SITE_CONFIG.categories[0].hindiName,
       readTime: '5 मिनट',
-      authorName: 'राजेश कुमार साहू (गुरु)',
+      authorName: 'राजेश कुमार साहू',
       authorRole: 'मुख्य संपादक (Chief Editor)',
       imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
       imageAlt: '',
@@ -288,7 +288,7 @@ export default function AdminPage() {
       category: art.category,
       categoryHindi: art.categoryHindi,
       readTime: art.readTime || '5 मिनट',
-      authorName: art.author?.name || 'राजेश कुमार साहू (गुरु)',
+      authorName: art.author?.name || 'राजेश कुमार साहू',
       authorRole: art.author?.role || 'मुख्य संपादक (Chief Editor)',
       imageUrl: art.image?.url || '',
       imageAlt: art.image?.alt || '',
@@ -460,7 +460,7 @@ export default function AdminPage() {
                       setArticleForm({
                         title: '', slug: '', excerpt: '', content: '',
                         category: SITE_CONFIG.categories[0].slug, categoryHindi: SITE_CONFIG.categories[0].hindiName,
-                        readTime: '5 मिनट', authorName: 'राजेश कुमार साहू (गुरु)', authorRole: 'मुख्य संपादक (Chief Editor)',
+                        readTime: '5 मिनट', authorName: 'राजेश कुमार साहू', authorRole: 'मुख्य संपादक (Chief Editor)',
                         imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
                         imageAlt: '', tags: 'स्वास्थ्य'
                       });

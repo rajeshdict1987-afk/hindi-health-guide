@@ -253,7 +253,7 @@ export function HomePage() {
               </div>
 
               <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
-                <span className="font-medium text-stone-700">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
+                <span className="font-medium text-stone-700">{article.author?.name || 'राजेश कुमार साहू'}</span>
                 <span className="text-rose-600 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition">
                   पढ़ें &rarr;
                 </span>
@@ -269,26 +269,26 @@ export function HomePage() {
     <div className="space-y-16 pb-20 overflow-x-hidden w-full">
       {/* 5-Slide Interactive Auto-Carousel Hero Section (Auto changes every 3s, manual arrows & dot indicators) */}
       <section 
-        className="relative bg-gradient-to-br from-rose-900 via-stone-900 to-teal-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden select-none"
+        className="relative bg-gradient-to-br from-slate-950 via-teal-950 to-emerald-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden select-none"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         aria-roledescription="carousel"
         aria-label="प्रमुख स्वास्थ्य श्रेणियां हिंडोला"
       >
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
 
         {/* Manual Navigation Arrows */}
         <button
           onClick={prevSlide}
           aria-label="पिछली स्लाइड"
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-stone-900/70 hover:bg-rose-600 text-white backdrop-blur border border-white/20 flex items-center justify-center transition cursor-pointer shadow-lg active:scale-95"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/70 hover:bg-teal-700 text-white backdrop-blur border border-white/20 flex items-center justify-center transition cursor-pointer shadow-lg active:scale-95"
         >
           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
         <button
           onClick={nextSlide}
           aria-label="अगली स्लाइड"
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-stone-900/70 hover:bg-rose-600 text-white backdrop-blur border border-white/20 flex items-center justify-center transition cursor-pointer shadow-lg active:scale-95"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/70 hover:bg-teal-700 text-white backdrop-blur border border-white/20 flex items-center justify-center transition cursor-pointer shadow-lg active:scale-95"
         >
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
@@ -309,7 +309,7 @@ export function HomePage() {
                   aria-hidden={!isActive}
                 >
                   <div className="space-y-5 text-left">
-                    <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300">
+                    <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-emerald-300">
                       <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>{slide.badge}</span>
                     </div>
@@ -318,14 +318,14 @@ export function HomePage() {
                       {slide.title}
                     </h1>
 
-                    <p className="text-sm sm:text-base text-stone-300 leading-relaxed max-w-xl">
+                    <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
                       {slide.description}
                     </p>
 
                     <div className="flex flex-wrap gap-3.5 pt-2">
                       <Link
                         href={slide.route}
-                        className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-5 sm:px-6 py-3 rounded-xl shadow-lg transition flex items-center gap-2 text-sm sm:text-base cursor-pointer"
+                        className="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 sm:px-6 py-3 rounded-xl shadow-lg transition flex items-center gap-2 text-sm sm:text-base cursor-pointer"
                       >
                         <span>{slide.ctaText}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -351,7 +351,7 @@ export function HomePage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-5 sm:p-6">
                         <div className="space-y-1">
-                          <span className="text-[11px] uppercase tracking-widest text-teal-300 font-bold">
+                          <span className="text-[11px] uppercase tracking-widest text-emerald-300 font-bold">
                             {slide.overlayBadge}
                           </span>
                           <p className="text-xs sm:text-sm font-medium text-white leading-snug">
@@ -375,7 +375,7 @@ export function HomePage() {
                 aria-label={`स्लाइड ${idx + 1}: ${slide.categoryHindi}`}
                 className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === currentSlide
-                    ? 'w-8 bg-rose-500 shadow-md shadow-rose-500/50'
+                    ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-400/50'
                     : 'w-2.5 bg-white/40 hover:bg-white/70'
                 }`}
               />
@@ -496,7 +496,7 @@ export function HomePage() {
                       <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-xs">
                         {(articles[0].author?.name || 'रा').charAt(0)}
                       </div>
-                      <span className="font-semibold text-stone-700">{articles[0].author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
+                      <span className="font-semibold text-stone-700">{articles[0].author?.name || 'राजेश कुमार साहू'}</span>
                     </div>
                     <span className="text-rose-600 font-bold flex items-center gap-1 group-hover:translate-x-1 transition">
                       विस्तार से पढ़ें &rarr;
@@ -554,7 +554,7 @@ export function HomePage() {
                       </div>
                     </div>
                     <div className="px-4 sm:px-5 pb-4 pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-                      <span className="text-stone-600 font-medium truncate max-w-[130px]">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
+                      <span className="text-stone-600 font-medium truncate max-w-[130px]">{article.author?.name || 'राजेश कुमार साहू'}</span>
                       <span className="text-rose-600 font-bold group-hover:translate-x-1 transition shrink-0">पढ़ें &rarr;</span>
                     </div>
                   </Link>
