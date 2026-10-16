@@ -17,7 +17,8 @@ import {
   Sparkles,
   PhoneCall,
   AlertTriangle,
-  Shield
+  Shield,
+  Home
 } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site-config';
 import { AdDisplay } from './AdDisplay';
@@ -138,8 +139,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-200 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between w-full">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-200 shadow-sm w-full">
+        <div className="w-full max-w-full px-3 sm:px-6 h-20 flex items-center justify-between">
           {/* Left spacer / mobile hamburger */}
           <div className="flex items-center gap-3 md:hidden">
             <button
@@ -195,8 +196,17 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Categories Bar (Desktop) */}
-        <nav className="hidden md:flex items-center justify-center gap-1 bg-stone-50 border-t border-stone-200 px-4 py-2.5 overflow-x-auto text-sm">
+        {/* Categories Bar (Desktop) with Home as first item */}
+        <nav className="hidden md:flex items-center justify-center gap-1 bg-stone-50 border-t border-stone-200 px-3 sm:px-6 py-2.5 overflow-x-auto text-sm w-full max-w-full">
+          <Link
+            href="/"
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${
+              pathname === '/' ? 'bg-rose-600 text-white shadow-sm' : 'text-stone-700 hover:bg-stone-200/60'
+            }`}
+          >
+            <Home className="w-4 h-4" />
+            <span>होम</span>
+          </Link>
           {SITE_CONFIG.categories.map((cat) => {
             const isActive = pathname === `/category/${cat.slug}`;
             return (
@@ -257,6 +267,16 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               </button>
 
               <div className="mt-6 space-y-1">
+                <Link
+                  href="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition ${
+                    pathname === '/' ? 'bg-rose-600 text-white font-bold' : 'text-stone-800 hover:bg-stone-100'
+                  }`}
+                >
+                  <Home className={`w-5 h-5 ${pathname === '/' ? 'text-white' : 'text-rose-600'}`} />
+                  <span>होम</span>
+                </Link>
                 {SITE_CONFIG.categories.map((cat) => (
                   <Link
                     key={cat.slug}
@@ -279,13 +299,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1">
+      <main className="flex-1 w-full">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-stone-900 text-stone-300 mt-16 pt-12 pb-8 border-t border-stone-800">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <footer className="bg-stone-900 text-stone-300 mt-16 pt-12 pb-8 border-t border-stone-800 w-full">
+        <div className="w-full max-w-full px-3 sm:px-6">
           {/* Footer Ad Banner */}
           <div className="mb-10">
             <AdDisplay position="footer" />
@@ -338,7 +358,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <div className="max-w-[1600px] mx-auto mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 space-y-1">
+          <div className="w-full max-w-full mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 space-y-1">
             <div>मुख्य संपादक: <strong>राजेश कुमार साहू (गुरु)</strong> | ईमेल: <a href="mailto:rajeshdict.1987@gmail.com" className="hover:text-rose-400">rajeshdict.1987@gmail.com</a></div>
             <div>&copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित। Vercel & Next.js पर संचालित।</div>
           </div>

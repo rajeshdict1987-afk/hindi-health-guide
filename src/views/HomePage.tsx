@@ -38,7 +38,7 @@ const HERO_SLIDES = [
     id: 'reproductive-health',
     categoryHindi: 'प्रजनन स्वास्थ्य',
     route: '/category/reproductive-health',
-    badge: 'WHO प्रमाणित मानक • श्रेणी 1/5',
+    badge: 'WHO प्रमाणित मानक • श्रेणी 1/7',
     title: 'सुरक्षित मातृत्व एवं संपूर्ण प्रजनन स्वास्थ्य',
     description: 'मासिक धर्म, गर्भधारण, पोषण और प्रजनन अंगों की वैज्ञानिक व प्रामाणिक जानकारी। योग्य विशेषज्ञों द्वारा समीक्षित क्लिनिकल तथ्य।',
     ctaText: 'प्रजनन स्वास्थ्य लेख पढ़ें',
@@ -51,7 +51,7 @@ const HERO_SLIDES = [
     id: 'sexual-education',
     categoryHindi: 'यौन शिक्षा',
     route: '/category/sexual-education',
-    badge: 'वैज्ञानिक व संकोचमुक्त समझ • श्रेणी 2/5',
+    badge: 'वैज्ञानिक व संकोचमुक्त समझ • श्रेणी 2/7',
     title: 'स्वस्थ जीवन एवं संकोचमुक्त वैज्ञानिक यौन शिक्षा',
     description: 'शारीरिक विकास, सुरक्षित संबंध, आपसी सहमति और वैज्ञानिक तथ्यों की स्पष्ट, प्रामाणिक व झिझकमुक्त समझ।',
     ctaText: 'यौन शिक्षा मार्गदर्शिका पढ़ें',
@@ -64,7 +64,7 @@ const HERO_SLIDES = [
     id: 'sti-hiv-prevention',
     categoryHindi: 'एसटीआई और एचआईवी रोकथाम',
     route: '/category/sti-hiv-prevention',
-    badge: 'NACO मानक समर्थित • हेल्पलाइन 1097 • श्रेणी 3/5',
+    badge: 'NACO मानक समर्थित • हेल्पलाइन 1097 • श्रेणी 3/7',
     title: 'एसटीआई और एचआईवी से बचाव, लक्षण, जांच व उपचार',
     description: 'राष्ट्रीय एड्स नियंत्रण संगठन (NACO) के क्लिनिकल मानकों के अनुसार लक्षण पहचान, पोस्ट-एक्सपोजर प्रोफिलैक्सिस (PEP) और समय पर जांच।',
     ctaText: 'एचआईवी व एसटीआई बचाव गाइड',
@@ -77,7 +77,7 @@ const HERO_SLIDES = [
     id: 'contraception-family-planning',
     categoryHindi: 'गर्भनिरोधक और परिवार नियोजन',
     route: '/category/contraception-family-planning',
-    badge: 'दोहरी सुरक्षा (Dual Protection) • श्रेणी 4/5',
+    badge: 'दोहरी सुरक्षा (Dual Protection) • श्रेणी 4/7',
     title: 'आधुनिक गर्भनिरोधक विकल्प एवं सुरक्षित परिवार नियोजन',
     description: 'कंडोम, ओरल पिल्स (छाया/माला-डी), आईयूडी (कॉपर-टी) व आपातकालीन गर्भनिरोध की सही खुराक और उपयोग विधि।',
     ctaText: 'गर्भनिरोधक विकल्प जानें',
@@ -90,7 +90,7 @@ const HERO_SLIDES = [
     id: 'myths-facts',
     categoryHindi: 'मिथक और तथ्य',
     route: '/category/myths-facts',
-    badge: '100% साइंटिफिक फैक्ट-चेक्ड • श्रेणी 5/5',
+    badge: '100% साइंटिफिक फैक्ट-चेक्ड • श्रेणी 5/7',
     title: 'यौन स्वास्थ्य के सामाजिक भ्रम बनाम चिकित्सा विज्ञान',
     description: 'हस्तमैथुन, स्वप्नदोष, शारीरिक बनावट और गुप्त रोगों से जुड़े सामाजिक अंधविश्वासों का वैज्ञानिक व चिकित्सकीय समाधान।',
     ctaText: 'सत्य और वैज्ञानिक तथ्य पढ़ें',
@@ -98,6 +98,32 @@ const HERO_SLIDES = [
     imageAlt: 'मिथक और तथ्य - हिंदी हेल्थ गाइड',
     overlayBadge: 'क्लिनिकल फैक्ट-चेक',
     overlayText: 'भ्रामक विज्ञापनों और नीम-हकीमों के अंधविश्वासों से सुरक्षित रहें।',
+  },
+  {
+    id: 'mental-emotional-health',
+    categoryHindi: 'मानसिक और भावनात्मक स्वास्थ्य',
+    route: '/category/mental-emotional-health',
+    badge: 'टेली-मानस 14416 समर्थित • श्रेणी 6/7',
+    title: 'स्वस्थ संबंध, आपसी सहमति एवं भावनात्मक कल्याण',
+    description: 'रिश्तों की समझ, यौन सहमति (Consent), चिंता, अवसाद और मानसिक तनाव से मुक्ति के वैज्ञानिक और मानवीय उपाय।',
+    ctaText: 'मानसिक स्वास्थ्य लेख पढ़ें',
+    imageUrl: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'मानसिक और भावनात्मक स्वास्थ्य - हिंदी हेल्थ गाइड',
+    overlayBadge: 'भावनात्मक एवं मानसिक परामर्श',
+    overlayText: 'सहमति, स्वस्थ रिश्ते और मानसिक शांति के लिए प्रमाणित क्लिनिकल परामर्श।',
+  },
+  {
+    id: 'expert-advice-qa',
+    categoryHindi: 'विशेषज्ञ सलाह और प्रश्नोत्तरी',
+    route: '/category/expert-advice-qa',
+    badge: '100% गोपनीय क्लिनिकल Q&A • श्रेणी 7/7',
+    title: 'चिकित्सकीय सलाह, परामर्श एवं गोपनीय प्रश्नोत्तरी',
+    description: 'वरिष्ठ स्त्री रोग, यूरोलॉजिस्ट और यौन रोग विशेषज्ञों द्वारा आपके व्यक्तिगत व संवेदनशील प्रश्नों के प्रामाणिक उत्तर।',
+    ctaText: 'विशेषज्ञ प्रश्नोत्तरी पढ़ें',
+    imageUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'विशेषज्ञ सलाह और प्रश्नोत्तरी - हिंदी हेल्थ गाइड',
+    overlayBadge: 'गोपनीय विशेषज्ञ उत्तर',
+    overlayText: 'अनुभवी चिकित्सकों और स्वास्थ्य विशेषज्ञों द्वारा सत्यापित चिकित्सकीय समाधान।',
   },
 ];
 
@@ -267,7 +293,7 @@ export function HomePage() {
         </button>
 
         {/* Carousel Slide Track */}
-        <div className="max-w-[1600px] mx-auto relative z-10 px-4 sm:px-8 lg:px-12 w-full">
+        <div className="w-full max-w-full relative z-10 px-4 sm:px-8 lg:px-12">
           <div className="relative min-h-[520px] sm:min-h-[440px] lg:min-h-[420px]">
             {HERO_SLIDES.map((slide, idx) => {
               const isActive = idx === currentSlide;
@@ -358,7 +384,7 @@ export function HomePage() {
       </section>
 
       {/* Trust Badges */}
-      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section className="w-full max-w-full px-3 sm:px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
@@ -403,7 +429,7 @@ export function HomePage() {
       </section>
 
       {/* FULL-WIDTH DESKTOP 3-COLUMN LAYOUT (60% Main Newsfeed - 25% Middle/Trending - 15% Right Sidebar) */}
-      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section className="w-full max-w-full px-3 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,60fr)_minmax(0,25fr)_minmax(0,15fr)] gap-6 lg:gap-8 items-start w-full">
           
           {/* ============================================================ */}
@@ -727,7 +753,7 @@ export function HomePage() {
       </section>
 
       {/* Medical Disclaimer Banner */}
-      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section className="w-full max-w-full px-3 sm:px-6">
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6">
           <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
             <CheckCircle className="w-8 h-8" />

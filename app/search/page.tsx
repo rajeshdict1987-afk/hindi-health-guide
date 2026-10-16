@@ -19,8 +19,8 @@ function SearchContent() {
   );
 
   return (
-    <div className="bg-stone-50 py-16 px-4 sm:px-6 lg:px-8 space-y-12 min-h-[75vh]">
-      <div className="max-w-4xl mx-auto space-y-4">
+    <div className="bg-stone-50 py-16 px-3 sm:px-6 space-y-12 min-h-[75vh] w-full">
+      <div className="w-full max-w-full space-y-4">
         <Link href="/" className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 text-sm font-semibold transition">
           <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर लौटें
         </Link>
@@ -31,7 +31,7 @@ function SearchContent() {
         <p className="text-stone-600 text-sm">कुल {results.length} लेख मिले।</p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="w-full max-w-full space-y-6">
         {results.length === 0 ? (
           <div className="bg-white p-12 rounded-3xl text-center shadow-sm border border-stone-200 space-y-3">
             <h3 className="text-xl font-bold text-stone-800">कोई परिणाम नहीं मिला</h3>

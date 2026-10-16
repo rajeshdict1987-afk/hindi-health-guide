@@ -163,7 +163,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
       <ReadingProgressBar />
       
       {/* Breadcrumbs Navigation */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full">
+      <div className="w-full max-w-full px-3 sm:px-6 pt-4">
         <Breadcrumbs 
           items={[
             { label: article.categoryHindi, href: `/category/${article.category}` },
@@ -173,8 +173,8 @@ export function ArticlePage({ slug }: ArticlePageProps) {
       </div>
 
       {/* Article Header Banner */}
-      <header className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="max-w-[1600px] mx-auto space-y-6 w-full">
+      <header className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mt-4 w-full">
+        <div className="w-full max-w-full space-y-6">
           <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition">
             <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर वापस जाएं
           </Link>
@@ -189,15 +189,15 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight max-w-4xl">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight w-full">
             {article.title}
           </h1>
 
-          <p className="text-base sm:text-lg text-stone-300 leading-relaxed max-w-3xl">
+          <p className="text-base sm:text-lg text-stone-300 leading-relaxed w-full">
             {article.excerpt}
           </p>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-700 text-sm text-stone-300 max-w-5xl">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-700 text-sm text-stone-300 w-full">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500/40 flex items-center justify-center font-bold text-white text-base">
                 {article.author?.name ? article.author.name.charAt(0) : 'र'}
@@ -234,7 +234,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
       </header>
 
       {/* Responsive Framing: Mobile Stacked, Tablet Balanced, Desktop 60% Main / 25% Middle-Trending / 15% Sidebar */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 w-full overflow-x-hidden">
+      <div className="w-full max-w-full px-3 sm:px-6 mt-8 overflow-x-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,60fr)_minmax(0,25fr)_minmax(0,15fr)] gap-6 lg:gap-8 items-start w-full">
           
           {/* Main Article Content (60% width on Desktop) */}

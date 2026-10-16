@@ -378,8 +378,8 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900 pb-20">
       {/* Top Admin Header */}
-      <header className="bg-stone-900 text-white shadow-md">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
+      <header className="bg-stone-900 text-white shadow-md w-full">
+        <div className="w-full max-w-full px-3 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-600 flex items-center justify-center text-white shadow">
               <Shield className="w-6 h-6" />
@@ -411,7 +411,7 @@ export default function AdminPage() {
 
       {/* Notification Toast */}
       {message && (
-        <div className="max-w-[1600px] mx-auto px-4 mt-4 w-full">
+        <div className="w-full max-w-full px-3 sm:px-6 mt-4">
           <div className="bg-emerald-600 text-white p-4 rounded-xl shadow-lg flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 shrink-0" />
             <span className="font-medium text-sm">{message}</span>
@@ -420,7 +420,7 @@ export default function AdminPage() {
       )}
 
       {/* Main Container */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 w-full">
+      <div className="w-full max-w-full px-3 sm:px-6 mt-8">
         {/* Navigation Tabs */}
         <div className="flex gap-4 border-b border-stone-300 pb-4 mb-8">
           <button
