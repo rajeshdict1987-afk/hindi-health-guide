@@ -169,18 +169,18 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          {/* Official Logo Image - Expanded by ~30% length and +10% height up/down */}
+          {/* Official Logo Image - Exact tight-fit white background matching logo size */}
           <Link
             href="/"
             className="flex items-center group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2 py-1"
           >
-            <div className="flex items-center h-16 sm:h-22 md:h-28 w-auto">
+            <div className="inline-flex items-center bg-white rounded-xl shadow-xs border border-emerald-100/80 overflow-hidden">
               <Image
                 src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
                 alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
-                width={920}
-                height={220}
-                className="h-14 sm:h-20 md:h-26 w-auto object-contain object-left md:object-center group-hover:scale-105 transition duration-300"
+                width={1100}
+                height={230}
+                className="h-14 sm:h-20 md:h-26 w-auto object-contain object-left md:object-center group-hover:scale-105 transition duration-300 p-0.5"
                 referrerPolicy="no-referrer"
                 priority
               />
@@ -339,12 +339,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="mb-4">
-                <div className="relative h-10 w-[200px] flex items-center">
+                <div className="relative h-12 w-[220px] flex items-center bg-white px-3 py-1.5 rounded-xl shadow-xs">
                   <Image
                     src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
                     alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
                     fill
-                    sizes="200px"
+                    sizes="220px"
                     className="object-contain object-left"
                     referrerPolicy="no-referrer"
                   />
