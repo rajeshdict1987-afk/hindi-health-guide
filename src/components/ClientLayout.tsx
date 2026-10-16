@@ -147,7 +147,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs w-full">
-        <div className="w-full max-w-full px-3 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2">
+        <div className="w-full max-w-full px-3 sm:px-6 h-20 sm:h-26 md:h-32 flex items-center justify-between gap-2">
           {/* Left spacer / mobile hamburger */}
           <div className="flex items-center gap-2 md:hidden shrink-0">
             <button
@@ -169,18 +169,18 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          {/* Official Logo Image - Fluid Responsive Sizing */}
+          {/* Official Logo Image - Expanded by ~30% length and +10% height up/down */}
           <Link
             href="/"
             className="flex items-center group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2 py-1"
           >
-            <div className="flex items-center h-12 sm:h-16 md:h-20 w-auto">
+            <div className="flex items-center h-16 sm:h-22 md:h-28 w-auto">
               <Image
                 src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
                 alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
-                width={600}
-                height={140}
-                className="h-10 sm:h-14 md:h-17 w-auto object-contain object-left md:object-center group-hover:scale-105 transition duration-300"
+                width={920}
+                height={220}
+                className="h-14 sm:h-20 md:h-26 w-auto object-contain object-left md:object-center group-hover:scale-105 transition duration-300"
                 referrerPolicy="no-referrer"
                 priority
               />
