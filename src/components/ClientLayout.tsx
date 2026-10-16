@@ -339,13 +339,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="mb-4">
-                <div className="relative h-12 w-[220px] flex items-center bg-white px-3 py-1.5 rounded-xl shadow-xs">
+                <div className="inline-flex items-center bg-white rounded-xl shadow-xs border border-emerald-100/80 overflow-hidden">
                   <Image
                     src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
                     alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
-                    fill
-                    sizes="220px"
-                    className="object-contain object-left"
+                    width={400}
+                    height={90}
+                    className="h-10 w-auto object-contain object-left p-0.5"
                     referrerPolicy="no-referrer"
                   />
                 </div>
