@@ -42,37 +42,31 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    const scriptSrc = 'https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4';
+
     function triggerSocialBarAd() {
       try {
-        // पुराना ऐड स्क्रिप्ट हटाएँ ताकि डुप्लीकेट न बने
-        const existingScript = document.getElementById('adsterra-social-bar-script');
-        if (existingScript) {
-          existingScript.remove();
-        }
+        // Clean up previous script instances to refresh on route change
+        const existingScripts = document.querySelectorAll(`script[src="${scriptSrc}"]`);
+        existingScripts.forEach((s) => s.remove());
 
-        // पिछले अप्रचलित या फ्रीज कंटेनर को साफ करें
-        const staleElements = document.querySelectorAll(
-          'iframe[src*="14/fdeaeb8e14ab4a9c96943a0503fc28e4"], div[id*="fdeaeb8e14ab4a9c96943a0503fc28e4"]'
-        );
-        staleElements.forEach(el => el.remove());
+        const script = document.createElement('script');
+        script.id = 'adsterra-social-bar-script';
+        script.type = 'text/javascript';
+        script.src = scriptSrc;
+        script.setAttribute('data-cfasync', 'false');
+        script.async = true;
 
-        // नया स्क्रिप्ट एलिमेंट बनाएं
-        const newScript = document.createElement('script');
-        newScript.id = 'adsterra-social-bar-script';
-        newScript.type = 'text/javascript';
-        newScript.src = 'https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4';
-        newScript.setAttribute('data-cfasync', 'false');
-        newScript.async = true;
-        newScript.crossOrigin = 'anonymous';
-
-        // बॉडी के अंदर जोड़ें ताकि यह हर पेज नेविगेशन पर सक्रिय हो सके
-        document.body.appendChild(newScript);
+        // Append to document.body so floating social bar displays properly on route changes
+        document.body.appendChild(script);
       } catch (err) {
-        console.error('Social bar trigger error:', err);
+        // safe fallback
       }
     }
 
-    triggerSocialBarAd();
+    // Small delay ensures route DOM is settled before injecting ad notification script
+    const timer = setTimeout(triggerSocialBarAd, 120);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -163,11 +157,11 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
           {/* Logo & Name (Bolder & Mid Center on Desktop) */}
           <Link href="/" className="flex items-center gap-3 group mx-auto md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition shrink-0">
               <HeartPulse className="w-7 h-7" />
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight leading-tight">{SITE_CONFIG.hindiName}</h1>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-stone-900 leading-tight">{SITE_CONFIG.hindiName}</h1>
               <p className="text-xs text-stone-500 font-semibold mt-0.5">वैज्ञानिक एवं प्रामाणिक स्वास्थ्य मार्गदर्शन</p>
             </div>
           </Link>

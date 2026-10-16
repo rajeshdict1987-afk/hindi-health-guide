@@ -52,12 +52,12 @@ export function CategoryPage({ slug }: CategoryPageProps) {
     <div className="bg-stone-50 pb-20 space-y-12">
       {/* Category Banner */}
       <div className="bg-gradient-to-br from-rose-900 via-stone-900 to-teal-950 text-white py-14 sm:py-16 px-4 sm:px-6 lg:px-8 w-full">
-        <div className="w-full max-w-full space-y-4 px-3 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition">
+        <div className="text-center flex flex-col items-center justify-center max-w-4xl mx-auto space-y-4 px-3 sm:px-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition mb-2">
             <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर वापस जाएं
           </Link>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black">{category.hindiName}</h1>
-          <p className="text-lg text-stone-300 w-full leading-relaxed">{category.description}</p>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight">{category.hindiName}</h1>
+          <p className="text-base sm:text-lg text-stone-300 max-w-2xl leading-relaxed">{category.description}</p>
         </div>
       </div>
 

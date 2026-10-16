@@ -174,13 +174,13 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
       {/* Article Header Banner */}
       <header className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mt-4 w-full">
-        <div className="w-full max-w-full space-y-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition">
+        <div className="text-center flex flex-col items-center justify-center max-w-4xl mx-auto space-y-6 px-3 sm:px-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition mb-1">
             <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर वापस जाएं
           </Link>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="bg-rose-600/85 text-white px-3.5 py-1 rounded-full text-xs font-semibold backdrop-blur">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <span className="bg-rose-600/85 text-white px-3.5 py-1 rounded-full text-xs font-semibold backdrop-blur shadow-sm">
               {article.categoryHindi}
             </span>
             <div className="flex items-center gap-2 text-stone-300 text-xs">
@@ -189,26 +189,26 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight w-full">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight text-center tracking-tight">
             {article.title}
           </h1>
 
-          <p className="text-base sm:text-lg text-stone-300 leading-relaxed w-full">
+          <p className="text-base sm:text-lg text-stone-300 leading-relaxed text-center max-w-3xl">
             {article.excerpt}
           </p>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-700 text-sm text-stone-300 w-full">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 pt-6 border-t border-stone-700/80 text-sm text-stone-300 w-full">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500/40 flex items-center justify-center font-bold text-white text-base">
+              <div className="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500/40 flex items-center justify-center font-bold text-white text-base shrink-0">
                 {article.author?.name ? article.author.name.charAt(0) : 'र'}
               </div>
-              <div>
+              <div className="text-center sm:text-left">
                 <div className="font-semibold text-white">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</div>
                 <div className="text-xs text-rose-300 font-medium">{article.author?.role || 'मुख्य संपादक (Chief Editor)'}</div>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs">
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
               <span className="flex items-center gap-1.5 text-stone-300">
                 <Calendar className="w-4 h-4 text-rose-400" />
                 <time dateTime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString('hi-IN')}</time>
@@ -222,7 +222,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
               <button 
                 onClick={handleShare}
-                className="flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-white px-3 py-1.5 rounded-lg transition"
+                className="flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-white px-3 py-1.5 rounded-lg transition cursor-pointer"
                 title="शेयर करें"
               >
                 <Share2 className="w-3.5 h-3.5" />
