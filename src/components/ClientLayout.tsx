@@ -139,7 +139,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-200 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 h-20 flex items-center justify-between">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between w-full">
           {/* Left spacer / mobile hamburger */}
           <div className="flex items-center gap-3 md:hidden">
             <button
@@ -285,7 +285,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
       {/* Footer */}
       <footer className="bg-stone-900 text-stone-300 mt-16 pt-12 pb-8 border-t border-stone-800">
-        <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
           {/* Footer Ad Banner */}
           <div className="mb-10">
             <AdDisplay position="footer" />
@@ -338,7 +338,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 space-y-1">
+          <div className="max-w-[1600px] mx-auto mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 space-y-1">
             <div>मुख्य संपादक: <strong>राजेश कुमार साहू (गुरु)</strong> | ईमेल: <a href="mailto:rajeshdict.1987@gmail.com" className="hover:text-rose-400">rajeshdict.1987@gmail.com</a></div>
             <div>&copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित। Vercel & Next.js पर संचालित।</div>
           </div>

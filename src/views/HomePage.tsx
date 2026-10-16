@@ -267,7 +267,7 @@ export function HomePage() {
         </button>
 
         {/* Carousel Slide Track */}
-        <div className="max-w-[1400px] mx-auto relative z-10 px-4 sm:px-12">
+        <div className="max-w-[1600px] mx-auto relative z-10 px-4 sm:px-8 lg:px-12 w-full">
           <div className="relative min-h-[520px] sm:min-h-[440px] lg:min-h-[420px]">
             {HERO_SLIDES.map((slide, idx) => {
               const isActive = idx === currentSlide;
@@ -358,7 +358,7 @@ export function HomePage() {
       </section>
 
       {/* Trust Badges */}
-      <section className="max-w-[1400px] mx-auto px-3 sm:px-6 w-full">
+      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
@@ -403,13 +403,13 @@ export function HomePage() {
       </section>
 
       {/* FULL-WIDTH DESKTOP 3-COLUMN LAYOUT (60% Main Newsfeed - 25% Middle/Trending - 15% Right Sidebar) */}
-      <section className="max-w-[1400px] mx-auto px-3 sm:px-6 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[minmax(0,60fr)_minmax(0,25fr)_minmax(0,15fr)] gap-6 sm:gap-8 items-start w-full">
+      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,60fr)_minmax(0,25fr)_minmax(0,15fr)] gap-6 lg:gap-8 items-start w-full">
           
           {/* ============================================================ */}
           {/* LEFT MAIN COLUMN (60% width): Main News Feed & Articles List */}
           {/* ============================================================ */}
-          <div className="lg:col-span-7 xl:col-span-1 space-y-10 min-w-0 w-full">
+          <div className="space-y-10 min-w-0 w-full">
             
             {/* News Feed Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
@@ -562,7 +562,7 @@ export function HomePage() {
           {/* ============================================================ */}
           {/* MIDDLE COLUMN (25% width): Top Categories, Trending & Guides */}
           {/* ============================================================ */}
-          <div className="lg:col-span-3 xl:col-span-1 space-y-6 min-w-0 w-full lg:sticky lg:top-24 self-start">
+          <div className="space-y-6 min-w-0 w-full lg:sticky lg:top-24 self-start">
             
             {/* Top Health Categories Widget */}
             <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200 space-y-4">
@@ -656,7 +656,7 @@ export function HomePage() {
           {/* ============================================================ */}
           {/* RIGHT SIDEBAR COLUMN (15% width): Helplines, Tips & Ads      */}
           {/* ============================================================ */}
-          <div className="lg:col-span-2 xl:col-span-1 space-y-5 min-w-0 w-full lg:sticky lg:top-24 self-start">
+          <div className="space-y-5 min-w-0 w-full lg:sticky lg:top-24 self-start">
             
             {/* Chief Editor Card */}
             <div className="bg-stone-900 text-white rounded-2xl p-4 shadow-sm space-y-2 border border-stone-800">
@@ -727,7 +727,7 @@ export function HomePage() {
       </section>
 
       {/* Medical Disclaimer Banner */}
-      <section className="max-w-[1400px] mx-auto px-3 sm:px-6 w-full">
+      <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6">
           <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
             <CheckCircle className="w-8 h-8" />
