@@ -169,18 +169,18 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          {/* Official Logo Image - Responsive Sizing */}
+          {/* Official Logo Image - Fluid Responsive Sizing */}
           <Link
             href="/"
-            className="flex items-center group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2"
+            className="flex items-center group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2 py-1"
           >
-            <div className="relative h-10 sm:h-12 md:h-14 w-[160px] sm:w-[240px] md:w-[320px] lg:w-[380px] flex items-center">
+            <div className="flex items-center h-12 sm:h-16 md:h-20 w-auto">
               <Image
                 src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
                 alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
-                fill
-                sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 380px"
-                className="object-contain object-left md:object-center group-hover:scale-105 transition duration-300"
+                width={600}
+                height={140}
+                className="h-10 sm:h-14 md:h-17 w-auto object-contain object-left md:object-center group-hover:scale-105 transition duration-300"
                 referrerPolicy="no-referrer"
                 priority
               />
