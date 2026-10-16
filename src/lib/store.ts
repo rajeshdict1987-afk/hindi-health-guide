@@ -3,9 +3,10 @@
 import { Article } from '../types/article';
 import { Advertisement } from '../types/ad';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
+import { validateArticleSchema, articleToFirestore, articleFromFirestore } from '../types/firestore';
 
-const ARTICLES_STORAGE_KEY = 'hindi_health_guide_articles_v3';
-const ADS_STORAGE_KEY = 'hindi_health_guide_ads_v3';
+const ARTICLES_STORAGE_KEY = 'hindi_health_guide_articles_v4';
+const ADS_STORAGE_KEY = 'hindi_health_guide_ads_v4';
 
 export const DEFAULT_ADS: Advertisement[] = [
   {
@@ -54,14 +55,30 @@ export function getStoredArticles(): Article[] {
       return INITIAL_ARTICLES;
     }
     // If user has fewer articles than initial seeded set, ensure all initial articles are present
-    if (parsed.length < INITIAL_ARTICLES.length) {
-      const existingSlugs = new Set(parsed.map((a: Article) => a.slug));
-      const missing = INITIAL_ARTICLES.filter(a => !existingSlugs.has(a.slug));
-      const merged = [...parsed, ...missing];
-      localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(merged));
-      return merged;
-    }
-    return parsed;
+    const existingSlugs = new Set(parsed.map((a: Article) => a.slug));
+    const missing = INITIAL_ARTICLES.filter(a => !existingSlugs.has(a.slug));
+    const merged = [...parsed, ...missing];
+
+    // Strictly enforce Chief Editor Rajesh Kumar Sahu (Guru) and remove placeholder names
+    const normalized = merged.map((art: Article) => {
+      if (!art.author?.name || art.author.name.includes('डॉ.') || art.author.name.includes('प्रो.')) {
+        return {
+          ...art,
+          author: {
+            name: 'राजेश कुमार साहू (गुरु)',
+            role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
+          },
+          reviewedBy: {
+            name: 'राजेश कुमार साहू (गुरु)',
+            credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
+          }
+        };
+      }
+      return art;
+    });
+
+    localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(normalized));
+    return normalized;
   } catch {
     return INITIAL_ARTICLES;
   }
@@ -70,7 +87,12 @@ export function getStoredArticles(): Article[] {
 export function saveStoredArticles(articles: Article[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(articles));
+    // Enforce strict schema normalization matching Firestore constraints
+    const sanitized = articles.map((art) => {
+      const firestoreDoc = articleToFirestore(art);
+      return articleFromFirestore(firestoreDoc);
+    });
+    localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(sanitized));
   } catch (e) {
     console.error('Failed to save articles:', e);
   }

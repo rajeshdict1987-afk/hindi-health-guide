@@ -21,6 +21,7 @@ import { Advertisement } from '@/src/types/ad';
 import { getStoredArticles, saveStoredArticles, getStoredAds, saveStoredAds, resetToDefaults } from '@/src/lib/store';
 import { SITE_CONFIG } from '@/src/config/site-config';
 import { generateSeoSuggestions } from '@/src/lib/seoHelper';
+import { validateArticleSchema } from '@/src/types/firestore';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -41,8 +42,8 @@ export default function AdminPage() {
     category: SITE_CONFIG.categories[0].slug,
     categoryHindi: SITE_CONFIG.categories[0].hindiName,
     readTime: '5 मिनट',
-    authorName: 'डॉ. अंजलि शर्मा',
-    authorRole: 'स्त्री रोग विशेषज्ञ',
+    authorName: 'राजेश कुमार साहू (गुरु)',
+    authorRole: 'मुख्य संपादक (Chief Editor)',
     imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
     imageAlt: 'स्वास्थ्य स्वास्थ्य लेख',
     tags: 'स्वास्थ्य, चिकित्सा, प्रजनन स्वास्थ्य'
@@ -76,9 +77,16 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanEmail = loginEmail.trim().toLowerCase();
+    if (cleanEmail !== 'rajeshdict.1987@gmail.com') {
+      setLoginError('अनधिकृत ईमेल पता! केवल अधिकृत मुख्य संपादक (rajeshdict.1987@gmail.com) ही लॉगिन कर सकते हैं।');
+      return;
+    }
     if (loginPin.trim() === '8492') {
       setIsAuthenticated(true);
       sessionStorage.setItem('admin_auth', 'true');
+      sessionStorage.setItem('admin_email', 'rajeshdict.1987@gmail.com');
+      sessionStorage.setItem('admin_name', 'राजेश कुमार साहू (गुरु)');
       setLoginError('');
     } else {
       setLoginError('अमान्य पिन (Invalid PIN)। कृपया सही गोपनीय पिन दर्ज करें।');
@@ -232,10 +240,16 @@ export default function AdminPage() {
       },
       tags: articleForm.tags.split(',').map(t => t.trim()),
       reviewedBy: {
-        name: 'डॉ. रमेश कुमार',
-        credentials: 'MBBS, MD (Public Health)'
+        name: 'राजेश कुमार साहू (गुरु)',
+        credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक'
       }
     };
+
+    const validation = validateArticleSchema(newArticle);
+    if (!validation.valid) {
+      alert(`आर्टिकल स्कीमा सत्यापन त्रुटि (Schema Validation Error):\n• ${validation.errors.join('\n• ')}`);
+      return;
+    }
 
     let updated: Article[];
     if (editingArticleId) {
@@ -255,8 +269,8 @@ export default function AdminPage() {
       category: SITE_CONFIG.categories[0].slug,
       categoryHindi: SITE_CONFIG.categories[0].hindiName,
       readTime: '5 मिनट',
-      authorName: 'डॉ. अंजलि शर्मा',
-      authorRole: 'स्त्री रोग विशेषज्ञ',
+      authorName: 'राजेश कुमार साहू (गुरु)',
+      authorRole: 'मुख्य संपादक (Chief Editor)',
       imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
       imageAlt: '',
       tags: 'स्वास्थ्य, चिकित्सा'
@@ -274,8 +288,8 @@ export default function AdminPage() {
       category: art.category,
       categoryHindi: art.categoryHindi,
       readTime: art.readTime || '5 मिनट',
-      authorName: art.author?.name || 'डॉ. अंजलि शर्मा',
-      authorRole: art.author?.role || 'विशेषज्ञ',
+      authorName: art.author?.name || 'राजेश कुमार साहू (गुरु)',
+      authorRole: art.author?.role || 'मुख्य संपादक (Chief Editor)',
       imageUrl: art.image?.url || '',
       imageAlt: art.image?.alt || '',
       tags: art.tags?.join(', ') || ''
@@ -446,7 +460,7 @@ export default function AdminPage() {
                       setArticleForm({
                         title: '', slug: '', excerpt: '', content: '',
                         category: SITE_CONFIG.categories[0].slug, categoryHindi: SITE_CONFIG.categories[0].hindiName,
-                        readTime: '5 मिनट', authorName: 'डॉ. अंजलि शर्मा', authorRole: 'स्त्री रोग विशेषज्ञ',
+                        readTime: '5 मिनट', authorName: 'राजेश कुमार साहू (गुरु)', authorRole: 'मुख्य संपादक (Chief Editor)',
                         imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
                         imageAlt: '', tags: 'स्वास्थ्य'
                       });

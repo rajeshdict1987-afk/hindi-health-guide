@@ -1,10 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Phone, MapPin } from 'lucide-react';
+import { SITE_CONFIG } from '../../src/config/site-config';
 
 export const metadata = {
-  title: 'संपर्क करें (Contact Us)',
-  description: 'हिंदी हेल्थ गाइड टीम से संपर्क करें।',
+  title: 'संपर्क करें (Contact Us) | हिंदी हेल्थ गाइड',
+  description: 'हिंदी हेल्थ गाइड टीम और मुख्य संपादक से संपर्क करें।',
+  alternates: {
+    canonical: `${SITE_CONFIG.productionUrl}/contact`,
+  },
 };
 
 export default function ContactPage() {

@@ -134,7 +134,7 @@ export function HomePage() {
               </div>
 
               <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
-                <span className="font-medium text-stone-700">{article.author.name}</span>
+                <span className="font-medium text-stone-700">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
                 <span className="text-rose-600 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition">
                   पढ़ें &rarr;
                 </span>
@@ -354,9 +354,9 @@ export function HomePage() {
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-xs">
-                      {article.author.name.charAt(0)}
+                      {(article.author?.name || 'राजेश कुमार साहू (गुरु)').charAt(0)}
                     </div>
-                    <span className="text-xs font-medium text-stone-700">{article.author.name}</span>
+                    <span className="text-xs font-medium text-stone-700">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
                   </div>
                   <span className="text-rose-600 font-semibold text-xs sm:text-sm flex items-center gap-1 group-hover:translate-x-1 transition">
                     पूरा पढ़ें <ArrowRight className="w-3.5 h-3.5" />

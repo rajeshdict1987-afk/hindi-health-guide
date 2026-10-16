@@ -1,10 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { SITE_CONFIG } from '../../src/config/site-config';
 
 export const metadata = {
-  title: 'नियम एवं शर्तें (Terms of Service)',
-  description: 'हिंदी हेल्थ गाइड के उपयोग की शर्तें।',
+  title: 'नियम एवं शर्तें (Terms of Service) | हिंदी हेल्थ गाइड',
+  description: 'हिंदी हेल्थ गाइड के उपयोग की कानूनी शर्तें एवं दिशानिर्देश।',
+  alternates: {
+    canonical: `${SITE_CONFIG.productionUrl}/terms`,
+  },
 };
 
 export default function TermsPage() {

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: article.seo?.metaDescription || article.excerpt,
     keywords: article.seo?.keywords || article.tags || ['स्वास्थ्य', 'प्रजनन स्वास्थ्य'],
     alternates: {
-      canonical: `/articles/${article.slug}`,
+      canonical: `${SITE_CONFIG.productionUrl}/articles/${article.slug}`,
     },
     openGraph: {
       type: 'article',

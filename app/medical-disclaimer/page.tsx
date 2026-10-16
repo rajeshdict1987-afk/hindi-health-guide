@@ -4,8 +4,11 @@ import { ArrowLeft } from 'lucide-react';
 import { SITE_CONFIG } from '../../src/config/site-config';
 
 export const metadata = {
-  title: 'चिकित्सा अस्वीकरण (Medical Disclaimer)',
+  title: 'चिकित्सा अस्वीकरण (Medical Disclaimer) | हिंदी हेल्थ गाइड',
   description: 'हिंदी हेल्थ गाइड का आधिकारिक चिकित्सा अस्वीकरण।',
+  alternates: {
+    canonical: `${SITE_CONFIG.productionUrl}/medical-disclaimer`,
+  },
 };
 
 export default function MedicalDisclaimerPage() {

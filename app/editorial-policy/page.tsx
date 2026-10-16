@@ -4,8 +4,11 @@ import { ArrowLeft } from 'lucide-react';
 import { SITE_CONFIG } from '../../src/config/site-config';
 
 export const metadata = {
-  title: 'संपादकीय नीति (Editorial Policy)',
+  title: 'संपादकीय नीति (Editorial Policy) | हिंदी हेल्थ गाइड',
   description: 'हिंदी हेल्थ गाइड की संपादकीय और चिकित्सा समीक्षा नीति।',
+  alternates: {
+    canonical: `${SITE_CONFIG.productionUrl}/editorial-policy`,
+  },
 };
 
 export default function EditorialPolicyPage() {
@@ -26,9 +29,9 @@ export default function EditorialPolicyPage() {
             {SITE_CONFIG.hindiName} पर प्रकाशित सभी लेख और मार्गदर्शिकाएं विश्व स्वास्थ्य संगठन (WHO), भारतीय आयुर्विज्ञान अनुसंधान परिषद (ICMR) और राष्ट्रीय स्वास्थ्य मिशन के वैज्ञानिक प्रमाणों पर आधारित हैं।
           </p>
 
-          <h2>2. चिकित्सा समीक्षा (Medical Review)</h2>
+          <h2>2. चिकित्सा व संपादकीय समीक्षा (Medical & Editorial Review)</h2>
           <p>
-            प्रत्येक स्वास्थ्य लेख को प्रकाशित करने से पूर्व स्त्री रोग विशेषज्ञों, संक्रामक रोग विशेषज्ञों और लोक स्वास्थ्य विशेषज्ञों द्वारा बारीकी से जांचा और समीक्षित किया जाता है।
+            प्रत्येक स्वास्थ्य लेख को प्रकाशित करने से पूर्व मुख्य संपादक <strong>राजेश कुमार साहू (गुरु)</strong> एवं एआई फैक्ट-चेक सत्यापन प्रणाली द्वारा डब्ल्यूएचओ (WHO) और एनएसीओ (NACO) दिशानिर्देशों के तहत बारीकी से जाँचा और प्रामाणिक बनाया जाता है।
           </p>
 
           <h2>3. स्वतंत्रता और निष्पक्षता</h2>

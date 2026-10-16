@@ -336,8 +336,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500">
-            &copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित। Vercel & Next.js पर संचालित।
+          <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 space-y-1">
+            <div>मुख्य संपादक: <strong>राजेश कुमार साहू (गुरु)</strong> | ईमेल: <a href="mailto:rajeshdict.1987@gmail.com" className="hover:text-rose-400">rajeshdict.1987@gmail.com</a></div>
+            <div>&copy; {new Date().getFullYear()} {SITE_CONFIG.hindiName}. सर्वाधिकार सुरक्षित। Vercel & Next.js पर संचालित।</div>
           </div>
         </div>
       </footer>

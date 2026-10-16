@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: category.seoTitle,
     description: category.seoDescription,
     alternates: {
-      canonical: `/category/${category.slug}`,
+      canonical: `${SITE_CONFIG.productionUrl}/category/${category.slug}`,
     },
     openGraph: {
       type: 'website',

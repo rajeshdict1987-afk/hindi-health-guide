@@ -16,8 +16,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-15T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ (Gynecologist)',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
@@ -30,8 +30,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['प्रजनन स्वास्थ्य', 'मासिक धर्म', 'हार्मोनल संतुलन', 'महिला स्वास्थ्य'],
     reviewedBy: {
-      name: 'डॉ. रमेश कुमार',
-      credentials: 'MBBS, MD (Public Health)',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -74,8 +74,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-16T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. राजेश वर्मा',
-      role: 'यूरोलॉजिस्ट एवं पुरुष स्वास्थ्य विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
@@ -88,8 +88,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['पुरुष स्वास्थ्य', 'स्पर्म क्वालिटी', 'फर्टिलिटी', 'प्रजनन स्वास्थ्य'],
     reviewedBy: {
-      name: 'डॉ. अंजलि शर्मा',
-      credentials: 'MBBS, MS',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -128,8 +128,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-17T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80',
@@ -161,8 +161,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-18T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
@@ -199,8 +199,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-19T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80',
@@ -233,8 +233,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-20T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'बाल एवं किशोर मनोविज्ञान विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
@@ -247,8 +247,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['यौन शिक्षा', 'किशोरावस्था', 'मानसिक स्वास्थ्य', 'शारीरिक विकास'],
     reviewedBy: {
-      name: 'डॉ. अंजलि शर्मा',
-      credentials: 'MBBS, MD',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -283,8 +283,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-21T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80',
@@ -320,8 +320,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-22T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80',
@@ -350,8 +350,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-23T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
@@ -380,8 +380,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-24T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80',
@@ -414,8 +414,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-25T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. मनीष गुप्ता',
-      role: 'संक्रामक रोग विशेषज्ञ (Infectious Disease Specialist)',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
@@ -428,8 +428,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['HIV', 'AIDS', 'एसटीआई रोकथाम', 'संक्रामक रोग'],
     reviewedBy: {
-      name: 'डॉ. रमेश कुमार',
-      credentials: 'MBBS, MD',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -469,8 +469,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-26T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. मनीष गुप्ता',
-      role: 'संक्रामक रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
@@ -502,8 +502,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-27T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. मनीष गुप्ता',
-      role: 'संक्रामक रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
@@ -532,8 +532,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-28T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. मनीष गुप्ता',
-      role: 'संक्रामक रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
@@ -562,8 +562,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-29T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
@@ -596,8 +596,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-30T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
@@ -610,8 +610,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['गर्भनिरोधक', 'परिवार नियोजन', 'कंडोम', 'स्वास्थ्य'],
     reviewedBy: {
-      name: 'डॉ. रमेश कुमार',
-      credentials: 'MBBS, MD',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -636,8 +636,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-01-31T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
@@ -666,8 +666,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-01T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80',
@@ -696,8 +696,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-02T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. राजेश वर्मा',
-      role: 'यूरोलॉजिस्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
@@ -726,8 +726,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-03T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80',
@@ -760,8 +760,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-04T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80',
@@ -774,8 +774,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['मिथक और तथ्य', 'यौन स्वास्थ्य', 'वैज्ञानिक सच्चाई', 'जागरूकता'],
     reviewedBy: {
-      name: 'डॉ. अंजलि शर्मा',
-      credentials: 'MBBS, MD',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -805,8 +805,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-05T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
@@ -835,8 +835,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-06T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
@@ -865,8 +865,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-07T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80',
@@ -895,8 +895,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-08T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80',
@@ -929,8 +929,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-09T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80',
@@ -943,8 +943,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['मानसिक स्वास्थ्य', 'तनाव', 'यौन स्वास्थ्य', 'भावनात्मक कल्याण'],
     reviewedBy: {
-      name: 'डॉ. रमेश कुमार',
-      credentials: 'MBBS, MD',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -969,8 +969,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-10T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80',
@@ -999,8 +999,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-11T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
@@ -1029,8 +1029,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-12T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
@@ -1059,8 +1059,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-13T10:00:00Z',
     status: 'published',
     author: {
-      name: 'प्रो. आलोक वर्मा',
-      role: 'मनोवैज्ञानिक',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80',
@@ -1093,8 +1093,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-14T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
@@ -1107,8 +1107,8 @@ export const INITIAL_ARTICLES: Article[] = [
     },
     tags: ['विशेषज्ञ सलाह', 'प्रश्नोत्तरी', 'स्त्री रोग', 'FAQ'],
     reviewedBy: {
-      name: 'डॉ. रमेश कुमार',
-      credentials: 'MBBS, MD',
+      name: 'राजेश कुमार साहू (गुरु)',
+      credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     faqs: [
       {
@@ -1133,8 +1133,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-15T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. राजेश वर्मा',
-      role: 'यूरोलॉजिस्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
@@ -1163,8 +1163,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-16T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. अंजलि शर्मा',
-      role: 'स्त्री रोग विशेषज्ञ',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80',
@@ -1193,8 +1193,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-17T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
@@ -1223,8 +1223,8 @@ export const INITIAL_ARTICLES: Article[] = [
     createdAt: '2025-02-18T10:00:00Z',
     status: 'published',
     author: {
-      name: 'डॉ. रमेश कुमार',
-      role: 'पब्लिक हेल्थ एक्सपर्ट',
+      name: 'राजेश कुमार साहू (गुरु)',
+      role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
     },
     image: {
       url: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80',

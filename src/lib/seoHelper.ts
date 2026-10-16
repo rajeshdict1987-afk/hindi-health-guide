@@ -54,7 +54,15 @@ export function generateArticleSchema(article: Article) {
       'image': article.image?.url || `${SITE_CONFIG.productionUrl}/icon.png`,
       'author': {
         '@type': 'Person',
-        'name': article.author?.name || 'विशेषज्ञ',
+        'name': article.author?.name || 'राजेश कुमार साहू (गुरु)',
+        'jobTitle': 'मुख्य संपादक (Chief Editor)',
+        'url': `${SITE_CONFIG.productionUrl}/about`
+      },
+      'editor': {
+        '@type': 'Person',
+        'name': 'राजेश कुमार साहू (गुरु)',
+        'jobTitle': 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
+        'url': `${SITE_CONFIG.productionUrl}/about`
       },
       'publisher': {
         '@type': 'Organization',

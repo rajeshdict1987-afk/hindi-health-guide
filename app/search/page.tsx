@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { INITIAL_ARTICLES } from '../../src/data/initialArticles';
 import { Search as SearchIcon, ArrowLeft, Clock, ArrowRight } from 'lucide-react';
 
-export default function SearchPage() {
-  // Use suspense or direct searchParams handling
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-  const query = searchParams.get('q') || '';
+function SearchContent() {
+  const searchParams = useSearchParams();
+  const query = searchParams?.get('q') || '';
 
   const results = INITIAL_ARTICLES.filter(
     (a) =>
@@ -19,9 +19,9 @@ export default function SearchPage() {
   );
 
   return (
-    <div className="bg-stone-50 py-16 px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="bg-stone-50 py-16 px-4 sm:px-6 lg:px-8 space-y-12 min-h-[75vh]">
       <div className="max-w-4xl mx-auto space-y-4">
-        <Link href="/" className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 text-sm font-semibold">
+        <Link href="/" className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 text-sm font-semibold transition">
           <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर लौटें
         </Link>
         <h1 className="text-3xl font-bold text-stone-900 flex items-center gap-3">
@@ -70,5 +70,19 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[75vh] flex items-center justify-center p-8 text-stone-500">
+          खोज परिणाम लोड हो रहे हैं...
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }

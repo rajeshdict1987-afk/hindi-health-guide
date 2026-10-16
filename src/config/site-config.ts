@@ -1,3 +1,5 @@
+import { ENV } from './env';
+
 export interface CategoryConfig {
   slug: string;
   name: string;
@@ -12,7 +14,7 @@ export const SITE_CONFIG = {
   name: 'Hindi Health Guide',
   hindiName: 'हिंदी हेल्थ गाइड',
   description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच। डब्ल्यूएचओ (WHO) और एनएसीओ (NACO) दिशानिर्देशों पर आधारित।',
-  productionUrl: 'https://hindi-health-guide.vercel.app',
+  productionUrl: ENV.productionUrl,
   categories: [
     {
       slug: 'reproductive-health',

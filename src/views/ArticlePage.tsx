@@ -199,26 +199,27 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
           <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-700 text-sm text-stone-300 max-w-5xl">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500/40 flex items-center justify-center font-bold text-white">
-                {article.author?.name ? article.author.name.charAt(0) : 'ड'}
+              <div className="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500/40 flex items-center justify-center font-bold text-white text-base">
+                {article.author?.name ? article.author.name.charAt(0) : 'र'}
               </div>
               <div>
-                <div className="font-semibold text-white">{article.author?.name || 'विशेषज्ञ'}</div>
-                <div className="text-xs text-stone-400">{article.author?.role || 'डॉक्टर'}</div>
+                <div className="font-semibold text-white">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</div>
+                <div className="text-xs text-rose-300 font-medium">{article.author?.role || 'मुख्य संपादक (Chief Editor)'}</div>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-3 text-xs">
+              <span className="flex items-center gap-1.5 text-stone-300">
                 <Calendar className="w-4 h-4 text-rose-400" />
                 <time dateTime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString('hi-IN')}</time>
               </span>
-              {article.reviewedBy && (
-                <span className="flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 px-3 py-1 rounded-lg">
-                  <ShieldCheck className="w-4 h-4" />
-                  समीक्षित: {article.reviewedBy.name} ({article.reviewedBy.credentials})
-                </span>
-              )}
+              
+              {/* Task 3: Clean "✅ एआई फैक्ट-चेक वेरिफाइड" green badge alongside the editor's details */}
+              <span className="inline-flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-semibold px-3 py-1.5 rounded-lg shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>✅ एआई फैक्ट-चेक वेरिफाइड</span>
+              </span>
+
               <button 
                 onClick={handleShare}
                 className="flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-white px-3 py-1.5 rounded-lg transition"
@@ -253,6 +254,28 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                   />
                 </figure>
               )}
+
+              {/* AI Fact-Check Verification Banner */}
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-emerald-950 text-sm sm:text-base">
+                        ✅ एआई फैक्ट-चेक वेरिफाइड (AI Fact-Checked & Verified)
+                      </span>
+                      <span className="bg-emerald-200/80 text-emerald-900 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-emerald-300">
+                        WHO & NACO मानक
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-emerald-900/90 leading-relaxed">
+                      इस स्वास्थ्य लेख के सभी चिकित्सकीय व वैज्ञानिक तथ्यों को राष्ट्रीय एड्स नियंत्रण संगठन (NACO), विश्व स्वास्थ्य संगठन (WHO) तथा स्वास्थ्य मंत्रालय के क्लिनिकल मानकों के अनुसार विश्लेषित एवं क्रॉस-वेरिफाइड किया गया है। मुख्य संपादक: <strong>राजेश कुमार साहू (गुरु)</strong>।
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               {/* Render Milestone-Structured Article Content with Placements 1, 2, and 3 */}
               {renderMilestoneContent(article.content)}

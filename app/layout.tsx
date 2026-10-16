@@ -28,9 +28,9 @@ export const metadata: Metadata = {
     'मिथक और तथ्य',
     'हिंदी हेल्थ गाइड',
   ],
-  authors: [{ name: 'Hindi Health Guide Medical Editorial Team' }],
-  creator: 'Hindi Health Guide',
-  publisher: 'Hindi Health Guide',
+  authors: [{ name: 'राजेश कुमार साहू (गुरु) – मुख्य संपादक (Chief Editor)' }],
+  creator: 'राजेश कुमार साहू (गुरु)',
+  publisher: 'हिंदी हेल्थ गाइड (Hindi Health Guide)',
   alternates: {
     canonical: '/',
   },
