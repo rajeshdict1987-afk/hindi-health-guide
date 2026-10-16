@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   HeartPulse, 
@@ -168,21 +169,21 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          {/* Logo & Name - Strictly Single Line on Mobile screens without wrapping or layout shift */}
+          {/* Official Logo Image - Responsive Sizing */}
           <Link
             href="/"
-            className="flex items-center gap-2 sm:gap-3 group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2"
+            className="flex items-center group min-w-0 md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2"
           >
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-teal-700 via-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition shrink-0">
-              <HeartPulse className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
-            <div className="min-w-0 flex flex-col justify-center text-left">
-              <span className="text-base sm:text-2xl md:text-3xl font-black tracking-tight text-slate-900 leading-none whitespace-nowrap">
-                {SITE_CONFIG.hindiName}
-              </span>
-              <span className="hidden sm:block text-[11px] md:text-xs text-slate-500 font-semibold mt-1 whitespace-nowrap">
-                वैज्ञानिक एवं प्रामाणिक स्वास्थ्य मार्गदर्शन
-              </span>
+            <div className="relative h-10 sm:h-12 md:h-14 w-[160px] sm:w-[240px] md:w-[320px] lg:w-[380px] flex items-center">
+              <Image
+                src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
+                alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
+                fill
+                sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 380px"
+                className="object-contain object-left md:object-center group-hover:scale-105 transition duration-300"
+                referrerPolicy="no-referrer"
+                priority
+              />
             </div>
           </Link>
 
@@ -337,11 +338,17 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-700 via-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md">
-                  <HeartPulse className="w-5 h-5" />
+              <div className="mb-4">
+                <div className="relative h-10 w-[200px] flex items-center">
+                  <Image
+                    src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
+                    alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
+                    fill
+                    sizes="200px"
+                    className="object-contain object-left"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
-                <span className="font-bold text-lg text-white">{SITE_CONFIG.hindiName}</span>
               </div>
               <p className="text-sm text-slate-400 leading-relaxed">
                 दरभंगा डिजिटल नेटवर्क की इकाई – भारत का अग्रणी और विश्वसनीय डिजिटल स्वास्थ्य मंच, जो विश्व स्वास्थ्य संगठन (WHO) तथा राष्ट्रीय एड्स नियंत्रण संगठन (NACO) के क्लिनिकल मानकों पर आधारित यौन एवं प्रजनन स्वास्थ्य साक्षरता प्रदान करता है।
