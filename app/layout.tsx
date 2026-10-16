@@ -55,7 +55,16 @@ export const metadata: Metadata = {
     title: `${SITE_CONFIG.hindiName} – यौन एवं प्रजनन स्वास्थ्य`,
     description: 'वैज्ञानिक तथ्यों और चिकित्सा दिशानिर्देशों (WHO/NACO/MoHFW) पर आधारित हिंदी स्वास्थ्य जानकारी।',
   },
+  icons: {
+    icon: '/icon-192.png',
+    apple: '/apple-touch-icon.png',
+  },
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'हेल्थ गाइड',
+  },
 };
 
 const structuredSchema = {

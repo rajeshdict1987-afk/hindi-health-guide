@@ -7,7 +7,7 @@
 
 function sanitizeUrl(rawUrl?: string): string {
   if (!rawUrl || typeof rawUrl !== 'string') {
-    return 'https://hindihealthguide.vercel.app';
+    return 'https://www.hindihealthguide.org';
   }
   let trimmed = rawUrl.trim();
   if (trimmed.startsWith('http://')) {
@@ -21,17 +21,10 @@ function sanitizeUrl(rawUrl?: string): string {
 
 export const ENV = {
   /**
-   * Primary canonical production URL with fallbacks:
-   * 1. NEXT_PUBLIC_APP_URL
-   * 2. APP_URL
-   * 3. VERCEL_URL
-   * 4. Hardened default https://hindihealthguide.vercel.app
+   * Primary canonical custom production URL:
+   * Pointing exclusively to https://www.hindihealthguide.org
    */
-  productionUrl: sanitizeUrl(
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined)
-  ),
+  productionUrl: 'https://www.hindihealthguide.org',
 
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',

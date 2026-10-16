@@ -70,6 +70,17 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [pathname]);
 
+  // Production Service Worker Registration for 100% PWA Compliance & Offline Capability
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          // Graceful fallback for non-supported or restricted environments
+        });
+      });
+    }
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {

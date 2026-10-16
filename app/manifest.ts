@@ -1,0 +1,99 @@
+import { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    id: '/?source=pwa',
+    name: 'हिंदी हेल्थ गाइड - Hindi Health Guide',
+    short_name: 'हेल्थ गाइड',
+    description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच।',
+    lang: 'hi',
+    dir: 'ltr',
+    start_url: '/',
+    scope: '/',
+    display: 'standalone',
+    display_override: ['standalone', 'browser'],
+    orientation: 'portrait-primary',
+    theme_color: '#DC2626',
+    background_color: '#FFFFFF',
+    categories: ['health', 'medical', 'lifestyle'],
+    prefer_related_applications: false,
+    related_applications: [],
+    icons: [
+      {
+        src: '/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+    ],
+    screenshots: [
+      {
+        src: '/screenshot-desktop.png',
+        sizes: '1280x720',
+        type: 'image/png',
+        form_factor: 'wide',
+        label: 'हिंदी हेल्थ गाइड - डेस्कटॉप पोर्टल (Hindi Health Guide Desktop Portal)',
+      },
+      {
+        src: '/screenshot-mobile.png',
+        sizes: '750x1334',
+        type: 'image/png',
+        form_factor: 'narrow',
+        label: 'हिंदी हेल्थ गाइड - मोबाइल ऐप (Hindi Health Guide Mobile App)',
+      },
+    ],
+    shortcuts: [
+      {
+        name: 'त्वरित स्वास्थ्य टिप्स',
+        short_name: 'हेल्थ टिप्स',
+        description: 'दैनिक प्रमाणित स्वास्थ्य व सुरक्षा सुझाव',
+        url: '/#tips',
+        icons: [
+          {
+            src: '/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+        ],
+      },
+      {
+        name: 'ताजा स्वास्थ्य समाचार व लेख',
+        short_name: 'नवीनतम लेख',
+        description: 'नवीनतम क्लिनिकल लेख एवं गाइड',
+        url: '/#articles',
+        icons: [
+          {
+            src: '/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+        ],
+      },
+      {
+        name: 'शीर्ष स्वास्थ्य श्रेणियां',
+        short_name: 'श्रेणियां',
+        description: 'प्रजनन स्वास्थ्य एवं यौन शिक्षा श्रेणियां',
+        url: '/#categories',
+        icons: [
+          {
+            src: '/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+        ],
+      },
+    ],
+  };
+}
