@@ -10,7 +10,9 @@ function sanitizeUrl(rawUrl?: string): string {
     return 'https://hindihealthguide.vercel.app';
   }
   let trimmed = rawUrl.trim();
-  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+  if (trimmed.startsWith('http://')) {
+    trimmed = `https://${trimmed.slice(7)}`;
+  } else if (!trimmed.startsWith('https://')) {
     trimmed = `https://${trimmed}`;
   }
   // Remove trailing slashes for consistent URL joining
