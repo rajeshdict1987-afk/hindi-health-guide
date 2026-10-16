@@ -163,7 +163,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
       <ReadingProgressBar />
       
       {/* Breadcrumbs Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 pt-4">
         <Breadcrumbs 
           items={[
             { label: article.categoryHindi, href: `/category/${article.category}` },
@@ -174,7 +174,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
       {/* Article Header Banner */}
       <header className="bg-gradient-to-br from-stone-900 via-stone-800 to-rose-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-[1400px] mx-auto space-y-6">
           <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition">
             <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर वापस जाएं
           </Link>
@@ -234,7 +234,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
       </header>
 
       {/* Responsive Framing: Mobile Stacked, Tablet Balanced, Desktop 60% Main / 25% Middle-Trending / 15% Sidebar */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 w-full overflow-x-hidden">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 mt-8 w-full overflow-x-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[minmax(0,60fr)_minmax(0,25fr)_minmax(0,15fr)] gap-6 sm:gap-8 items-start w-full">
           
           {/* Main Article Content (60% width on Desktop) */}

@@ -20,7 +20,11 @@ import {
   Clock,
   Calendar,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FolderTree,
+  TrendingUp,
+  PhoneCall,
+  Zap
 } from 'lucide-react';
 import { SITE_CONFIG, CategoryConfig } from '../config/site-config';
 import { Article } from '../types/article';
@@ -190,7 +194,7 @@ export function HomePage() {
         </div>
 
         {/* Direct Articles Grid (2-3 Articles) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {catArticles.map((article) => (
             <Link
               key={article.id}
@@ -263,7 +267,7 @@ export function HomePage() {
         </button>
 
         {/* Carousel Slide Track */}
-        <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-12">
+        <div className="max-w-[1400px] mx-auto relative z-10 px-4 sm:px-12">
           <div className="relative min-h-[520px] sm:min-h-[440px] lg:min-h-[420px]">
             {HERO_SLIDES.map((slide, idx) => {
               const isActive = idx === currentSlide;
@@ -354,7 +358,7 @@ export function HomePage() {
       </section>
 
       {/* Trust Badges */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-[1400px] mx-auto px-3 sm:px-6 w-full">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
@@ -398,135 +402,332 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* HEALTH CATEGORIES SECTION WITH INTERLEAVED NATIVE ADS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-700 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-            स्वास्थ्य श्रेणियां एवं नवीनतम लेख
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
-            श्रेणी अनुसार स्वास्थ्य लेख पढ़ें
-          </h2>
-          <p className="text-stone-600 text-sm">
-            प्रत्येक विषय के तहत डॉक्टरों और विशेषज्ञों द्वारा तैयार सीधे लेख देखें और बिना किसी बाधा के पढ़ें।
-          </p>
-        </div>
-
-        {/* Alternating Interleaving: Category Block 1 (Categories 1 & 2) */}
-        <div className="space-y-8">
-          {catGroup1.map(renderCategoryCard)}
-        </div>
-
-        {/* NATIVE AD INTERLEAVING 1 (Between Cat 1-2 and Cat 3-4) */}
-        <div className="py-2">
-          <AdsterraNativeAd placement="homepage-interleave-1" />
-        </div>
-
-        {/* Alternating Interleaving: Category Block 2 (Categories 3 & 4) */}
-        <div className="space-y-8">
-          {catGroup2.map(renderCategoryCard)}
-        </div>
-
-        {/* NATIVE AD INTERLEAVING 2 (Between Cat 3-4 and Cat 5-6) */}
-        <div className="py-2">
-          <AdsterraNativeAd placement="homepage-interleave-2" />
-        </div>
-
-        {/* Alternating Interleaving: Category Block 3 (Categories 5 & 6) */}
-        <div className="space-y-8">
-          {catGroup3.map(renderCategoryCard)}
-        </div>
-
-        {/* NATIVE AD INTERLEAVING 3 (Between Cat 5-6 and Cat 7) */}
-        <div className="py-2">
-          <AdsterraNativeAd placement="homepage-interleave-3" />
-        </div>
-
-        {/* Alternating Interleaving: Category Block 4 (Category 7: Expert Advice & Q&A) */}
-        <div className="space-y-8">
-          {catGroup4.map(renderCategoryCard)}
-        </div>
-      </section>
-
-      {/* Standalone Sponsor Banner (Separated) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AdDisplay position="mid" />
-      </section>
-
-      {/* Latest All Articles Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">हालिया स्वास्थ्य लेख</h2>
-            <p className="text-stone-600 text-sm mt-1">चिकित्सकों द्वारा समीक्षित ताजा स्वास्थ्य लेख और प्रामाणिक मार्गदर्शिकाएं</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.slice(0, 9).map((article) => (
-            <Link
-              key={article.id}
-              href={`/articles/${article.slug}`}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg border border-stone-200 transition flex flex-col group"
-            >
-              <div className="relative aspect-video overflow-hidden bg-stone-100">
-                <Image
-                  src={article.image.url}
-                  alt={article.image.alt || article.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition duration-500"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-stone-800 shadow">
-                  {article.categoryHindi}
+      {/* FULL-WIDTH DESKTOP 3-COLUMN LAYOUT (60% Main Newsfeed - 25% Middle/Trending - 15% Right Sidebar) */}
+      <section className="max-w-[1400px] mx-auto px-3 sm:px-6 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[minmax(0,60fr)_minmax(0,25fr)_minmax(0,15fr)] gap-6 sm:gap-8 items-start w-full">
+          
+          {/* ============================================================ */}
+          {/* LEFT MAIN COLUMN (60% width): Main News Feed & Articles List */}
+          {/* ============================================================ */}
+          <div className="lg:col-span-7 xl:col-span-1 space-y-10 min-w-0 w-full">
+            
+            {/* News Feed Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>मुख्य स्वास्थ्य समाचार व प्रमाणित लेख</span>
                 </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
+                  ताजा क्लिनिकल मार्गदर्शिका एवं स्वास्थ्य समाचार
+                </h2>
               </div>
+              <span className="text-xs text-stone-500 font-semibold bg-stone-100 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+                {articles.length} प्रमाणित लेख
+              </span>
+            </div>
 
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs text-stone-500">
-                    <span className="flex items-center gap-1">
+            {/* Lead / Featured Article Card */}
+            {articles[0] && (
+              <Link
+                href={`/articles/${articles[0].slug}`}
+                className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg border border-stone-200 transition block"
+              >
+                <div className="relative aspect-video sm:aspect-21/9 overflow-hidden bg-stone-100">
+                  <Image
+                    src={articles[0].image.url}
+                    alt={articles[0].image.alt || articles[0].title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition duration-500"
+                    referrerPolicy="no-referrer"
+                    priority
+                  />
+                  <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-rose-700 shadow">
+                    विशेष आलेख • {articles[0].categoryHindi}
+                  </div>
+                </div>
+                <div className="p-6 sm:p-7 space-y-3">
+                  <div className="flex items-center gap-3 text-xs text-stone-500">
+                    <span className="flex items-center gap-1 font-medium">
                       <Clock className="w-3.5 h-3.5 text-rose-500" />
-                      {article.readTime}
+                      {articles[0].readTime}
                     </span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-rose-500" />
-                      {new Date(article.publishedAt).toLocaleDateString('hi-IN')}
+                      {new Date(articles[0].publishedAt).toLocaleDateString('hi-IN')}
                     </span>
                   </div>
-                  <h3 className="font-bold text-stone-900 text-lg group-hover:text-rose-600 transition line-clamp-2">
-                    {article.title}
+                  <h3 className="font-extrabold text-stone-900 text-xl sm:text-2xl group-hover:text-rose-600 transition leading-snug">
+                    {articles[0].title}
                   </h3>
-                  <p className="text-stone-600 text-sm line-clamp-3 leading-relaxed">
-                    {article.excerpt}
+                  <p className="text-stone-600 text-sm sm:text-base leading-relaxed line-clamp-2">
+                    {articles[0].excerpt}
                   </p>
-                </div>
-
-                <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-xs">
-                      {(article.author?.name || 'राजेश कुमार साहू (गुरु)').charAt(0)}
+                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-xs">
+                        {(articles[0].author?.name || 'रा').charAt(0)}
+                      </div>
+                      <span className="font-semibold text-stone-700">{articles[0].author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
                     </div>
-                    <span className="text-xs font-medium text-stone-700">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
+                    <span className="text-rose-600 font-bold flex items-center gap-1 group-hover:translate-x-1 transition">
+                      विस्तार से पढ़ें &rarr;
+                    </span>
                   </div>
-                  <span className="text-rose-600 font-semibold text-xs sm:text-sm flex items-center gap-1 group-hover:translate-x-1 transition">
-                    पूरा पढ़ें <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+                </div>
+              </Link>
+            )}
+
+            {/* Recent Articles 2-Col Grid */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-stone-900 pb-2 border-b border-stone-100">
+                हालिया प्रकाशित लेख (Recent Articles)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {articles.slice(1, 7).map((article) => (
+                  <Link
+                    key={article.id}
+                    href={`/articles/${article.slug}`}
+                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-stone-200 transition flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="relative aspect-video overflow-hidden bg-stone-100">
+                        <Image
+                          src={article.image.url}
+                          alt={article.image.alt || article.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-500"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur px-2.5 py-0.5 rounded-full text-[11px] font-semibold text-stone-800 shadow-xs">
+                          {article.categoryHindi}
+                        </div>
+                      </div>
+                      <div className="p-4 sm:p-5 space-y-2">
+                        <div className="flex items-center gap-2 text-[11px] text-stone-500">
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-rose-500" />
+                            {article.readTime}
+                          </span>
+                          <span>•</span>
+                          <span>{new Date(article.publishedAt).toLocaleDateString('hi-IN')}</span>
+                        </div>
+                        <h4 className="font-bold text-stone-900 text-sm sm:text-base group-hover:text-rose-600 transition line-clamp-2 leading-snug">
+                          {article.title}
+                        </h4>
+                        <p className="text-stone-600 text-xs line-clamp-2 leading-relaxed">
+                          {article.excerpt}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="px-4 sm:px-5 pb-4 pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
+                      <span className="text-stone-600 font-medium truncate max-w-[130px]">{article.author?.name || 'राजेश कुमार साहू (गुरु)'}</span>
+                      <span className="text-rose-600 font-bold group-hover:translate-x-1 transition shrink-0">पढ़ें &rarr;</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Interleaved Native Ad Placement 1 */}
+            <div className="py-2">
+              <AdsterraNativeAd placement="homepage-interleave-1" />
+            </div>
+
+            {/* Category Deep Dives (Block 1: Categories 1 & 2) */}
+            <div className="space-y-8">
+              {catGroup1.map(renderCategoryCard)}
+            </div>
+
+            {/* Interleaved Native Ad Placement 2 */}
+            <div className="py-2">
+              <AdsterraNativeAd placement="homepage-interleave-2" />
+            </div>
+
+            {/* Category Deep Dives (Block 2 & 3: Remaining Categories) */}
+            <div className="space-y-8">
+              {catGroup2.map(renderCategoryCard)}
+              {catGroup3.map(renderCategoryCard)}
+              {catGroup4.map(renderCategoryCard)}
+            </div>
+
+            {/* Standalone Sponsor Banner */}
+            <div className="pt-2">
+              <AdDisplay position="mid" />
+            </div>
+
+          </div>
+
+          {/* ============================================================ */}
+          {/* MIDDLE COLUMN (25% width): Top Categories, Trending & Guides */}
+          {/* ============================================================ */}
+          <div className="lg:col-span-3 xl:col-span-1 space-y-6 min-w-0 w-full lg:sticky lg:top-24 self-start">
+            
+            {/* Top Health Categories Widget */}
+            <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-stone-100 font-bold text-stone-900 text-base sm:text-lg">
+                <FolderTree className="w-5 h-5 text-rose-600" />
+                <h3>शीर्ष स्वास्थ्य श्रेणियां</h3>
+              </div>
+              <ul className="space-y-1.5">
+                {SITE_CONFIG.categories.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/category/${cat.slug}`}
+                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-rose-50 text-stone-700 hover:text-rose-700 transition text-xs sm:text-sm font-medium group"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="shrink-0">{getCategoryIcon(cat.icon)}</span>
+                        <span className="truncate">{cat.hindiName}</span>
+                      </div>
+                      <span className="text-stone-400 group-hover:translate-x-1 transition text-xs">&rarr;</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Trending Health Articles Widget */}
+            <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-stone-100 font-bold text-stone-900 text-base sm:text-lg">
+                <TrendingUp className="w-5 h-5 text-rose-600" />
+                <h3>ट्रेंडिंग स्वास्थ्य लेख</h3>
+              </div>
+              <div className="space-y-3.5">
+                {articles.slice(0, 5).map((art, idx) => (
+                  <Link
+                    key={art.id}
+                    href={`/articles/${art.slug}`}
+                    className="flex items-start gap-3 group pb-3 border-b border-stone-100 last:border-0 last:pb-0"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <div className="space-y-1 min-w-0">
+                      <h4 className="text-xs sm:text-sm font-bold text-stone-900 group-hover:text-rose-600 transition line-clamp-2 leading-snug">
+                        {art.title}
+                      </h4>
+                      <span className="text-[11px] text-stone-500">{art.readTime}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Featured Health Guides */}
+            <div className="bg-gradient-to-br from-teal-900 to-teal-950 text-white rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
+              <div className="flex items-center gap-2 text-teal-300">
+                <Sparkles className="w-5 h-5" />
+                <h3 className="font-bold text-white text-base">विशेष स्वास्थ्य गाइड</h3>
+              </div>
+              <div className="space-y-3 text-xs">
+                <Link
+                  href="/category/reproductive-health"
+                  className="block bg-white/10 hover:bg-white/20 p-3 rounded-xl transition border border-white/10"
+                >
+                  <span className="font-bold text-teal-200 block text-xs">सुरक्षित मातृत्व एवं प्रजनन गाइड</span>
+                  <span className="text-stone-300 text-[11px] mt-0.5 block">क्लिनिकल पोषण एवं प्रजनन अंग स्वच्छता</span>
+                </Link>
+                <Link
+                  href="/category/sti-hiv-prevention"
+                  className="block bg-white/10 hover:bg-white/20 p-3 rounded-xl transition border border-white/10"
+                >
+                  <span className="font-bold text-teal-200 block text-xs">72-घंटे PEP व HIV सुरक्षा गाइड</span>
+                  <span className="text-stone-300 text-[11px] mt-0.5 block">NACO दिशा-निर्देश व निःशुल्क ICTC केंद्र</span>
+                </Link>
+                <Link
+                  href="/category/contraception-family-planning"
+                  className="block bg-white/10 hover:bg-white/20 p-3 rounded-xl transition border border-white/10"
+                >
+                  <span className="font-bold text-teal-200 block text-xs">कंडोम व दोहरी सुरक्षा (Dual Protection)</span>
+                  <span className="text-stone-300 text-[11px] mt-0.5 block">गर्भ व संक्रमण से 98% सुरक्षित रहने के नियम</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Middle Sticky Native Ad */}
+            <div className="py-1">
+              <AdsterraNativeAd placement="sidebar-sticky" />
+            </div>
+
+          </div>
+
+          {/* ============================================================ */}
+          {/* RIGHT SIDEBAR COLUMN (15% width): Helplines, Tips & Ads      */}
+          {/* ============================================================ */}
+          <div className="lg:col-span-2 xl:col-span-1 space-y-5 min-w-0 w-full lg:sticky lg:top-24 self-start">
+            
+            {/* Chief Editor Card */}
+            <div className="bg-stone-900 text-white rounded-2xl p-4 shadow-sm space-y-2 border border-stone-800">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-rose-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                  रा
+                </div>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-xs text-white truncate">राजेश कुमार साहू</h4>
+                  <p className="text-[10px] text-rose-300">मुख्य संपादक (Chief Editor)</p>
                 </div>
               </div>
-            </Link>
-          ))}
+              <p className="text-[11px] text-stone-300 leading-tight">
+                WHO एवं NACO दिशानिर्देशों के अनुरूप क्लिनिकल तथ्य समीक्षा।
+              </p>
+            </div>
+
+            {/* National Helplines Widget */}
+            <div className="bg-gradient-to-br from-rose-900 to-rose-950 text-white rounded-2xl p-4 shadow-md space-y-2.5">
+              <div className="flex items-center gap-1.5 text-rose-300">
+                <PhoneCall className="w-4 h-4" />
+                <h4 className="font-bold text-white text-xs">राष्ट्रीय हेल्पलाइन</h4>
+              </div>
+              <p className="text-[11px] text-stone-200 leading-tight">
+                गोपनीय आपातकालीन चिकित्सा सहायता (24x7)
+              </p>
+              <div className="space-y-1.5 font-mono text-center">
+                <div className="bg-white/10 rounded-lg p-1.5 text-[11px] font-bold text-rose-200 border border-white/20">
+                  एम्बुलेंस: 108 / 102
+                </div>
+                <div className="bg-white/10 rounded-lg p-1.5 text-[11px] font-bold text-rose-200 border border-white/20">
+                  NACO एड्स: 1097
+                </div>
+                <div className="bg-white/10 rounded-lg p-1.5 text-[11px] font-bold text-rose-200 border border-white/20">
+                  टेली-मानस: 14416
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Health Tips Widget */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 space-y-3">
+              <div className="flex items-center gap-1.5 pb-2 border-b border-stone-100 font-bold text-stone-900 text-xs uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+                <span>त्वरित स्वास्थ्य टिप्स</span>
+              </div>
+              <div className="space-y-2 text-[11px] text-stone-600 leading-tight">
+                <div className="p-2 bg-stone-50 rounded-lg border border-stone-100">
+                  <strong className="text-stone-800 block text-xs mb-0.5">दोहरी सुरक्षा</strong>
+                  कंडोम अनचाहे गर्भ और एसटीआई दोनों से 98% रक्षा करता है।
+                </div>
+                <div className="p-2 bg-stone-50 rounded-lg border border-stone-100">
+                  <strong className="text-stone-800 block text-xs mb-0.5">यूपीटी टेस्ट</strong>
+                  पीरियड मिस होने के 5-7 दिन बाद सुबह की पेशाब से जांचें।
+                </div>
+                <div className="p-2 bg-stone-50 rounded-lg border border-stone-100">
+                  <strong className="text-stone-800 block text-xs mb-0.5">दैनिक स्वच्छता</strong>
+                  प्रतिदिन 3 लीटर पानी पिएं और केवल सादे पानी से सफाई रखें।
+                </div>
+              </div>
+            </div>
+
+            {/* Ad Placement */}
+            <AdDisplay position="bottom" />
+
+          </div>
+
         </div>
       </section>
 
-      {/* Bottom Ad Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AdDisplay position="bottom" />
-      </section>
-
       {/* Medical Disclaimer Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-[1400px] mx-auto px-3 sm:px-6 w-full">
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6">
           <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
             <CheckCircle className="w-8 h-8" />

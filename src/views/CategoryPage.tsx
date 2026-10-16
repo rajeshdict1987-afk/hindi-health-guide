@@ -51,8 +51,8 @@ export function CategoryPage({ slug }: CategoryPageProps) {
   return (
     <div className="bg-stone-50 pb-20 space-y-12">
       {/* Category Banner */}
-      <div className="bg-gradient-to-br from-rose-900 via-stone-900 to-teal-950 text-white py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-4">
+      <div className="bg-gradient-to-br from-rose-900 via-stone-900 to-teal-950 text-white py-14 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto space-y-4 px-3 sm:px-6">
           <Link href="/" className="inline-flex items-center gap-2 text-stone-300 hover:text-white text-sm font-medium transition">
             <ArrowLeft className="w-4 h-4" /> मुख्य पृष्ठ पर वापस जाएं
           </Link>
@@ -62,12 +62,12 @@ export function CategoryPage({ slug }: CategoryPageProps) {
       </div>
 
       {/* Mid Ad Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
         <AdDisplay position="mid" />
       </div>
 
       {/* Articles Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
         {articles.length === 0 ? (
           <div className="bg-white p-12 rounded-3xl text-center shadow-sm border border-stone-200 space-y-3">
             <h3 className="text-xl font-bold text-stone-800">इस श्रेणी में अभी कोई लेख उपलब्ध नहीं है</h3>
