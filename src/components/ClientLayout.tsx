@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site-config';
 import { AdDisplay } from './AdDisplay';
+import { generateWhoNacoResponse } from '../lib/whoNacoAssistant';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -106,10 +107,11 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         })
       });
       const data = await res.json();
-      const replyText = data.text || data.error || 'उत्तर प्राप्त करने में असमर्थ।';
+      const replyText = data.text || generateWhoNacoResponse(userMessage);
       setMessages([...newMessages, { role: 'model' as const, text: replyText }]);
     } catch {
-      setMessages([...newMessages, { role: 'model' as const, text: 'सर्वर त्रुटि। कृपया पुनः प्रयास करें।' }]);
+      const fallbackReply = generateWhoNacoResponse(userMessage);
+      setMessages([...newMessages, { role: 'model' as const, text: fallbackReply }]);
     } finally {
       setAiLoading(false);
     }

@@ -18,7 +18,9 @@ import {
   Users,
   Award,
   Clock,
-  Calendar
+  Calendar,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { SITE_CONFIG, CategoryConfig } from '../config/site-config';
 import { Article } from '../types/article';
@@ -27,8 +29,78 @@ import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { AdDisplay } from '../components/AdDisplay';
 import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
 
+const HERO_SLIDES = [
+  {
+    id: 'reproductive-health',
+    categoryHindi: 'प्रजनन स्वास्थ्य',
+    route: '/category/reproductive-health',
+    badge: 'WHO प्रमाणित मानक • श्रेणी 1/5',
+    title: 'सुरक्षित मातृत्व एवं संपूर्ण प्रजनन स्वास्थ्य',
+    description: 'मासिक धर्म, गर्भधारण, पोषण और प्रजनन अंगों की वैज्ञानिक व प्रामाणिक जानकारी। योग्य विशेषज्ञों द्वारा समीक्षित क्लिनिकल तथ्य।',
+    ctaText: 'प्रजनन स्वास्थ्य लेख पढ़ें',
+    imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'प्रजनन स्वास्थ्य - हिंदी हेल्थ गाइड',
+    overlayBadge: 'विशेषज्ञ चिकित्सा समीक्षा',
+    overlayText: 'योग्य स्त्री रोग विशेषज्ञों और स्वास्थ्य वैज्ञानिकों द्वारा सत्यापित सामग्री।',
+  },
+  {
+    id: 'sexual-education',
+    categoryHindi: 'यौन शिक्षा',
+    route: '/category/sexual-education',
+    badge: 'वैज्ञानिक व संकोचमुक्त समझ • श्रेणी 2/5',
+    title: 'स्वस्थ जीवन एवं संकोचमुक्त वैज्ञानिक यौन शिक्षा',
+    description: 'शारीरिक विकास, सुरक्षित संबंध, आपसी सहमति और वैज्ञानिक तथ्यों की स्पष्ट, प्रामाणिक व झिझकमुक्त समझ।',
+    ctaText: 'यौन शिक्षा मार्गदर्शिका पढ़ें',
+    imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'यौन शिक्षा - हिंदी हेल्थ गाइड',
+    overlayBadge: 'संकोचमुक्त मार्गदर्शन',
+    overlayText: 'युवाओं और वयस्कों के लिए वैज्ञानिक व संवेदनशील स्वास्थ्य परामर्श।',
+  },
+  {
+    id: 'sti-hiv-prevention',
+    categoryHindi: 'एसटीआई और एचआईवी रोकथाम',
+    route: '/category/sti-hiv-prevention',
+    badge: 'NACO मानक समर्थित • हेल्पलाइन 1097 • श्रेणी 3/5',
+    title: 'एसटीआई और एचआईवी से बचाव, लक्षण, जांच व उपचार',
+    description: 'राष्ट्रीय एड्स नियंत्रण संगठन (NACO) के क्लिनिकल मानकों के अनुसार लक्षण पहचान, पोस्ट-एक्सपोजर प्रोफिलैक्सिस (PEP) और समय पर जांच।',
+    ctaText: 'एचआईवी व एसटीआई बचाव गाइड',
+    imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'एसटीआई और एचआईवी रोकथाम - हिंदी हेल्थ गाइड',
+    overlayBadge: 'गोपनीय जांच व उपचार',
+    overlayText: 'राष्ट्रीय एड्स नियंत्रण संगठन (NACO) दिशा-निर्देशों के अनुरूप।',
+  },
+  {
+    id: 'contraception-family-planning',
+    categoryHindi: 'गर्भनिरोधक और परिवार नियोजन',
+    route: '/category/contraception-family-planning',
+    badge: 'दोहरी सुरक्षा (Dual Protection) • श्रेणी 4/5',
+    title: 'आधुनिक गर्भनिरोधक विकल्प एवं सुरक्षित परिवार नियोजन',
+    description: 'कंडोम, ओरल पिल्स (छाया/माला-डी), आईयूडी (कॉपर-टी) व आपातकालीन गर्भनिरोध की सही खुराक और उपयोग विधि।',
+    ctaText: 'गर्भनिरोधक विकल्प जानें',
+    imageUrl: 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'गर्भनिरोधक और परिवार नियोजन - हिंदी हेल्थ गाइड',
+    overlayBadge: 'दोहरी सुरक्षा परामर्श',
+    overlayText: 'अनचाहे गर्भ और एसटीआई संक्रमण से एक साथ पूर्ण सुरक्षा।',
+  },
+  {
+    id: 'myths-facts',
+    categoryHindi: 'मिथक और तथ्य',
+    route: '/category/myths-facts',
+    badge: '100% साइंटिफिक फैक्ट-चेक्ड • श्रेणी 5/5',
+    title: 'यौन स्वास्थ्य के सामाजिक भ्रम बनाम चिकित्सा विज्ञान',
+    description: 'हस्तमैथुन, स्वप्नदोष, शारीरिक बनावट और गुप्त रोगों से जुड़े सामाजिक अंधविश्वासों का वैज्ञानिक व चिकित्सकीय समाधान।',
+    ctaText: 'सत्य और वैज्ञानिक तथ्य पढ़ें',
+    imageUrl: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'मिथक और तथ्य - हिंदी हेल्थ गाइड',
+    overlayBadge: 'क्लिनिकल फैक्ट-चेक',
+    overlayText: 'भ्रामक विज्ञापनों और नीम-हकीमों के अंधविश्वासों से सुरक्षित रहें।',
+  },
+];
+
 export function HomePage() {
   const [articles, setArticles] = useState<Article[]>(INITIAL_ARTICLES);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const loaded = getStoredArticles();
@@ -36,6 +108,22 @@ export function HomePage() {
       setArticles(loaded);
     }
   }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  };
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
@@ -148,55 +236,119 @@ export function HomePage() {
 
   return (
     <div className="space-y-16 pb-20 overflow-x-hidden w-full">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-rose-900 via-stone-900 to-teal-950 text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>WHO & NACO दिशा-निर्देशों द्वारा प्रमाणित</span>
-            </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-              भारत का विश्वसनीय <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-teal-300">यौन एवं प्रजनन स्वास्थ्य</span> मंच
-            </h1>
-            <p className="text-base sm:text-lg text-stone-300 leading-relaxed">
-              {SITE_CONFIG.description}
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Link
-                href="/category/reproductive-health"
-                className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg transition flex items-center gap-2 text-sm sm:text-base"
-              >
-                <span>लेख पढ़ना शुरू करें</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/about"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-6 py-3.5 rounded-xl backdrop-blur transition text-sm sm:text-base"
-              >
-                हमारे बारे में जानें
-              </Link>
-            </div>
+      {/* 5-Slide Interactive Auto-Carousel Hero Section (Auto changes every 3s, manual arrows & dot indicators) */}
+      <section 
+        className="relative bg-gradient-to-br from-rose-900 via-stone-900 to-teal-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden select-none"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        aria-roledescription="carousel"
+        aria-label="प्रमुख स्वास्थ्य श्रेणियां हिंडोला"
+      >
+        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+
+        {/* Manual Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          aria-label="पिछली स्लाइड"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-stone-900/70 hover:bg-rose-600 text-white backdrop-blur border border-white/20 flex items-center justify-center transition cursor-pointer shadow-lg active:scale-95"
+        >
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
+        <button
+          onClick={nextSlide}
+          aria-label="अगली स्लाइड"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-stone-900/70 hover:bg-rose-600 text-white backdrop-blur border border-white/20 flex items-center justify-center transition cursor-pointer shadow-lg active:scale-95"
+        >
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
+
+        {/* Carousel Slide Track */}
+        <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-12">
+          <div className="relative min-h-[520px] sm:min-h-[440px] lg:min-h-[420px]">
+            {HERO_SLIDES.map((slide, idx) => {
+              const isActive = idx === currentSlide;
+              return (
+                <div
+                  key={slide.id}
+                  className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center transition-all duration-700 ease-in-out ${
+                    isActive 
+                      ? 'opacity-100 relative z-10 pointer-events-auto translate-x-0' 
+                      : 'opacity-0 absolute inset-0 z-0 pointer-events-none -translate-x-4'
+                  }`}
+                  aria-hidden={!isActive}
+                >
+                  <div className="space-y-5 text-left">
+                    <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{slide.badge}</span>
+                    </div>
+
+                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                      {slide.title}
+                    </h1>
+
+                    <p className="text-sm sm:text-base text-stone-300 leading-relaxed max-w-xl">
+                      {slide.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-3.5 pt-2">
+                      <Link
+                        href={slide.route}
+                        className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-5 sm:px-6 py-3 rounded-xl shadow-lg transition flex items-center gap-2 text-sm sm:text-base cursor-pointer"
+                      >
+                        <span>{slide.ctaText}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        href="/about"
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-5 sm:px-6 py-3 rounded-xl backdrop-blur transition text-sm sm:text-base cursor-pointer"
+                      >
+                        संपादकीय नीति
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 aspect-video lg:aspect-4/3">
+                      <Image
+                        src={slide.imageUrl}
+                        alt={slide.imageAlt}
+                        fill
+                        className="object-cover"
+                        referrerPolicy="no-referrer"
+                        priority={idx === 0}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-5 sm:p-6">
+                        <div className="space-y-1">
+                          <span className="text-[11px] uppercase tracking-widest text-teal-300 font-bold">
+                            {slide.overlayBadge}
+                          </span>
+                          <p className="text-xs sm:text-sm font-medium text-white leading-snug">
+                            {slide.overlayText}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="relative">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 aspect-video lg:aspect-4/3">
-              <Image
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80"
-                alt="Hindi Health Guide Hero"
-                fill
-                className="object-cover"
-                referrerPolicy="no-referrer"
-                priority
+          {/* Dot Indicators */}
+          <div className="flex items-center justify-center gap-2 pt-6">
+            {HERO_SLIDES.map((slide, idx) => (
+              <button
+                key={slide.id}
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`स्लाइड ${idx + 1}: ${slide.categoryHindi}`}
+                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  idx === currentSlide
+                    ? 'w-8 bg-rose-500 shadow-md shadow-rose-500/50'
+                    : 'w-2.5 bg-white/40 hover:bg-white/70'
+                }`}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent flex items-end p-6">
-                <div className="space-y-1">
-                  <span className="text-xs uppercase tracking-widest text-teal-300 font-bold">विशेषज्ञ चिकित्सा समीक्षा</span>
-                  <p className="text-sm font-medium text-white">योग्य स्त्री रोग विशेषज्ञों और स्वास्थ्य वैज्ञानिकों द्वारा सत्यापित सामग्री।</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
