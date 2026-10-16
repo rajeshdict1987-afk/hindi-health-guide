@@ -9,6 +9,7 @@ import { SITE_CONFIG } from '../config/site-config';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, ShieldCheck, Share2, TrendingUp, FolderTree, PhoneCall } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
 import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
+import { AdsterraDisplayBanner } from '../components/AdsterraDisplayBanner';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { ReadingProgressBar } from '../components/ReadingProgressBar';
 
@@ -61,7 +62,7 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
   const trendingArticles = allArticles.slice(0, 5);
 
-  // Step-by-Step / Section-wise Native Ad Placements (Requirement 1)
+  // Step-by-Step / Section-wise Display Banner & Native Ad Placements
   const renderMilestoneContent = (htmlContent: string) => {
     if (!htmlContent) return null;
 
@@ -81,9 +82,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             dangerouslySetInnerHTML={{ __html: introSection }}
           />
 
-          {/* Placement 1: After introduction / overview section */}
-          <div className="py-2">
-            <AdsterraNativeAd placement="article-after-intro" />
+          {/* Ad Placement 1: After introduction / overview - Official 300x250 Display Banner */}
+          <div className="py-2 flex justify-center w-full">
+            <AdsterraDisplayBanner format="300x250" className="mx-auto" />
           </div>
 
           {/* Milestone 2: Problem / Causes description section */}
@@ -92,9 +93,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             dangerouslySetInnerHTML={{ __html: causesSection }}
           />
 
-          {/* Placement 2: After problem / causes description section */}
-          <div className="py-2">
-            <AdsterraNativeAd placement="article-after-causes" />
+          {/* Ad Placement 2: After problem / causes - Official 468x60 Inline Display Banner */}
+          <div className="py-2 flex justify-center w-full overflow-hidden">
+            <AdsterraDisplayBanner format="468x60" className="mx-auto max-w-full" />
           </div>
 
           {/* Milestone 3: Remedies / Solutions & conclusions section */}
@@ -103,9 +104,12 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             dangerouslySetInnerHTML={{ __html: solutionsSection }}
           />
 
-          {/* Placement 3: After remedies / solutions section */}
-          <div className="py-2">
+          {/* Ad Placement 3: After remedies / solutions - Balanced Native Ad + 300x250 Display Banner */}
+          <div className="py-2 space-y-4">
             <AdsterraNativeAd placement="article-after-solutions" />
+            <div className="flex justify-center w-full">
+              <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+            </div>
           </div>
         </div>
       );
@@ -124,22 +128,25 @@ export function ArticlePage({ slug }: ArticlePageProps) {
             className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
             dangerouslySetInnerHTML={{ __html: part1 }}
           />
-          <div className="py-2">
-            <AdsterraNativeAd placement="article-after-intro" />
+          <div className="py-2 flex justify-center w-full">
+            <AdsterraDisplayBanner format="300x250" className="mx-auto" />
           </div>
           <div 
             className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
             dangerouslySetInnerHTML={{ __html: part2 }}
           />
-          <div className="py-2">
-            <AdsterraNativeAd placement="article-after-causes" />
+          <div className="py-2 flex justify-center w-full overflow-hidden">
+            <AdsterraDisplayBanner format="468x60" className="mx-auto max-w-full" />
           </div>
           <div 
             className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
             dangerouslySetInnerHTML={{ __html: part3 }}
           />
-          <div className="py-2">
+          <div className="py-2 space-y-4">
             <AdsterraNativeAd placement="article-after-solutions" />
+            <div className="flex justify-center w-full">
+              <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+            </div>
           </div>
         </div>
       );
@@ -151,8 +158,8 @@ export function ArticlePage({ slug }: ArticlePageProps) {
           className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
-        <div className="py-2">
-          <AdsterraNativeAd placement="article-after-solutions" />
+        <div className="py-2 flex justify-center w-full">
+          <AdsterraDisplayBanner format="300x250" className="mx-auto" />
         </div>
       </div>
     );
@@ -326,9 +333,17 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </section>
               )}
 
-              {/* Placement 4: At the bottom of the article before related health posts */}
-              <div className="pt-6 border-t border-stone-200/80">
+              {/* Placement 4: Leaderboard Display Banner (728x90) */}
+              <div className="pt-6 border-t border-stone-200/80 flex justify-center w-full overflow-hidden">
+                <AdsterraDisplayBanner format="728x90" className="w-full max-w-2xl" />
+              </div>
+
+              {/* Placement 5: At the bottom of the article before related health posts */}
+              <div className="pt-6 border-t border-stone-200/80 space-y-4">
                 <AdsterraNativeAd placement="article-bottom-before-related" />
+                <div className="flex justify-center w-full">
+                  <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+                </div>
               </div>
             </div>
           </article>
@@ -363,6 +378,9 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </div>
             </div>
 
+            {/* Middle Column 300x250 Display Banner */}
+            <AdsterraDisplayBanner format="300x250" className="w-full" />
+
             {/* Sticky Desktop Adsterra Native Ad */}
             <div className="py-1">
               <AdsterraNativeAd placement="sidebar-sticky" />
@@ -391,6 +409,11 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </div>
               </div>
             )}
+
+            {/* Middle Column Skyscraper Banner (160x600-middle) */}
+            <div className="flex justify-center w-full">
+              <AdsterraDisplayBanner format="160x600-middle" className="w-full" />
+            </div>
           </section>
 
           {/* Right Sidebar (15% width on Desktop) */}
@@ -410,6 +433,11 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               <p className="text-[11px] text-stone-300 leading-tight">
                 WHO एवं NACO दिशानिर्देशों के अनुरूप क्लिनिकल तथ्य समीक्षा।
               </p>
+            </div>
+
+            {/* Right Sidebar 160x600 Skyscraper Banner */}
+            <div className="flex justify-center w-full">
+              <AdsterraDisplayBanner format="160x600-sidebar" className="w-full" />
             </div>
 
             {/* Categories Widget */}
@@ -444,6 +472,24 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </p>
               <div className="bg-white/10 rounded-xl p-2 text-center font-mono font-bold text-base text-rose-200 border border-white/20">
                 1075 / 104
+              </div>
+            </div>
+
+            {/* Quick Health Tips Widget */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 space-y-3">
+              <div className="flex items-center gap-1.5 pb-2 border-b border-stone-100 font-bold text-stone-900 text-xs uppercase tracking-wider">
+                <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
+                <span>त्वरित स्वास्थ्य टिप्स</span>
+              </div>
+              <div className="space-y-2 text-[11px] text-stone-600 leading-tight">
+                <div className="p-2 bg-stone-50 rounded-lg border border-stone-100">
+                  <strong className="text-stone-800 block text-xs mb-0.5">दोहरी सुरक्षा</strong>
+                  कंडोम अनचाहे गर्भ और एसटीआई दोनों से 98% रक्षा करता है।
+                </div>
+                <div className="p-2 bg-stone-50 rounded-lg border border-stone-100">
+                  <strong className="text-stone-800 block text-xs mb-0.5">हेल्पलाइन</strong>
+                  राष्ट्रीय एड्स हेल्पलाइन 1097 पर 24 घंटे मुफ्त सलाह उपलब्ध है।
+                </div>
               </div>
             </div>
 

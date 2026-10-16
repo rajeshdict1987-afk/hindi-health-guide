@@ -32,6 +32,7 @@ import { getStoredArticles } from '../lib/store';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { AdDisplay } from '../components/AdDisplay';
 import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
+import { AdsterraDisplayBanner } from '../components/AdsterraDisplayBanner';
 
 const HERO_SLIDES = [
   {
@@ -505,6 +506,11 @@ export function HomePage() {
               </Link>
             )}
 
+            {/* Official Adsterra Leaderboard Banner (728x90) */}
+            <div className="py-2 flex justify-center w-full overflow-hidden">
+              <AdsterraDisplayBanner format="728x90" className="w-full max-w-3xl" />
+            </div>
+
             {/* Recent Articles 2-Col Grid */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-stone-900 pb-2 border-b border-stone-100">
@@ -556,6 +562,11 @@ export function HomePage() {
               </div>
             </div>
 
+            {/* In-Article / Content Display Banner (300x250) */}
+            <div className="py-2 flex justify-center w-full">
+              <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+            </div>
+
             {/* Interleaved Native Ad Placement 1 */}
             <div className="py-2">
               <AdsterraNativeAd placement="homepage-interleave-1" />
@@ -564,6 +575,11 @@ export function HomePage() {
             {/* Category Deep Dives (Block 1: Categories 1 & 2) */}
             <div className="space-y-8">
               {catGroup1.map(renderCategoryCard)}
+            </div>
+
+            {/* Content Inline Display Banner (468x60) */}
+            <div className="py-2 flex justify-center w-full overflow-hidden">
+              <AdsterraDisplayBanner format="468x60" className="mx-auto max-w-full" />
             </div>
 
             {/* Interleaved Native Ad Placement 2 */}
@@ -576,6 +592,11 @@ export function HomePage() {
               {catGroup2.map(renderCategoryCard)}
               {catGroup3.map(renderCategoryCard)}
               {catGroup4.map(renderCategoryCard)}
+            </div>
+
+            {/* Bottom Leaderboard Display Banner (728x90) */}
+            <div className="py-2 flex justify-center w-full overflow-hidden">
+              <AdsterraDisplayBanner format="728x90" className="w-full max-w-3xl" />
             </div>
 
             {/* Standalone Sponsor Banner */}
@@ -614,6 +635,9 @@ export function HomePage() {
               </ul>
             </div>
 
+            {/* Middle Column 300x250 Display Banner */}
+            <AdsterraDisplayBanner format="300x250" className="w-full" />
+
             {/* Trending Health Articles Widget */}
             <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200 space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-stone-100 font-bold text-stone-900 text-base sm:text-lg">
@@ -639,6 +663,11 @@ export function HomePage() {
                   </Link>
                 ))}
               </div>
+            </div>
+
+            {/* Middle Column Skyscraper Banner (160x600-middle) */}
+            <div className="flex justify-center w-full">
+              <AdsterraDisplayBanner format="160x600-middle" className="w-full" />
             </div>
 
             {/* Featured Health Guides */}
@@ -700,6 +729,32 @@ export function HomePage() {
               </p>
             </div>
 
+            {/* Right Sidebar 160x600 Skyscraper Banner */}
+            <div className="flex justify-center w-full">
+              <AdsterraDisplayBanner format="160x600-sidebar" className="w-full" />
+            </div>
+
+            {/* Categories Widget */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 space-y-3">
+              <div className="flex items-center gap-1.5 pb-2 border-b border-stone-100 font-bold text-stone-900 text-xs uppercase tracking-wider">
+                <FolderTree className="w-3.5 h-3.5 text-rose-600" />
+                <span>श्रेणियां</span>
+              </div>
+              <ul className="space-y-1.5">
+                {SITE_CONFIG.categories.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/category/${cat.slug}`}
+                      className="flex items-center justify-between p-1.5 rounded-lg hover:bg-rose-50 text-stone-700 hover:text-rose-700 transition text-xs font-medium group"
+                    >
+                      <span className="truncate">{cat.hindiName}</span>
+                      <span className="text-stone-400 group-hover:translate-x-0.5 transition text-[10px]">&rarr;</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             {/* National Helplines Widget */}
             <div className="bg-gradient-to-br from-rose-900 to-rose-950 text-white rounded-2xl p-4 shadow-md space-y-2.5">
               <div className="flex items-center gap-1.5 text-rose-300">
@@ -709,6 +764,9 @@ export function HomePage() {
               <p className="text-[11px] text-stone-200 leading-tight">
                 गोपनीय आपातकालीन चिकित्सा सहायता (24x7)
               </p>
+              <div className="bg-white/10 rounded-xl p-2 text-center font-mono font-bold text-base text-rose-200 border border-white/20">
+                1075 / 104
+              </div>
               <div className="space-y-1.5 font-mono text-center">
                 <div className="bg-white/10 rounded-lg p-1.5 text-[11px] font-bold text-rose-200 border border-white/20">
                   एम्बुलेंस: 108 / 102
