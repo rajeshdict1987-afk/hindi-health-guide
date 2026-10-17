@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
       publishedTime: article.publishedAt || article.createdAt,
       modifiedTime: article.updatedAt || article.publishedAt || article.createdAt,
-      authors: [article.author.name],
+      authors: [(article.author?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू'],
       tags: article.tags,
     },
     twitter: {

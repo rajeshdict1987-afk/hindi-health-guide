@@ -59,22 +59,51 @@ export function getStoredArticles(): Article[] {
     const missing = INITIAL_ARTICLES.filter(a => !existingSlugs.has(a.slug));
     const merged = [...parsed, ...missing];
 
-    // Strictly enforce Chief Editor Rajesh Kumar Sahu (Guru) and remove placeholder names
+    // Helper to completely purge any 'गुरु' prefix from editor name or article content
+    const purgeGuru = (str: string | undefined): string => {
+      if (!str) return '';
+      return str
+        .replace(/गुरु\s*राजेश\s*कुमार\s*साहू/g, 'राजेश कुमार साहू')
+        .replace(/गुरु\s*राजेश/g, 'राजेश')
+        .replace(/Guru\s*Rajesh\s*Kumar\s*Sahu/gi, 'Rajesh Kumar Sahu')
+        .replace(/Guru\s*Rajesh/gi, 'Rajesh');
+    };
+
+    // Strictly enforce Chief Editor Rajesh Kumar Sahu (WITHOUT any गुरु prefix) and clean content
     const normalized = merged.map((art: Article) => {
-      if (!art.author?.name || art.author.name.includes('डॉ.') || art.author.name.includes('प्रो.')) {
-        return {
-          ...art,
-          author: {
-            name: 'राजेश कुमार साहू',
-            role: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
-          },
-          reviewedBy: {
-            name: 'राजेश कुमार साहू',
-            credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
-          }
-        };
+      let authorName = (art.author?.name || 'राजेश कुमार साहू')
+        .replace(/गुरु\s*/gi, '')
+        .replace(/Guru\s*/gi, '')
+        .trim();
+
+      if (!authorName || authorName.includes('डॉ.') || authorName.includes('प्रो.')) {
+        authorName = 'राजेश कुमार साहू';
       }
-      return art;
+
+      let reviewerName = (art.reviewedBy?.name || 'राजेश कुमार साहू')
+        .replace(/गुरु\s*/gi, '')
+        .replace(/Guru\s*/gi, '')
+        .trim();
+
+      if (!reviewerName || reviewerName.includes('डॉ.') || reviewerName.includes('प्रो.')) {
+        reviewerName = 'राजेश कुमार साहू';
+      }
+
+      return {
+        ...art,
+        title: purgeGuru(art.title),
+        excerpt: purgeGuru(art.excerpt),
+        content: purgeGuru(art.content),
+        author: {
+          name: authorName,
+          role: art.author?.role || 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
+          avatar: art.author?.avatar
+        },
+        reviewedBy: {
+          name: reviewerName,
+          credentials: art.reviewedBy?.credentials || 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
+        }
+      };
     });
 
     localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(normalized));

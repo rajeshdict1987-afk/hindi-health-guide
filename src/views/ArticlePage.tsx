@@ -63,8 +63,15 @@ export function ArticlePage({ slug }: ArticlePageProps) {
   const trendingArticles = allArticles.slice(0, 5);
 
   // Article Content Rendering with Adsterra in-article placements
-  const renderMilestoneContent = (htmlContent: string) => {
-    if (!htmlContent) return null;
+  const renderMilestoneContent = (rawHtmlContent: string) => {
+    if (!rawHtmlContent) return null;
+
+    // Purge any 'गुरु' prefix from content
+    const htmlContent = rawHtmlContent
+      .replace(/गुरु\s*राजेश\s*कुमार\s*साहू/g, 'राजेश कुमार साहू')
+      .replace(/गुरु\s*राजेश/g, 'राजेश')
+      .replace(/Guru\s*Rajesh\s*Kumar\s*Sahu/gi, 'Rajesh Kumar Sahu')
+      .replace(/Guru\s*Rajesh/gi, 'Rajesh');
 
     const sections = htmlContent.split(/(?=<h2[\s>])/i);
 
@@ -200,10 +207,12 @@ export function ArticlePage({ slug }: ArticlePageProps) {
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 pt-6 border-t border-stone-700/80 text-sm text-stone-300 w-full">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500/40 flex items-center justify-center font-bold text-white text-base shrink-0">
-                {article.author?.name ? article.author.name.charAt(0) : 'र'}
+                {(article.author?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim().charAt(0) || 'र'}
               </div>
               <div className="text-center sm:text-left">
-                <div className="font-semibold text-white">{article.author?.name || 'राजेश कुमार साहू'}</div>
+                <div className="font-semibold text-white">
+                  {(article.author?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू'}
+                </div>
                 <div className="text-xs text-rose-300 font-medium">{article.author?.role || 'मुख्य संपादक (Chief Editor)'}</div>
               </div>
             </div>

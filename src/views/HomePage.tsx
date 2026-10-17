@@ -34,6 +34,13 @@ import { AdDisplay } from '../components/AdDisplay';
 import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
 
+const getCleanAuthorName = (name?: string): string => {
+  return (name || 'राजेश कुमार साहू')
+    .replace(/गुरु\s*/gi, '')
+    .replace(/Guru\s*/gi, '')
+    .trim() || 'राजेश कुमार साहू';
+};
+
 const HERO_SLIDES = [
   {
     id: 'reproductive-health',
@@ -253,7 +260,7 @@ export function HomePage() {
               </div>
 
               <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
-                <span className="font-medium text-stone-700">{article.author?.name || 'राजेश कुमार साहू'}</span>
+                <span className="font-medium text-stone-700">{getCleanAuthorName(article.author?.name)}</span>
                 <span className="text-rose-600 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition">
                   पढ़ें &rarr;
                 </span>
@@ -509,9 +516,9 @@ export function HomePage() {
                   <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-xs">
-                        {(articles[0].author?.name || 'रा').charAt(0)}
+                        {getCleanAuthorName(articles[0].author?.name).charAt(0)}
                       </div>
-                      <span className="font-semibold text-stone-700">{articles[0].author?.name || 'राजेश कुमार साहू'}</span>
+                      <span className="font-semibold text-stone-700">{getCleanAuthorName(articles[0].author?.name)}</span>
                     </div>
                     <span className="text-rose-600 font-bold flex items-center gap-1 group-hover:translate-x-1 transition">
                       विस्तार से पढ़ें &rarr;
@@ -564,7 +571,7 @@ export function HomePage() {
                       </div>
                     </div>
                     <div className="px-4 sm:px-5 pb-4 pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-                      <span className="text-stone-600 font-medium truncate max-w-[130px]">{article.author?.name || 'राजेश कुमार साहू'}</span>
+                      <span className="text-stone-600 font-medium truncate max-w-[130px]">{getCleanAuthorName(article.author?.name)}</span>
                       <span className="text-rose-600 font-bold group-hover:translate-x-1 transition shrink-0">पढ़ें &rarr;</span>
                     </div>
                   </Link>

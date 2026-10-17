@@ -54,7 +54,7 @@ export function generateArticleSchema(article: Article) {
       'image': article.image?.url || `${SITE_CONFIG.productionUrl}/icon.png`,
       'author': {
         '@type': 'Person',
-        'name': article.author?.name || 'राजेश कुमार साहू',
+        'name': (article.author?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू',
         'jobTitle': 'मुख्य संपादक (Chief Editor)',
         'url': `${SITE_CONFIG.productionUrl}/about`
       },
@@ -66,7 +66,7 @@ export function generateArticleSchema(article: Article) {
       },
       'reviewedBy': {
         '@type': 'Person',
-        'name': article.reviewedBy?.name || 'राजेश कुमार साहू',
+        'name': (article.reviewedBy?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू',
         'jobTitle': article.reviewedBy?.credentials || 'मुख्य संपादक एवं स्वास्थ्य विश्लेषक',
         'url': `${SITE_CONFIG.productionUrl}/about`
       },

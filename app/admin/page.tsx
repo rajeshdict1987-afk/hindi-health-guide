@@ -226,7 +226,7 @@ export default function AdminPage() {
       createdAt: new Date().toISOString(),
       status: 'published',
       author: {
-        name: articleForm.authorName,
+        name: (articleForm.authorName || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू',
         role: articleForm.authorRole
       },
       image: {
@@ -288,7 +288,7 @@ export default function AdminPage() {
       category: art.category,
       categoryHindi: art.categoryHindi,
       readTime: art.readTime || '5 मिनट',
-      authorName: art.author?.name || 'राजेश कुमार साहू',
+      authorName: (art.author?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू',
       authorRole: art.author?.role || 'मुख्य संपादक (Chief Editor)',
       imageUrl: art.image?.url || '',
       imageAlt: art.image?.alt || '',

@@ -100,7 +100,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Editorial Leadership: Rajesh Kumar Sahu (WITHOUT गुरु) */}
+        {/* Editorial Leadership: Rajesh Kumar Sahu */}
         <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-emerald-100 space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-slate-100">
             <div className="flex items-center gap-3">
