@@ -7,7 +7,7 @@
 
 function sanitizeUrl(rawUrl?: string): string {
   if (!rawUrl || typeof rawUrl !== 'string') {
-    return 'https://www.hindihealthguide.org';
+    return 'https://hindilhealthguide.org';
   }
   let trimmed = rawUrl.trim();
   if (trimmed.startsWith('http://')) {
@@ -22,9 +22,9 @@ function sanitizeUrl(rawUrl?: string): string {
 export const ENV = {
   /**
    * Primary canonical custom production URL:
-   * Pointing exclusively to https://www.hindihealthguide.org
+   * Pointing strictly to official domain: https://hindilhealthguide.org
    */
-  productionUrl: 'https://www.hindihealthguide.org',
+  productionUrl: process.env.NEXT_PUBLIC_SITE_URL ? sanitizeUrl(process.env.NEXT_PUBLIC_SITE_URL) : 'https://hindilhealthguide.org',
 
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',

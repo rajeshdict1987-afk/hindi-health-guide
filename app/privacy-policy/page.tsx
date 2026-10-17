@@ -5,7 +5,7 @@ import { SITE_CONFIG } from '../../src/config/site-config';
 
 export const metadata = {
   title: 'गोपनीयता नीति (Privacy Policy) | हिंदी हेल्थ गाइड',
-  description: 'हिंदी हेल्थ गाइड (Hindi Health Guide) की कानूनी गोपनीयता नीति, Adsterra विज्ञापन नेटवर्क प्रकटीकरण और कुकीज़ ट्रैकिंग दिशानिर्देश।',
+  description: 'हिंदी हेल्थ गाइड (Hindi Health Guide) की आधिकारिक कानूनी गोपनीयता नीति, डेटा सुरक्षा, कुकीज़ और उपयोगकर्ता गोपनीयता अधिकार दिशानिर्देश।',
   alternates: {
     canonical: `${SITE_CONFIG.productionUrl}/privacy-policy`,
   },
@@ -47,24 +47,24 @@ export default function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <section className="space-y-4 bg-amber-50/60 border border-amber-200 rounded-2xl p-5 sm:p-6 text-stone-800">
-            <h2 className="text-xl font-bold text-amber-950 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-amber-700" />
-              2. Adsterra विज्ञापन नेटवर्क प्रकटीकरण (Adsterra Advertising Network Disclosure)
+          <section className="space-y-4 bg-emerald-50/60 border border-emerald-200 rounded-2xl p-5 sm:p-6 text-stone-800">
+            <h2 className="text-xl font-bold text-emerald-950 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-emerald-700" />
+              2. सामग्री एवं मुद्रीकरण पारदर्शिता नीति (Content & Monetization Policy)
             </h2>
             <p className="text-sm leading-relaxed text-stone-700">
-              यह मंच स्वतंत्र और मुफ़्त उच्च गुणवत्ता वाली स्वास्थ्य शिक्षा प्रदान करने के उद्देश्य से मुद्रीकरण हेतु <strong>Adsterra Advertising Network</strong> के प्रामाणिक स्क्रिप्ट्स का उपयोग करता है। हमारी साइट में निम्नलिखित विज्ञापन मॉड्यूल सक्रिय हैं:
+              यह मंच स्वतंत्र और मुफ़्त उच्च गुणवत्ता वाली स्वास्थ्य शिक्षा प्रदान करने के उद्देश्य से संचालित है। हमारा उद्देश्य पाठकों को बिना किसी भ्रामक या अवांछित तृतीय-पक्ष स्क्रिप्ट्स के स्वच्छ और सुरक्षित पठन अनुभव प्रदान करना है।
             </p>
             <ul className="list-disc pl-5 space-y-2 text-sm text-stone-700">
               <li>
-                <strong>Adsterra Social Bar:</strong> यह इंटरैक्टिव नोटिफिकेशन एवं एंगेजमेंट स्ट्रिप (स्क्रिप्ट स्रोत: <code>https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4</code>) के माध्यम से उपयोगकर्ताओं को प्रासंगिक जानकारी व प्रायोजित लिंक प्रदर्शित करता है। इसके डिस्प्ले स्टाइल्स <code>app/globals.css</code> में अनुकूलित हैं।
+                <strong>स्वच्छ एवं सुरक्षित पठन अनुभव:</strong> पोर्टल पर किसी भी प्रकार के पॉप-अप, पॉप-अंडर या दखलंदाजी करने वाले अप्रमाणित स्क्रिप्ट्स का उपयोग पूर्णतः वर्जित है।
               </li>
               <li>
-                <strong>Adsterra Native Banners:</strong> प्राकृतिक सामग्री प्रवाह (Content Stream) के बीच सुव्यवस्थित 4-कंटेनर नेटिव विज्ञापन (स्क्रिप्ट स्रोत: <code>https://bicea.org/21/d9642fd6678c07a30a56b2fd136e6cb5</code>) प्रदर्शित किए जाते हैं ताकि उपयोगकर्ता का पठन अनुभव बाधित न हो।
+                <strong>डेटा सुरक्षा प्राथमिकता:</strong> उपयोगकर्ताओं का कोई भी व्यक्तिगत या स्वास्थ्य संबंधी डेटा किसी तीसरे पक्ष के विज्ञापन नेटवर्क को साझा या विक्रय नहीं किया जाता है।
               </li>
             </ul>
             <p className="text-xs text-stone-600 italic">
-              <strong>कानूनी स्पष्टीकरण:</strong> Adsterra नेटवर्क आपके ब्राउज़र में गैर-व्यक्तिगत पहचान योग्य पहचानकर्ता (Non-PII Identifiers), कुकीज़ और वेब बीकन का उपयोग विज्ञापनों की पुनरावृत्ति सीमा (Frequency Capping), धोखाधड़ी रोकथाम (Anti-Fraud), और क्षेत्रीय प्रासंगिकता सुनिश्चित करने के लिए कर सकता है। कोई भी व्यक्तिगत स्वास्थ्य संबंधी रिकॉर्ड Adsterra को प्रेषित नहीं किया जाता।
+              <strong>कानूनी स्पष्टीकरण:</strong> सभी स्वास्थ्य लेख WHO और NACO के प्रामाणिक दिशा-निर्देशों के अनुरूप तथ्यात्मक रूप से समीक्षित किए जाते हैं।
             </p>
           </section>
 

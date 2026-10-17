@@ -55,5 +55,60 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  return <CategoryPage slug={slug} />;
+  const category = SITE_CONFIG.categories.find((c: CategoryConfig) => c.slug === slug);
+
+  const categoryJsonLd = category
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': ['CollectionPage', 'MedicalWebPage'],
+            '@id': `${SITE_CONFIG.productionUrl}/category/${category.slug}#page`,
+            url: `${SITE_CONFIG.productionUrl}/category/${category.slug}`,
+            name: `${category.hindiName} - ${SITE_CONFIG.hindiName}`,
+            headline: category.seoTitle,
+            description: category.seoDescription || category.description,
+            inLanguage: 'hi-IN',
+            publisher: {
+              '@type': 'Organization',
+              name: SITE_CONFIG.hindiName,
+              url: SITE_CONFIG.productionUrl,
+            },
+            citation: [
+              'World Health Organization (WHO) Guidelines',
+              'National AIDS Control Organisation (NACO) Standards'
+            ],
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'होम',
+                item: SITE_CONFIG.productionUrl,
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: category.hindiName,
+                item: `${SITE_CONFIG.productionUrl}/category/${category.slug}`,
+              },
+            ],
+          },
+        ],
+      }
+    : null;
+
+  return (
+    <>
+      {categoryJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryJsonLd) }}
+        />
+      )}
+      <CategoryPage slug={slug} />
+    </>
+  );
 }

@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site-config';
 import { AdDisplay } from './AdDisplay';
-import { AdsterraDisplayBanner } from './AdsterraDisplayBanner';
 import { generateWhoNacoResponse } from '../lib/whoNacoAssistant';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -42,34 +41,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    const scriptSrc = 'https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4';
-
-    function triggerSocialBarAd() {
-      try {
-        // Clean up previous script instances to refresh on route change
-        const existingScripts = document.querySelectorAll(`script[src="${scriptSrc}"]`);
-        existingScripts.forEach((s) => s.remove());
-
-        const script = document.createElement('script');
-        script.id = 'adsterra-social-bar-script';
-        script.type = 'text/javascript';
-        script.src = scriptSrc;
-        script.setAttribute('data-cfasync', 'false');
-        script.async = true;
-
-        // Append to document.body so floating social bar displays properly on route changes
-        document.body.appendChild(script);
-      } catch (err) {
-        // safe fallback
-      }
-    }
-
-    // Small delay ensures route DOM is settled before injecting ad notification script
-    const timer = setTimeout(triggerSocialBarAd, 120);
-    return () => clearTimeout(timer);
-  }, [pathname]);
 
   // Production Service Worker Registration for 100% PWA Compliance & Offline Capability
   useEffect(() => {
@@ -326,10 +297,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       {/* Footer */}
       <footer className="bg-slate-950 text-slate-300 mt-16 pt-12 pb-8 border-t border-slate-800 w-full">
         <div className="w-full max-w-full px-3 sm:px-6">
-          {/* Official Adsterra Leaderboard Footer Banner (728x90) */}
-          <div className="mb-8 flex justify-center w-full overflow-hidden">
-            <AdsterraDisplayBanner format="728x90" className="w-full max-w-3xl" />
-          </div>
 
           {/* Footer Ad Banner */}
           <div className="mb-10">
@@ -526,22 +493,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {/* Official Adsterra Mobile Sticky Footer Banner (320x50) */}
-      <div className="block md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-stone-200 py-1 px-2 flex flex-col items-center justify-center shadow-lg">
-        <div className="w-full max-w-[320px] flex flex-col items-center">
-          <div className="w-full flex items-center justify-between text-[9px] text-stone-500 font-semibold px-1 pb-0.5 uppercase tracking-wider">
-            <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-              विज्ञापन / Sponsored
-            </span>
-            <span>320x50</span>
-          </div>
-          <AdsterraDisplayBanner format="320x50" hideBadge className="my-0 p-0 border-0 shadow-none bg-transparent" />
-        </div>
-      </div>
-
-      {/* Adsterra Social Bar Global Anchor */}
-      <div id="adsterra-social-bar-container" className="fixed bottom-0 left-0 right-0 z-[2147483647] pointer-events-auto" />
     </div>
   );
 }

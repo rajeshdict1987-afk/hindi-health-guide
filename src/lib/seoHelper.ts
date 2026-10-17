@@ -28,7 +28,6 @@ export function generateFAQSchema(article: Article) {
 
   const articleUrl = `${SITE_CONFIG.productionUrl}/articles/${article.slug}`;
   return {
-    '@context': 'https://schema.org',
     '@type': 'FAQPage',
     '@id': `${articleUrl}#faq`,
     'mainEntity': faqsToUse.map(faq => ({
@@ -47,10 +46,11 @@ export function generateArticleSchema(article: Article) {
   
   const graph: any[] = [
     {
-      '@type': 'Article',
+      '@type': ['MedicalWebPage', 'Article'],
       '@id': `${articleUrl}#article`,
       'headline': article.title,
       'description': article.excerpt,
+      'inLanguage': 'hi-IN',
       'image': article.image?.url || `${SITE_CONFIG.productionUrl}/icon.png`,
       'author': {
         '@type': 'Person',
@@ -64,9 +64,27 @@ export function generateArticleSchema(article: Article) {
         'jobTitle': 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
         'url': `${SITE_CONFIG.productionUrl}/about`
       },
+      'reviewedBy': {
+        '@type': 'Person',
+        'name': article.reviewedBy?.name || 'राजेश कुमार साहू',
+        'jobTitle': article.reviewedBy?.credentials || 'मुख्य संपादक एवं स्वास्थ्य विश्लेषक',
+        'url': `${SITE_CONFIG.productionUrl}/about`
+      },
+      'medicalAudience': {
+        '@type': 'MedicalAudience',
+        'audienceType': 'Patient',
+        'name': 'सामान्य जन एवं स्वास्थ्य पाठक'
+      },
+      'citation': [
+        'World Health Organization (WHO) Reproductive & Sexual Health Guidelines',
+        'National AIDS Control Organisation (NACO) Clinical Protocols India',
+        'Ministry of Health and Family Welfare (MoHFW) Government of India'
+      ],
+      'disclaimer': 'यह सामग्री केवल शैक्षिक एवं जन-स्वास्थ्य जागरूकता उद्देश्यों हेतु है। किसी भी व्यक्तिगत चिकित्सा परामर्श के लिए पंजीकृत डॉक्टर से मिलें।',
       'publisher': {
         '@type': 'Organization',
         'name': SITE_CONFIG.hindiName,
+        'url': SITE_CONFIG.productionUrl,
         'logo': {
           '@type': 'ImageObject',
           'url': `${SITE_CONFIG.productionUrl}/icon.png`

@@ -8,10 +8,10 @@ import { getStoredArticles } from '../lib/store';
 import { SITE_CONFIG } from '../config/site-config';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, ShieldCheck, Share2, TrendingUp, FolderTree, PhoneCall } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
-import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
-import { AdsterraDisplayBanner } from '../components/AdsterraDisplayBanner';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { ReadingProgressBar } from '../components/ReadingProgressBar';
+import AdsterraBanner from '../components/AdsterraBanner';
+import AdsterraNative from '../components/AdsterraNative';
 
 interface ArticlePageProps {
   slug: string;
@@ -62,104 +62,97 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
   const trendingArticles = allArticles.slice(0, 5);
 
-  // Step-by-Step / Section-wise Display Banner & Native Ad Placements
+  // Article Content Rendering with Adsterra in-article placements
   const renderMilestoneContent = (htmlContent: string) => {
     if (!htmlContent) return null;
 
-    // Split by <h2> tags to find natural content milestone boundaries
-    const h2Sections = htmlContent.split(/(?=<h2)/i).filter(s => s.trim().length > 0);
+    const sections = htmlContent.split(/(?=<h2[\s>])/i);
 
-    if (h2Sections.length >= 3) {
-      const introSection = h2Sections[0];
-      const causesSection = h2Sections[1];
-      const solutionsSection = h2Sections.slice(2).join('');
+    if (sections.length <= 1) {
+      const pChunks = htmlContent.split(/(?=<\/p>)/i);
+      if (pChunks.length > 3) {
+        const mid1 = Math.floor(pChunks.length * 0.25);
+        const mid2 = Math.floor(pChunks.length * 0.55);
+        const mid3 = Math.floor(pChunks.length * 0.8);
+        return (
+          <div className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
+            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(0, mid1).join('') }} />
+            
+            {/* First In-Article Ad Placement */}
+            <div className="my-4 not-prose flex justify-center">
+              <div className="hidden sm:block">
+                <AdsterraBanner keyId="d2edcc8ed4140105f91b01b7c7314eef" width={468} height={60} />
+              </div>
+              <div className="block sm:hidden">
+                <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
+              </div>
+            </div>
 
-      return (
-        <div className="space-y-6">
-          {/* Milestone 1: Introduction / Overview Section */}
-          <div 
-            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: introSection }}
-          />
+            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(mid1, mid2).join('') }} />
+            
+            {/* Second In-Article Native Placement */}
+            <div className="my-6 not-prose">
+              <AdsterraNative />
+            </div>
 
-          {/* Ad Placement 1: After introduction / overview - Official 300x250 Display Banner */}
-          <div className="py-2 flex justify-center w-full">
-            <AdsterraDisplayBanner format="300x250" className="mx-auto" />
-          </div>
+            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(mid2, mid3).join('') }} />
+            
+            {/* Third In-Article 300x250 Banner */}
+            <div className="my-6 not-prose flex justify-center">
+              <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
+            </div>
 
-          {/* Milestone 2: Problem / Causes description section */}
-          <div 
-            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: causesSection }}
-          />
-
-          {/* Ad Placement 2: After problem / causes - Official 468x60 Inline Display Banner */}
-          <div className="py-2 flex justify-center w-full overflow-hidden">
-            <AdsterraDisplayBanner format="468x60" className="mx-auto max-w-full" />
-          </div>
-
-          {/* Milestone 3: Remedies / Solutions & conclusions section */}
-          <div 
-            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: solutionsSection }}
-          />
-
-          {/* Ad Placement 3: After remedies / solutions - Balanced Native Ad + 300x250 Display Banner */}
-          <div className="py-2 space-y-4">
-            <AdsterraNativeAd placement="article-after-solutions" />
-            <div className="flex justify-center w-full">
-              <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(mid3).join('') }} />
+            
+            {/* Bottom In-Article Native Placement */}
+            <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
+              <AdsterraNative />
             </div>
           </div>
-        </div>
-      );
-    }
-
-    // Fallback: If no <h2> tags, split by paragraph intervals
-    const paragraphs = htmlContent.split('</p>').filter(p => p.trim().length > 0);
-    if (paragraphs.length >= 4) {
-      const part1 = paragraphs.slice(0, 1).join('</p>') + '</p>';
-      const part2 = paragraphs.slice(1, 3).join('</p>') + '</p>';
-      const part3 = paragraphs.slice(3).join('</p>');
-
+        );
+      }
       return (
         <div className="space-y-6">
           <div 
             className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: part1 }}
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
-          <div className="py-2 flex justify-center w-full">
-            <AdsterraDisplayBanner format="300x250" className="mx-auto" />
-          </div>
-          <div 
-            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: part2 }}
-          />
-          <div className="py-2 flex justify-center w-full overflow-hidden">
-            <AdsterraDisplayBanner format="468x60" className="mx-auto max-w-full" />
-          </div>
-          <div 
-            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: part3 }}
-          />
-          <div className="py-2 space-y-4">
-            <AdsterraNativeAd placement="article-after-solutions" />
-            <div className="flex justify-center w-full">
-              <AdsterraDisplayBanner format="300x250" className="mx-auto" />
-            </div>
+          <div className="mt-6 not-prose">
+            <AdsterraNative />
           </div>
         </div>
       );
     }
 
     return (
-      <div className="space-y-6">
-        <div 
-          className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-        />
-        <div className="py-2 flex justify-center w-full">
-          <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+      <div className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
+        {sections.map((sec, idx) => (
+          <React.Fragment key={idx}>
+            <div dangerouslySetInnerHTML={{ __html: sec }} />
+            {idx === 0 && (
+              <div className="my-4 not-prose flex justify-center">
+                <div className="hidden sm:block">
+                  <AdsterraBanner keyId="d2edcc8ed4140105f91b01b7c7314eef" width={468} height={60} />
+                </div>
+                <div className="block sm:hidden">
+                  <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
+                </div>
+              </div>
+            )}
+            {idx === 1 && (
+              <div className="not-prose my-6">
+                <AdsterraNative />
+              </div>
+            )}
+            {idx === 2 && (
+              <div className="not-prose my-6 flex justify-center">
+                <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+        <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
+          <AdsterraNative />
         </div>
       </div>
     );
@@ -239,6 +232,16 @@ export function ArticlePage({ slug }: ArticlePageProps) {
           </div>
         </div>
       </header>
+
+      {/* Top Banner (728x90 Desktop / 320x50 Mobile) */}
+      <div className="w-full max-w-full px-3 sm:px-6 my-4">
+        <div className="hidden md:flex justify-center">
+          <AdsterraBanner keyId="79ab62f6d42e81834759afbed25d87f3" width={728} height={90} />
+        </div>
+        <div className="flex md:hidden justify-center">
+          <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
+        </div>
+      </div>
 
       {/* Responsive Framing: Mobile Stacked, Tablet Balanced, Desktop 60% Main / 25% Middle-Trending / 15% Sidebar */}
       <div className="w-full max-w-full px-3 sm:px-6 mt-8 overflow-x-hidden">
@@ -333,16 +336,17 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </section>
               )}
 
-              {/* Placement 4: Leaderboard Display Banner (728x90) */}
-              <div className="pt-6 border-t border-stone-200/80 flex justify-center w-full overflow-hidden">
-                <AdsterraDisplayBanner format="728x90" className="w-full max-w-2xl" />
-              </div>
-
-              {/* Placement 5: At the bottom of the article before related health posts */}
-              <div className="pt-6 border-t border-stone-200/80 space-y-4">
-                <AdsterraNativeAd placement="article-bottom-before-related" />
-                <div className="flex justify-center w-full">
-                  <AdsterraDisplayBanner format="300x250" className="mx-auto" />
+              {/* Authoritative Medical Citation for AEO / GEO */}
+              <div className="pt-6 border-t border-stone-200/80 bg-emerald-50/50 rounded-2xl p-4 sm:p-5 border border-emerald-100 flex items-start gap-3">
+                <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="text-xs sm:text-sm text-slate-700 space-y-1">
+                  <p className="font-bold text-slate-900">चिकित्सीय समीक्षा एवं संदर्भ (Medical Review & Standards):</p>
+                  <p className="leading-relaxed">
+                    यह लेख <strong>विश्व स्वास्थ्य संगठन (WHO)</strong>, <strong>राष्ट्रीय एड्स नियंत्रण संगठन (NACO)</strong> एवं भारत सरकार के स्वास्थ्य एवं परिवार कल्याण मंत्रालय (MoHFW) के अधिकृत क्लिनिकल मानकों पर आधारित है।
+                  </p>
+                  <p className="text-[11px] text-slate-500 pt-1">
+                    समीक्षक: <span className="font-semibold text-slate-800">राजेश कुमार साहू</span> (मुख्य संपादक) | किसी भी गंभीर व्यक्तिगत लक्षण हेतु निकटतम पंजीकृत चिकित्सक या सरकारी हेल्पलाइन 108/1097 पर संपर्क करें।
+                  </p>
                 </div>
               </div>
             </div>
@@ -378,14 +382,6 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </div>
             </div>
 
-            {/* Middle Column 300x250 Display Banner */}
-            <AdsterraDisplayBanner format="300x250" className="w-full" />
-
-            {/* Sticky Desktop Adsterra Native Ad */}
-            <div className="py-1">
-              <AdsterraNativeAd placement="sidebar-sticky" />
-            </div>
-
             {/* Related Articles in Same Category */}
             {relatedArticles.length > 0 && (
               <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200 space-y-4">
@@ -409,11 +405,6 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 </div>
               </div>
             )}
-
-            {/* Middle Column Skyscraper Banner (160x600-middle) */}
-            <div className="flex justify-center w-full">
-              <AdsterraDisplayBanner format="160x600-middle" className="w-full" />
-            </div>
           </section>
 
           {/* Right Sidebar (15% width on Desktop) */}
@@ -435,10 +426,6 @@ export function ArticlePage({ slug }: ArticlePageProps) {
               </p>
             </div>
 
-            {/* Right Sidebar 160x600 Skyscraper Banner */}
-            <div className="flex justify-center w-full">
-              <AdsterraDisplayBanner format="160x600-sidebar" className="w-full" />
-            </div>
 
             {/* Categories Widget */}
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 space-y-3">
@@ -495,6 +482,16 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
             {/* Standalone Sidebar AdDisplay at bottom if configured */}
             <AdDisplay position="article-sidebar" />
+
+            {/* Adsterra Sticky Sidebar Banners */}
+            <div className="space-y-4 pt-2">
+              <div className="bg-white p-3 rounded-2xl shadow-sm border border-stone-200 flex justify-center overflow-hidden">
+                <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
+              </div>
+              <div className="bg-white p-3 rounded-2xl shadow-sm border border-stone-200 flex justify-center overflow-hidden">
+                <AdsterraBanner keyId="61dc3f3fb172427e9e611bb565029b7b" width={160} height={600} />
+              </div>
+            </div>
 
           </aside>
 

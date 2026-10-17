@@ -57,36 +57,6 @@
   }
 }
 
-/* Adsterra Social Bar Global Safeguard & High Priority Z-Index */
-iframe[src*="14/fdeaeb8e14ab4a9c96943a0503fc28e4"],
-div[id*="fdeaeb8e14ab4a9c96943a0503fc28e4"],
-iframe[src*="bicea.org/14"],
-div[class*="social-bar"],
-div[id*="social-bar"],
-[id*="at-cv-lightbox"],
-.adsterra-social-bar,
-#adsterra-social-bar-container {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 2147483647 !important;
-  pointer-events: auto !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Native Ads Containment & De-Clustering Safeguards */
-div[id*="container-d9642fd6678c07a30a56b2fd136e6cb5"],
-.adsterra-native-ad-wrapper {
-  max-width: 100% !important;
-  width: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  min-height: 90px;
-}
-
 /* Mobile & Desktop-Mode Viewport Compatibility (Prevent horizontal clipping & overflow) */
 @media screen and (max-width: 1024px) {
   html, body {

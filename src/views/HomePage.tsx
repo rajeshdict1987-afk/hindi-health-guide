@@ -31,8 +31,8 @@ import { Article } from '../types/article';
 import { getStoredArticles } from '../lib/store';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { AdDisplay } from '../components/AdDisplay';
-import { AdsterraNativeAd } from '../components/AdsterraNativeAd';
-import { AdsterraDisplayBanner } from '../components/AdsterraDisplayBanner';
+import AdsterraBanner from '../components/AdsterraBanner';
+import AdsterraNative from '../components/AdsterraNative';
 
 const HERO_SLIDES = [
   {
@@ -267,6 +267,16 @@ export function HomePage() {
 
   return (
     <div className="space-y-16 pb-20 overflow-x-hidden w-full">
+      {/* Top Banner (728x90 Desktop / 320x50 Mobile) */}
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-4">
+        <div className="hidden md:flex justify-center">
+          <AdsterraBanner keyId="79ab62f6d42e81834759afbed25d87f3" width={728} height={90} />
+        </div>
+        <div className="flex md:hidden justify-center">
+          <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
+        </div>
+      </div>
+
       {/* 5-Slide Interactive Auto-Carousel Hero Section (Auto changes every 3s, manual arrows & dot indicators) */}
       <section 
         className="relative bg-gradient-to-br from-slate-950 via-teal-950 to-emerald-950 text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden select-none"
@@ -454,6 +464,11 @@ export function HomePage() {
               </span>
             </div>
 
+            {/* Adsterra Native Ad */}
+            <div className="my-2">
+              <AdsterraNative />
+            </div>
+
             {/* Lead / Featured Article Card */}
             {articles[0] && (
               <Link
@@ -506,11 +521,6 @@ export function HomePage() {
               </Link>
             )}
 
-            {/* Official Adsterra Leaderboard Banner (728x90) */}
-            <div className="py-2 flex justify-center w-full overflow-hidden">
-              <AdsterraDisplayBanner format="728x90" className="w-full max-w-3xl" />
-            </div>
-
             {/* Recent Articles 2-Col Grid */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-stone-900 pb-2 border-b border-stone-100">
@@ -562,14 +572,9 @@ export function HomePage() {
               </div>
             </div>
 
-            {/* In-Article / Content Display Banner (300x250) */}
-            <div className="py-2 flex justify-center w-full">
-              <AdsterraDisplayBanner format="300x250" className="mx-auto" />
-            </div>
-
-            {/* Interleaved Native Ad Placement 1 */}
-            <div className="py-2">
-              <AdsterraNativeAd placement="homepage-interleave-1" />
+            {/* Adsterra 300x250 Banner */}
+            <div className="bg-white p-4 rounded-3xl shadow-sm border border-stone-200 flex justify-center overflow-hidden my-4">
+              <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
             </div>
 
             {/* Category Deep Dives (Block 1: Categories 1 & 2) */}
@@ -577,26 +582,11 @@ export function HomePage() {
               {catGroup1.map(renderCategoryCard)}
             </div>
 
-            {/* Content Inline Display Banner (468x60) */}
-            <div className="py-2 flex justify-center w-full overflow-hidden">
-              <AdsterraDisplayBanner format="468x60" className="mx-auto max-w-full" />
-            </div>
-
-            {/* Interleaved Native Ad Placement 2 */}
-            <div className="py-2">
-              <AdsterraNativeAd placement="homepage-interleave-2" />
-            </div>
-
             {/* Category Deep Dives (Block 2 & 3: Remaining Categories) */}
             <div className="space-y-8">
               {catGroup2.map(renderCategoryCard)}
               {catGroup3.map(renderCategoryCard)}
               {catGroup4.map(renderCategoryCard)}
-            </div>
-
-            {/* Bottom Leaderboard Display Banner (728x90) */}
-            <div className="py-2 flex justify-center w-full overflow-hidden">
-              <AdsterraDisplayBanner format="728x90" className="w-full max-w-3xl" />
             </div>
 
             {/* Standalone Sponsor Banner */}
@@ -635,9 +625,6 @@ export function HomePage() {
               </ul>
             </div>
 
-            {/* Middle Column 300x250 Display Banner */}
-            <AdsterraDisplayBanner format="300x250" className="w-full" />
-
             {/* Trending Health Articles Widget */}
             <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200 space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-stone-100 font-bold text-stone-900 text-base sm:text-lg">
@@ -663,11 +650,6 @@ export function HomePage() {
                   </Link>
                 ))}
               </div>
-            </div>
-
-            {/* Middle Column Skyscraper Banner (160x600-middle) */}
-            <div className="flex justify-center w-full">
-              <AdsterraDisplayBanner format="160x600-middle" className="w-full" />
             </div>
 
             {/* Featured Health Guides */}
@@ -701,9 +683,9 @@ export function HomePage() {
               </div>
             </div>
 
-            {/* Middle Sticky Native Ad */}
-            <div className="py-1">
-              <AdsterraNativeAd placement="sidebar-sticky" />
+            {/* Adsterra 160x300 Banner */}
+            <div className="bg-white p-3 rounded-3xl shadow-sm border border-stone-200 flex justify-center overflow-hidden">
+              <AdsterraBanner keyId="f7a12dec279062caee5ec7fc0bf4ba24" width={160} height={300} />
             </div>
 
           </div>
@@ -727,11 +709,6 @@ export function HomePage() {
               <p className="text-[11px] text-stone-300 leading-tight">
                 WHO एवं NACO दिशानिर्देशों के अनुरूप क्लिनिकल तथ्य समीक्षा।
               </p>
-            </div>
-
-            {/* Right Sidebar 160x600 Skyscraper Banner */}
-            <div className="flex justify-center w-full">
-              <AdsterraDisplayBanner format="160x600-sidebar" className="w-full" />
             </div>
 
             {/* Categories Widget */}
@@ -804,6 +781,11 @@ export function HomePage() {
 
             {/* Ad Placement */}
             <AdDisplay position="bottom" />
+
+            {/* Adsterra 160x600 Skyscraper Banner */}
+            <div className="bg-white p-3 rounded-2xl shadow-sm border border-stone-200 flex justify-center overflow-hidden">
+              <AdsterraBanner keyId="61dc3f3fb172427e9e611bb565029b7b" width={160} height={600} />
+            </div>
 
           </div>
 

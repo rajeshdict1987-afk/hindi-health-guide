@@ -35,7 +35,6 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch: Network-first strategy with offline cache fallback
-// Critical: Always bypass cache for Adsterra ad networks and non-GET requests
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
@@ -44,11 +43,8 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // Bypass cache for external ad networks, analytics, or third-party tracking
+  // Bypass cache for external analytics, cloud services, and dynamic API endpoints
   if (
-    url.hostname.includes('bicea.org') ||
-    url.hostname.includes('profitablecpmrate') ||
-    url.hostname.includes('adsterra') ||
     url.hostname.includes('google-analytics') ||
     url.hostname.includes('firestore.googleapis.com') ||
     url.pathname.startsWith('/api/')

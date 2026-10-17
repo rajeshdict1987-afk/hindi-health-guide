@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import React from 'react';
+import Script from 'next/script';
 import './globals.css';
 import { SITE_CONFIG } from '../src/config/site-config';
 import { ClientLayout } from '../src/components/ClientLayout';
@@ -71,19 +72,39 @@ const structuredSchema = {
   '@context': 'https://schema.org',
   '@graph': [
     {
-      '@type': 'Organization',
+      '@type': 'MedicalOrganization',
       '@id': `${SITE_CONFIG.productionUrl}#organization`,
       name: 'Hindi Health Guide',
       alternateName: 'हिंदी हेल्थ गाइड',
       url: SITE_CONFIG.productionUrl,
-      description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच।',
+      logo: `${SITE_CONFIG.productionUrl}/icon-512.png`,
+      description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच। डब्ल्यूएचओ (WHO) और राष्ट्रीय एड्स नियंत्रण संगठन (NACO) के क्लिनिकल मानकों पर आधारित।',
       publishingPrinciples: `${SITE_CONFIG.productionUrl}/editorial-policy`,
+      medicalSpecialty: [
+        'Reproductive Health',
+        'Sexual Health',
+        'Public Health',
+        'Infectious Disease Prevention'
+      ],
+      knowsAbout: [
+        'यौन स्वास्थ्य (Sexual Health)',
+        'प्रजनन स्वास्थ्य (Reproductive Health)',
+        'एचआईवी एवं एसटीआई रोकथाम (HIV & STI Prevention)',
+        'गर्भनिरोधक एवं परिवार नियोजन (Contraception & Family Planning)',
+        'यौन शिक्षा एवं स्वास्थ्य मिथक (Sex Education & Health Myths)'
+      ],
+      founder: {
+        '@type': 'Person',
+        name: 'राजेश कुमार साहू',
+        jobTitle: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक'
+      }
     },
     {
       '@type': 'WebSite',
       '@id': `${SITE_CONFIG.productionUrl}#website`,
       url: SITE_CONFIG.productionUrl,
       name: 'Hindi Health Guide',
+      alternateName: 'हिंदी हेल्थ गाइड',
       publisher: {
         '@id': `${SITE_CONFIG.productionUrl}#organization`,
       },
@@ -106,7 +127,12 @@ export default function RootLayout({
     <html lang="hi" dir="ltr">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <script data-cfasync="false" src="https://bicea.org/14/fdeaeb8e14ab4a9c96943a0503fc28e4"></script>
+        {/* Adsterra Social Bar (Floating Ad) */}
+        <Script
+          src="https://bicea.org/14/e859f22ed91ad735ece6a60fc6c81e37"
+          data-cfasync="false"
+          strategy="lazyOnload"
+        />
       </head>
       <body className="bg-stone-50 text-stone-900 antialiased font-sans">
         <script
