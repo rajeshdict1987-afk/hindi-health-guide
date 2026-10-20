@@ -53,29 +53,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (docSnap.exists()) {
       const data = docSnap.data();
       articleTitle = data.title || articleTitle;
-      const cleanContent = data.content ? String(data.content).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
-      articleDesc = data.excerpt || cleanContent.substring(0, 150) || data.content?.substring(0, 150) || articleDesc;
+      articleDesc = data.excerpt || data.content?.substring(0, 150) || articleDesc;
       articleImage = data.imageUrl || (data.image && data.image.url) || articleImage;
     } else {
       // यदि फायरस्टोर में यह स्लग न मिले, तो डिफ़ॉल्ट/स्थानीय डेटाबेस से प्राप्त करें
       const localData = await getArticleData(slug);
       if (localData) {
         articleTitle = localData.title || articleTitle;
-        const cleanContent = localData.content ? localData.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
-        articleDesc = localData.excerpt || cleanContent.substring(0, 150) || articleDesc;
+        articleDesc = localData.excerpt || localData.content?.substring(0, 150) || articleDesc;
         articleImage = (localData as any).imageUrl || localData.image?.url || articleImage;
       }
     }
   } catch (e) {
-    console.error('Error fetching metadata', e);
-    // एरर की स्थिति में भी लोकल डेटा से फ़ॉलबैक
+    console.error('Error fetching metadata:', e);
     const localData = await getArticleData(slug);
     if (localData) {
       articleTitle = localData.title || articleTitle;
-      const cleanContent = localData.content ? localData.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
-      articleDesc = localData.excerpt || cleanContent.substring(0, 150) || articleDesc;
+      articleDesc = localData.excerpt || localData.content?.substring(0, 150) || articleDesc;
       articleImage = (localData as any).imageUrl || localData.image?.url || articleImage;
     }
+  }
+
+  // Ensure absolute URL for social media link crawlers (WhatsApp / Facebook)
+  if (articleImage.startsWith('/')) {
+    articleImage = `https://www.hindihealthguide.org${articleImage}`;
   }
 
   const pageUrl = `https://www.hindihealthguide.org/articles/${slug}`;
