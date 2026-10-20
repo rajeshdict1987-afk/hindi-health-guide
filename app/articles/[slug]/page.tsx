@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import { db } from '@/lib/firebase'; // आपका फायरस्टोर कनेक्शन
 import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { INITIAL_ARTICLES } from '../../../src/data/initialArticles';
 import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
@@ -17,7 +17,7 @@ export async function generateStaticParams() {
   }));
 }
 
-// फ़ंक्शन: लोकल / प्रारंभिक डेटा से आर्टिकल प्राप्त करना (फ़ॉलबैक व बिल्ड समय हेतु)
+// फ़ंक्शन: स्लग या आईडी के आधार पर आर्टिकल प्राप्त करना (फ़ॉलबैक व बिल्ड समय हेतु)
 export async function getArticleData(slugParam: string): Promise<Article | undefined> {
   if (!slugParam) return undefined;
   const decoded = decodeURIComponent(slugParam).trim();
@@ -39,62 +39,64 @@ export async function getArticleData(slugParam: string): Promise<Article | undef
 
 export const getArticleBySlug = getArticleData;
 
-// 1. यह फ़ंक्शन WhatsApp और Facebook को आर्टिकल का डेटा देता है
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const { slug } = resolvedParams;
 
-  // यहाँ अपने डेटाबेस से आर्टिकल का डेटा लाएँ
-  let articleData: any = null;
+  let articleTitle = 'हिंदी हेल्थ गाइड';
+  let articleDesc = 'स्वास्थ्य संबंधी प्रामाणिक जानकारी।';
+  let articleImage = 'https://www.hindihealthguide.org/logo.png';
+
   try {
     const docRef = doc(db, 'articles', slug);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      articleData = docSnap.data();
+      const data = docSnap.data();
+      articleTitle = data.title || articleTitle;
+      const cleanContent = data.content ? String(data.content).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
+      articleDesc = data.excerpt || cleanContent.substring(0, 150) || data.content?.substring(0, 150) || articleDesc;
+      articleImage = data.imageUrl || (data.image && data.image.url) || articleImage;
+    } else {
+      // यदि फायरस्टोर में यह स्लग न मिले, तो डिफ़ॉल्ट/स्थानीय डेटाबेस से प्राप्त करें
+      const localData = await getArticleData(slug);
+      if (localData) {
+        articleTitle = localData.title || articleTitle;
+        const cleanContent = localData.content ? localData.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
+        articleDesc = localData.excerpt || cleanContent.substring(0, 150) || articleDesc;
+        articleImage = (localData as any).imageUrl || localData.image?.url || articleImage;
+      }
     }
-  } catch (error) {
-    console.error('Error fetching article metadata from Firestore:', error);
+  } catch (e) {
+    console.error('Error fetching metadata', e);
+    // एरर की स्थिति में भी लोकल डेटा से फ़ॉलबैक
+    const localData = await getArticleData(slug);
+    if (localData) {
+      articleTitle = localData.title || articleTitle;
+      const cleanContent = localData.content ? localData.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
+      articleDesc = localData.excerpt || cleanContent.substring(0, 150) || articleDesc;
+      articleImage = (localData as any).imageUrl || localData.image?.url || articleImage;
+    }
   }
 
-  // यदि फायरस्टोर में न मिले (उदा. प्रारंभिक डेटा), तो डिफ़ॉल्ट डेटाबेस से लाएं
-  if (!articleData) {
-    articleData = await getArticleData(slug);
-  }
-
-  const title = articleData?.title || 'हिंदी हेल्थ गाइड';
-  const rawContent = articleData?.content
-    ? String(articleData.content).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
-    : '';
-  const description =
-    articleData?.excerpt ||
-    rawContent.substring(0, 120) ||
-    articleData?.content?.substring(0, 120) ||
-    'स्वास्थ्य संबंधी प्रामाणिक जानकारी।';
-
-  // आर्टिकल की पोस्टर फ़ोटो (16:9) - अगर न हो तो आपका ओरिजिनल ब्रांड लोगो
-  const imageUrl =
-    articleData?.imageUrl ||
-    articleData?.image?.url ||
-    'https://www.hindihealthguide.org/logo.png';
   const pageUrl = `https://www.hindihealthguide.org/articles/${slug}`;
 
   return {
-    title: title,
-    description: description,
+    title: articleTitle,
+    description: articleDesc,
     alternates: {
       canonical: pageUrl,
     },
     openGraph: {
-      title: title,
-      description: description,
+      title: articleTitle,
+      description: articleDesc,
       url: pageUrl,
       siteName: 'हिंदी हेल्थ गाइड',
       images: [
         {
-          url: imageUrl,
+          url: articleImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: articleTitle,
         },
       ],
       locale: 'hi_IN',
@@ -102,16 +104,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: title,
-      description: description,
-      images: [imageUrl],
+      title: articleTitle,
+      description: articleDesc,
+      images: [articleImage],
     },
   };
 }
 
 export default async function Page({ params }: Props) {
   const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const { slug } = resolvedParams;
   let article: any = null;
 
   try {
@@ -121,7 +123,7 @@ export default async function Page({ params }: Props) {
       article = docSnap.data();
     }
   } catch {
-    // Fallback below
+    // Fallback
   }
 
   if (!article) {
