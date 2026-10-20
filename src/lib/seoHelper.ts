@@ -150,10 +150,8 @@ export function generateSeoSuggestions(title: string, content: string) {
   const combined = Array.from(new Set([...words, ...defaultKeywords]));
   const tags = combined.slice(0, 6).join(', ');
 
-  const slug = cleanTitle
-    .toLowerCase()
-    .replace(/[\s\t]+/g, '-')
-    .replace(/[^\w-]/g, '');
+  // Generate clean URL slug without invalid dashes (e.g. preventing '---------')
+  const slug = generateCleanSlug(cleanTitle);
 
   return {
     metaDescription,
@@ -161,4 +159,88 @@ export function generateSeoSuggestions(title: string, content: string) {
     slug
   };
 }
+
+/**
+ * Robust slug generator for Hindi and English titles.
+ * Maps Hindi health keywords to clean latin words or generates clean semantic article URLs.
+ * Never outputs dashes only (e.g. '---------').
+ */
+export function generateCleanSlug(title: string, id?: string): string {
+  if (!title) {
+    const fallbackId = id ? String(id).slice(-6) : Date.now().toString().slice(-6);
+    return `article-${fallbackId}`;
+  }
+
+  // 1. If title contains English/alphanumeric words, prioritize them
+  const latinClean = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  if (latinClean.length >= 3 && /[a-z0-9]/.test(latinClean)) {
+    return id ? `${latinClean}-${String(id).slice(-4)}` : latinClean;
+  }
+
+  // 2. Hindi health keywords dictionary for semantic SEO slugs
+  const hindiToEnglishMap: Record<string, string> = {
+    'स्वास्थ्य': 'health',
+    'यौन': 'sexual',
+    'प्रजनन': 'reproductive',
+    'महिला': 'women',
+    'महिलाएं': 'women',
+    'पुरुष': 'men',
+    'पुरुषों': 'men',
+    'गर्भनिरोधक': 'contraception',
+    'गर्भधारण': 'pregnancy',
+    'पीरियड्स': 'periods',
+    'मासिक': 'menstrual',
+    'धर्म': 'cycle',
+    'हार्मोन': 'hormone',
+    'एचआईवी': 'hiv',
+    'एड्स': 'aids',
+    'संक्रमण': 'infection',
+    'एसटीआई': 'sti',
+    'लक्षण': 'symptoms',
+    'उपाय': 'tips',
+    'कारण': 'causes',
+    'इलाज': 'treatment',
+    'मिथक': 'myths',
+    'तथ्य': 'facts',
+    'स्पर्म': 'sperm',
+    'क्वालिटी': 'quality',
+    'फर्टिलिटी': 'fertility',
+    'तनाव': 'stress',
+    'सलाह': 'advice',
+    'गाइड': 'guide',
+    'सवाल': 'faq',
+    'जवाब': 'qa',
+  };
+
+  const words = title.split(/[\s,।!?|_\-–—]+/).filter(Boolean);
+  const matchedTokens: string[] = [];
+
+  for (const w of words) {
+    const trimmed = w.trim();
+    if (hindiToEnglishMap[trimmed]) {
+      matchedTokens.push(hindiToEnglishMap[trimmed]);
+    } else {
+      const engOnly = trimmed.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (engOnly) matchedTokens.push(engOnly);
+    }
+  }
+
+  const uniqueSuffix = id ? String(id).slice(-6) : Date.now().toString().slice(-6);
+  const baseSlug = matchedTokens.slice(0, 5).join('-');
+
+  if (baseSlug && baseSlug.length >= 3) {
+    return `${baseSlug}-${uniqueSuffix}`;
+  }
+
+  return `article-${uniqueSuffix}`;
+}
+
 

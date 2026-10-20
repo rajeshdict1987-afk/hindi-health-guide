@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { INITIAL_ARTICLES } from '../../../src/data/initialArticles';
-import { SITE_CONFIG } from '../../../src/config/site-config';
 import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
 import { generateArticleSchema, generateFAQSchema } from '../../../src/lib/seoHelper';
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }> | { slug: string };
 }
 
 export async function generateStaticParams() {
@@ -16,83 +15,85 @@ export async function generateStaticParams() {
   }));
 }
 
-// फ़ायरस्टोर / डेटाबेस या प्रारंभिक डेटा से आर्टिकल लोड करने का फ़ंक्शन
-export async function getArticleBySlug(slug: string): Promise<Article | undefined> {
-  return INITIAL_ARTICLES.find((a: Article) => a.slug === slug);
-}
+// फ़ंक्शन: स्लग या आईडी के आधार पर आर्टिकल डेटा लोड करना
+export async function getArticleData(slugParam: string): Promise<Article | undefined> {
+  if (!slugParam) return undefined;
+  const decoded = decodeURIComponent(slugParam).trim();
+  
+  // 1. सीधे स्लग से मिलान
+  let found = INITIAL_ARTICLES.find(
+    (a: Article) => a.slug === slugParam || a.slug === decoded || a.id === slugParam
+  );
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }> | { slug: string };
-}): Promise<Metadata> {
-  const resolvedParams = await params;
-  const article = await getArticleBySlug(resolvedParams.slug);
-
-  if (!article) {
-    return {
-      title: 'लेख नहीं मिला | हिंदी हेल्थ गाइड',
-      description: 'यह स्वास्थ्य आलेख उपलब्ध नहीं है या हटा दिया गया है।',
-    };
+  // 2. यदि न मिले, तो क्लीन स्लग से मिलान
+  if (!found) {
+    const normalizedTarget = decoded.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+    found = INITIAL_ARTICLES.find((a: Article) => {
+      const aNorm = a.slug.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+      return aNorm === normalizedTarget || a.slug.includes(normalizedTarget) || normalizedTarget.includes(a.slug);
+    });
   }
 
-  // एक्सर्प्ट या आर्टिकल सामग्री के शुरुआती 150 अक्षरों से स्वच्छ विवरण
-  const cleanDescription =
-    article.excerpt ||
-    (article.content
-      ? article.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().substring(0, 150)
-      : '') ||
-    'भारत का विश्वसनीय स्वास्थ्य पोर्टल - यौन एवं प्रजनन स्वास्थ्य शिक्षा।';
+  return found;
+}
 
-  const imageUrl =
-    (article as any).imageUrl ||
-    article.image?.url ||
-    'https://www.hindihealthguide.org/default-og-image.jpg';
+export const getArticleBySlug = getArticleData;
 
-  const articleUrl = `https://www.hindihealthguide.org/articles/${resolvedParams.slug}`;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const article = await getArticleData(slug);
+
+  const title = article?.title || 'हिंदी हेल्थ गाइड';
+  const rawContent = article?.content ? article.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
+  const description = article?.excerpt || rawContent.substring(0, 150) || 'स्वास्थ्य संबंधी प्रामाणिक जानकारी।';
+  const imageUrl = (article as any)?.imageUrl || article?.image?.url || 'https://www.hindihealthguide.org/logo.png';
+  const pageUrl = `https://www.hindihealthguide.org/articles/${slug}`;
 
   return {
-    title: article.title,
-    description: cleanDescription,
+    title,
+    description,
     alternates: {
-      canonical: articleUrl,
+      canonical: pageUrl,
     },
     openGraph: {
-      title: article.title,
-      description: cleanDescription,
-      url: articleUrl,
+      title,
+      description,
+      url: pageUrl,
       siteName: 'हिंदी हेल्थ गाइड',
       images: [
         {
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: article.title,
+          alt: title,
         },
       ],
+      locale: 'hi_IN',
       type: 'article',
-      publishedTime: article.publishedAt || article.createdAt,
-      modifiedTime: article.updatedAt || article.publishedAt || article.createdAt,
+      publishedTime: article?.publishedAt || article?.createdAt,
+      modifiedTime: article?.updatedAt || article?.publishedAt,
       authors: [
-        (article.author?.name || 'राजेश कुमार साहू')
+        (article?.author?.name || 'राजेश कुमार साहू')
           .replace(/गुरु\s*/gi, '')
           .replace(/Guru\s*/gi, '')
           .trim() || 'राजेश कुमार साहू',
       ],
-      tags: article.tags,
+      tags: article?.tags,
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
-      description: cleanDescription,
+      title,
+      description,
       images: [imageUrl],
     },
   };
 }
 
 export default async function Page({ params }: Props) {
-  const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const article = await getArticleData(slug);
 
   const jsonLd = article ? generateArticleSchema(article) : null;
   const faqJsonLd = article ? generateFAQSchema(article) : null;

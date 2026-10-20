@@ -4,6 +4,7 @@ import { Article } from '../types/article';
 import { Advertisement } from '../types/ad';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { validateArticleSchema, articleToFirestore, articleFromFirestore } from '../types/firestore';
+import { generateCleanSlug } from './seoHelper';
 
 const ARTICLES_STORAGE_KEY = 'hindi_health_guide_articles_v4';
 const ADS_STORAGE_KEY = 'hindi_health_guide_ads_v4';
@@ -89,8 +90,15 @@ export function getStoredArticles(): Article[] {
         reviewerName = 'राजेश कुमार साहू';
       }
 
+      // Auto-heal any invalid dashes-only slug (e.g. '---------')
+      let cleanSlug = (art.slug || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+      if (!cleanSlug || cleanSlug.length < 3 || /^[-]+$/.test(cleanSlug)) {
+        cleanSlug = generateCleanSlug(art.title, art.id);
+      }
+
       return {
         ...art,
+        slug: cleanSlug,
         title: purgeGuru(art.title),
         excerpt: purgeGuru(art.excerpt),
         content: purgeGuru(art.content),

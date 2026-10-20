@@ -130,7 +130,7 @@ export function validateArticleSchema(data: unknown): { valid: boolean; errors: 
   if (typeof art.title !== 'string' || art.title.length < 5 || art.title.length > 300) {
     errors.push('title must be between 5 and 300 characters');
   }
-  if (typeof art.slug !== 'string' || !/^[a-z0-9-]+$/.test(art.slug) || art.slug.length < 3 || art.slug.length > 160) {
+  if (typeof art.slug !== 'string' || !/^(?=.*[a-z0-9])[a-z0-9-]+$/.test(art.slug) || art.slug.length < 3 || art.slug.length > 160) {
     errors.push('slug must be lowercase alphanumeric with hyphens between 3 and 160 characters');
   }
   if (typeof art.excerpt !== 'string' || art.excerpt.length > 600) {
@@ -161,10 +161,15 @@ export function articleToFirestore(article: Article): FirestoreArticleDoc {
   // Parse reading time in minutes
   const readingTimeMinutes = parseInt(article.readTime?.replace(/\D/g, '') || '5', 10);
 
+  const cleanSlug = (() => {
+    const s = (article.slug || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+    return (s && s.length >= 3 && !/^[-]+$/.test(s)) ? s : `article-${article.id || Date.now().toString().slice(-6)}`;
+  })();
+
   return {
     id: article.id,
     title: article.title.trim(),
-    slug: article.slug.trim(),
+    slug: cleanSlug,
     excerpt: article.excerpt.trim(),
     content: article.content.trim(),
     categorySlug: article.category.trim(),
@@ -218,7 +223,10 @@ export function articleFromFirestore(doc: FirestoreArticleDoc | Record<string, u
   return {
     id: String(doc.id || ''),
     title: String(doc.title || ''),
-    slug: String(doc.slug || ''),
+    slug: (() => {
+      const s = String(doc.slug || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+      return (s && s.length >= 3 && !/^[-]+$/.test(s)) ? s : `article-${doc.id || 'entry'}`;
+    })(),
     excerpt: String(doc.excerpt || ''),
     content: String(doc.content || ''),
     category: String(doc.categorySlug || ('category' in doc ? (doc as Record<string, unknown>).category : '') || 'reproductive-health'),

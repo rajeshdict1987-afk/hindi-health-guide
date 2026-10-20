@@ -20,7 +20,7 @@ import { Article } from '@/src/types/article';
 import { Advertisement } from '@/src/types/ad';
 import { getStoredArticles, saveStoredArticles, getStoredAds, saveStoredAds, resetToDefaults } from '@/src/lib/store';
 import { SITE_CONFIG } from '@/src/config/site-config';
-import { generateSeoSuggestions } from '@/src/lib/seoHelper';
+import { generateSeoSuggestions, generateCleanSlug } from '@/src/lib/seoHelper';
 import { validateArticleSchema } from '@/src/types/firestore';
 
 export default function AdminPage() {
@@ -193,11 +193,12 @@ export default function AdminPage() {
       return;
     }
     const suggestion = generateSeoSuggestions(articleForm.title, articleForm.content);
+    const validPrevSlug = (articleForm.slug && articleForm.slug.length >= 3 && !/^[-]+$/.test(articleForm.slug)) ? articleForm.slug : '';
     setArticleForm(prev => ({
       ...prev,
       excerpt: prev.excerpt || suggestion.metaDescription,
       tags: prev.tags || suggestion.tags,
-      slug: prev.slug || suggestion.slug
+      slug: validPrevSlug || suggestion.slug || generateCleanSlug(articleForm.title)
     }));
     showNotification('✨ AI SEO सुझाव (Meta Description, Tags & Slug) सफलतापूर्वक जनरेट हो गए!');
   };
@@ -210,7 +211,11 @@ export default function AdminPage() {
       return;
     }
 
-    const slug = articleForm.slug.trim() || articleForm.title.toLowerCase().replace(/[\s\t]+/g, '-').replace(/[^\w-]/g, '');
+    const rawSlug = articleForm.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+    const slug = (rawSlug && rawSlug.length >= 3 && !/^[-]+$/.test(rawSlug))
+      ? rawSlug
+      : generateCleanSlug(articleForm.title, editingArticleId || Date.now().toString());
+
     const selectedCat = SITE_CONFIG.categories.find(c => c.slug === articleForm.category);
 
     const newArticle: Article = {

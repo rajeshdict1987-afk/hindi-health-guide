@@ -26,7 +26,15 @@ export function ArticlePage({ slug }: ArticlePageProps) {
   useEffect(() => {
     const all = getStoredArticles();
     setAllArticles(all);
-    const found = all.find((a) => a.slug === slug);
+    const decodedSlug = decodeURIComponent(slug).trim();
+    const normalizedTarget = decodedSlug.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+    const found = all.find(
+      (a) =>
+        a.slug === slug ||
+        a.slug === decodedSlug ||
+        a.id === slug ||
+        a.slug.replace(/-+/g, '-').replace(/^-+|-+$/g, '') === normalizedTarget
+    );
     if (found) {
       setArticle(found);
       setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
