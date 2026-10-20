@@ -127,7 +127,20 @@ export default function RootLayout({
     <html lang="hi" dir="ltr">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        {/* Adsterra Social Bar (Floating Ad) */}
+        {/* Google Analytics (GA4) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-38N6L8697T"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-38N6L8697T');
+          `}
+        </Script>
+        {/* Adsterra Social Bar (Unlimited Floating Ad) */}
         <Script
           src="https://bicea.org/14/e859f22ed91ad735ece6a60fc6c81e37"
           data-cfasync="false"
