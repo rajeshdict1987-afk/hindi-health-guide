@@ -127,9 +127,9 @@ export default function RootLayout({
     <html lang="hi" dir="ltr">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        {/* Google Analytics (GA4) */}
+        {/* Google Analytics Script (GA4) */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-38N6L8697T"
+          src="https://www.googletagmanager.com/gtag/js?id=G-3BN6L8697T"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -137,7 +137,8 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-38N6L8697T');
+
+            gtag('config', 'G-3BN6L8697T');
           `}
         </Script>
         {/* Adsterra Social Bar (Unlimited Floating Ad) */}
