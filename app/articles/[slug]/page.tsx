@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import React from 'react';
+import { db } from '@/lib/firebase'; // आपका फायरस्टोर कनेक्शन
+import { doc, getDoc } from 'firebase/firestore';
 import { INITIAL_ARTICLES } from '../../../src/data/initialArticles';
 import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
 import { generateArticleSchema, generateFAQSchema } from '../../../src/lib/seoHelper';
 
-interface Props {
+type Props = {
   params: Promise<{ slug: string }> | { slug: string };
-}
+};
 
 export async function generateStaticParams() {
   return INITIAL_ARTICLES.map((art: Article) => ({
@@ -15,17 +17,15 @@ export async function generateStaticParams() {
   }));
 }
 
-// फ़ंक्शन: स्लग या आईडी के आधार पर आर्टिकल डेटा लोड करना
+// फ़ंक्शन: लोकल / प्रारंभिक डेटा से आर्टिकल प्राप्त करना (फ़ॉलबैक व बिल्ड समय हेतु)
 export async function getArticleData(slugParam: string): Promise<Article | undefined> {
   if (!slugParam) return undefined;
   const decoded = decodeURIComponent(slugParam).trim();
-  
-  // 1. सीधे स्लग से मिलान
+
   let found = INITIAL_ARTICLES.find(
     (a: Article) => a.slug === slugParam || a.slug === decoded || a.id === slugParam
   );
 
-  // 2. यदि न मिले, तो क्लीन स्लग से मिलान
   if (!found) {
     const normalizedTarget = decoded.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
     found = INITIAL_ARTICLES.find((a: Article) => {
@@ -39,26 +39,54 @@ export async function getArticleData(slugParam: string): Promise<Article | undef
 
 export const getArticleBySlug = getArticleData;
 
+// 1. यह फ़ंक्शन WhatsApp और Facebook को आर्टिकल का डेटा देता है
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
-  const article = await getArticleData(slug);
 
-  const title = article?.title || 'हिंदी हेल्थ गाइड';
-  const rawContent = article?.content ? article.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
-  const description = article?.excerpt || rawContent.substring(0, 150) || 'स्वास्थ्य संबंधी प्रामाणिक जानकारी।';
-  const imageUrl = (article as any)?.imageUrl || article?.image?.url || 'https://www.hindihealthguide.org/logo.png';
+  // यहाँ अपने डेटाबेस से आर्टिकल का डेटा लाएँ
+  let articleData: any = null;
+  try {
+    const docRef = doc(db, 'articles', slug);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      articleData = docSnap.data();
+    }
+  } catch (error) {
+    console.error('Error fetching article metadata from Firestore:', error);
+  }
+
+  // यदि फायरस्टोर में न मिले (उदा. प्रारंभिक डेटा), तो डिफ़ॉल्ट डेटाबेस से लाएं
+  if (!articleData) {
+    articleData = await getArticleData(slug);
+  }
+
+  const title = articleData?.title || 'हिंदी हेल्थ गाइड';
+  const rawContent = articleData?.content
+    ? String(articleData.content).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    : '';
+  const description =
+    articleData?.excerpt ||
+    rawContent.substring(0, 120) ||
+    articleData?.content?.substring(0, 120) ||
+    'स्वास्थ्य संबंधी प्रामाणिक जानकारी।';
+
+  // आर्टिकल की पोस्टर फ़ोटो (16:9) - अगर न हो तो आपका ओरिजिनल ब्रांड लोगो
+  const imageUrl =
+    articleData?.imageUrl ||
+    articleData?.image?.url ||
+    'https://www.hindihealthguide.org/logo.png';
   const pageUrl = `https://www.hindihealthguide.org/articles/${slug}`;
 
   return {
-    title,
-    description,
+    title: title,
+    description: description,
     alternates: {
       canonical: pageUrl,
     },
     openGraph: {
-      title,
-      description,
+      title: title,
+      description: description,
       url: pageUrl,
       siteName: 'हिंदी हेल्थ गाइड',
       images: [
@@ -71,20 +99,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
       locale: 'hi_IN',
       type: 'article',
-      publishedTime: article?.publishedAt || article?.createdAt,
-      modifiedTime: article?.updatedAt || article?.publishedAt,
-      authors: [
-        (article?.author?.name || 'राजेश कुमार साहू')
-          .replace(/गुरु\s*/gi, '')
-          .replace(/Guru\s*/gi, '')
-          .trim() || 'राजेश कुमार साहू',
-      ],
-      tags: article?.tags,
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
+      title: title,
+      description: description,
       images: [imageUrl],
     },
   };
@@ -93,7 +112,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
-  const article = await getArticleData(slug);
+  let article: any = null;
+
+  try {
+    const docRef = doc(db, 'articles', slug);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      article = docSnap.data();
+    }
+  } catch {
+    // Fallback below
+  }
+
+  if (!article) {
+    article = await getArticleData(slug);
+  }
 
   const jsonLd = article ? generateArticleSchema(article) : null;
   const faqJsonLd = article ? generateFAQSchema(article) : null;
