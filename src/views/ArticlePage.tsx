@@ -62,6 +62,35 @@ export function ArticlePage({ slug }: ArticlePageProps) {
 
   const trendingArticles = allArticles.slice(0, 5);
 
+  // In-Article Ad Banner Components
+  const InArticleBanner1 = () => (
+    <div className="my-6 not-prose flex flex-col items-center justify-center">
+      <div className="hidden sm:block">
+        <AdsterraBanner keyId="d2edcc8ed4140105f91b01b7c7314eef" width={468} height={60} />
+      </div>
+      <div className="block sm:hidden">
+        <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
+      </div>
+    </div>
+  );
+
+  const InArticleBanner2 = () => (
+    <div className="my-6 not-prose flex justify-center">
+      <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
+    </div>
+  );
+
+  const InArticleBanner3 = () => (
+    <div className="my-6 not-prose flex flex-col items-center justify-center">
+      <div className="hidden sm:block">
+        <AdsterraBanner keyId="d2edcc8ed4140105f91b01b7c7314eef" width={468} height={60} />
+      </div>
+      <div className="block sm:hidden">
+        <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
+      </div>
+    </div>
+  );
+
   // Article Content Rendering with Adsterra in-article placements
   const renderMilestoneContent = (rawHtmlContent: string) => {
     if (!rawHtmlContent) return null;
@@ -73,45 +102,45 @@ export function ArticlePage({ slug }: ArticlePageProps) {
       .replace(/Guru\s*Rajesh\s*Kumar\s*Sahu/gi, 'Rajesh Kumar Sahu')
       .replace(/Guru\s*Rajesh/gi, 'Rajesh');
 
-    const sections = htmlContent.split(/(?=<h2[\s>])/i);
+    // Helper to pick ads based on current step / chunk index
+    const renderInBetweenAd = (index: number, total: number) => {
+      if (index >= total - 1) return null;
 
-    if (sections.length <= 1) {
-      const pChunks = htmlContent.split(/(?=<\/p>)/i);
-      if (pChunks.length > 3) {
-        const mid1 = Math.floor(pChunks.length * 0.25);
-        const mid2 = Math.floor(pChunks.length * 0.55);
-        const mid3 = Math.floor(pChunks.length * 0.8);
+      if (total === 2) {
+        return <InArticleBanner1 />;
+      }
+      if (total === 3) {
+        if (index === 0) return <InArticleBanner1 />;
+        if (index === 1) return <div className="not-prose my-6"><AdsterraNative /></div>;
+        return null;
+      }
+      // 4+ steps:
+      if (index === 0) return <InArticleBanner1 />;
+      if (index === 1) return <div className="not-prose my-6"><AdsterraNative /></div>;
+      if (index === 2) return <InArticleBanner2 />;
+      if (index === 3) return <InArticleBanner3 />;
+      if (index === 4) return <div className="not-prose my-6"><AdsterraNative /></div>;
+      if (index === 5) return <InArticleBanner2 />;
+      return null;
+    };
+
+    const isHtml = /<[a-z][\s\S]*>/i.test(htmlContent);
+
+    if (!isHtml) {
+      const paras = htmlContent
+        .split(/\n\s*\n/)
+        .map(p => p.trim())
+        .filter(p => p.length > 0);
+
+      if (paras.length > 1) {
         return (
-          <div className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
-            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(0, mid1).join('') }} />
-            
-            {/* First In-Article Ad Placement */}
-            <div className="my-4 not-prose flex justify-center">
-              <div className="hidden sm:block">
-                <AdsterraBanner keyId="d2edcc8ed4140105f91b01b7c7314eef" width={468} height={60} />
-              </div>
-              <div className="block sm:hidden">
-                <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
-              </div>
-            </div>
-
-            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(mid1, mid2).join('') }} />
-            
-            {/* Second In-Article Native Placement */}
-            <div className="my-6 not-prose">
-              <AdsterraNative />
-            </div>
-
-            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(mid2, mid3).join('') }} />
-            
-            {/* Third In-Article 300x250 Banner */}
-            <div className="my-6 not-prose flex justify-center">
-              <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
-            </div>
-
-            <div dangerouslySetInnerHTML={{ __html: pChunks.slice(mid3).join('') }} />
-            
-            {/* Bottom In-Article Native Placement */}
+          <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6">
+            {paras.map((para, idx) => (
+              <React.Fragment key={idx}>
+                <div>{para}</div>
+                {renderInBetweenAd(idx, paras.length)}
+              </React.Fragment>
+            ))}
             <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
               <AdsterraNative />
             </div>
@@ -119,46 +148,78 @@ export function ArticlePage({ slug }: ArticlePageProps) {
         );
       }
       return (
-        <div className="space-y-6">
-          <div 
-            className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
-          <div className="mt-6 not-prose">
+        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line">
+          {htmlContent}
+          <InArticleBanner1 />
+          <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
             <AdsterraNative />
           </div>
         </div>
       );
     }
 
+    // Case 2: HTML with <h2> or <h3> headings
+    // Filter out leading empty strings so section 0 is the real first step
+    const rawHeadingSections = htmlContent
+      .split(/(?=<h[23][\s>])/i)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    if (rawHeadingSections.length > 1) {
+      return (
+        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
+          {rawHeadingSections.map((sec, idx) => (
+            <React.Fragment key={idx}>
+              <div dangerouslySetInnerHTML={{ __html: sec }} />
+              {renderInBetweenAd(idx, rawHeadingSections.length)}
+            </React.Fragment>
+          ))}
+          <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
+            <AdsterraNative />
+          </div>
+        </div>
+      );
+    }
+
+    // Case 3: HTML with only <p> paragraphs
+    const pChunks = htmlContent
+      .split(/(?<=<\/p>)/i)
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+
+    if (pChunks.length > 2) {
+      // Group paragraphs into 3 to 5 readable milestones
+      const groupCount = Math.min(5, Math.max(2, Math.ceil(pChunks.length / 2)));
+      const chunkSize = Math.ceil(pChunks.length / groupCount);
+      const groups: string[] = [];
+      for (let i = 0; i < pChunks.length; i += chunkSize) {
+        groups.push(pChunks.slice(i, i + chunkSize).join(''));
+      }
+
+      return (
+        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
+          {groups.map((group, idx) => (
+            <React.Fragment key={idx}>
+              <div dangerouslySetInnerHTML={{ __html: group }} />
+              {renderInBetweenAd(idx, groups.length)}
+            </React.Fragment>
+          ))}
+          <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
+            <AdsterraNative />
+          </div>
+        </div>
+      );
+    }
+
+    // Fallback: single block with Banner + Native
     return (
-      <div className="prose prose-stone max-w-none text-stone-800 leading-relaxed space-y-6 text-base sm:text-lg [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-stone-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
-        {sections.map((sec, idx) => (
-          <React.Fragment key={idx}>
-            <div dangerouslySetInnerHTML={{ __html: sec }} />
-            {idx === 0 && (
-              <div className="my-4 not-prose flex justify-center">
-                <div className="hidden sm:block">
-                  <AdsterraBanner keyId="d2edcc8ed4140105f91b01b7c7314eef" width={468} height={60} />
-                </div>
-                <div className="block sm:hidden">
-                  <AdsterraBanner keyId="6ee720141ab5d1099514b9f6d51ceaa5" width={320} height={50} />
-                </div>
-              </div>
-            )}
-            {idx === 1 && (
-              <div className="not-prose my-6">
-                <AdsterraNative />
-              </div>
-            )}
-            {idx === 2 && (
-              <div className="not-prose my-6 flex justify-center">
-                <AdsterraBanner keyId="5d7e9c6d3afd394fc2cfcd19fabfe3b9" width={300} height={250} />
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-        <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
+      <div className="space-y-6">
+        <div 
+          className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+        <InArticleBanner1 />
+        <div className="mt-6 not-prose">
           <AdsterraNative />
         </div>
       </div>

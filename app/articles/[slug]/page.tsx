@@ -16,55 +16,83 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const article = INITIAL_ARTICLES.find((a: Article) => a.slug === slug);
+// फ़ायरस्टोर / डेटाबेस या प्रारंभिक डेटा से आर्टिकल लोड करने का फ़ंक्शन
+export async function getArticleBySlug(slug: string): Promise<Article | undefined> {
+  return INITIAL_ARTICLES.find((a: Article) => a.slug === slug);
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }> | { slug: string };
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const article = await getArticleBySlug(resolvedParams.slug);
 
   if (!article) {
     return {
-      title: 'लेख नहीं मिला',
+      title: 'लेख नहीं मिला | हिंदी हेल्थ गाइड',
+      description: 'यह स्वास्थ्य आलेख उपलब्ध नहीं है या हटा दिया गया है।',
     };
   }
 
+  // एक्सर्प्ट या आर्टिकल सामग्री के शुरुआती 150 अक्षरों से स्वच्छ विवरण
+  const cleanDescription =
+    article.excerpt ||
+    (article.content
+      ? article.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().substring(0, 150)
+      : '') ||
+    'भारत का विश्वसनीय स्वास्थ्य पोर्टल - यौन एवं प्रजनन स्वास्थ्य शिक्षा।';
+
+  const imageUrl =
+    (article as any).imageUrl ||
+    article.image?.url ||
+    'https://www.hindihealthguide.org/default-og-image.jpg';
+
+  const articleUrl = `https://www.hindihealthguide.org/articles/${resolvedParams.slug}`;
+
   return {
-    title: article.seo?.title || `${article.title} | ${SITE_CONFIG.hindiName}`,
-    description: article.seo?.metaDescription || article.excerpt,
-    keywords: article.seo?.keywords || article.tags || ['स्वास्थ्य', 'प्रजनन स्वास्थ्य'],
+    title: article.title,
+    description: cleanDescription,
     alternates: {
-      canonical: `${SITE_CONFIG.productionUrl}/articles/${article.slug}`,
+      canonical: articleUrl,
     },
     openGraph: {
-      type: 'article',
-      locale: 'hi_IN',
-      siteName: SITE_CONFIG.hindiName,
       title: article.title,
-      description: article.excerpt,
-      url: `${SITE_CONFIG.productionUrl}/articles/${article.slug}`,
+      description: cleanDescription,
+      url: articleUrl,
+      siteName: 'हिंदी हेल्थ गाइड',
       images: [
         {
-          url: article.image.url,
+          url: imageUrl,
           width: 1200,
           height: 630,
-          alt: article.image.alt || article.title,
+          alt: article.title,
         },
       ],
+      type: 'article',
       publishedTime: article.publishedAt || article.createdAt,
       modifiedTime: article.updatedAt || article.publishedAt || article.createdAt,
-      authors: [(article.author?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू'],
+      authors: [
+        (article.author?.name || 'राजेश कुमार साहू')
+          .replace(/गुरु\s*/gi, '')
+          .replace(/Guru\s*/gi, '')
+          .trim() || 'राजेश कुमार साहू',
+      ],
       tags: article.tags,
     },
     twitter: {
       card: 'summary_large_image',
       title: article.title,
-      description: article.excerpt,
-      images: [article.image.url],
+      description: cleanDescription,
+      images: [imageUrl],
     },
   };
 }
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const article = INITIAL_ARTICLES.find((a: Article) => a.slug === slug);
+  const article = await getArticleBySlug(slug);
 
   const jsonLd = article ? generateArticleSchema(article) : null;
   const faqJsonLd = article ? generateFAQSchema(article) : null;
