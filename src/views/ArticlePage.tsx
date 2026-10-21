@@ -12,6 +12,8 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { ReadingProgressBar } from '../components/ReadingProgressBar';
 import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface ArticlePageProps {
   slug: string;
@@ -38,6 +40,17 @@ export function ArticlePage({ slug }: ArticlePageProps) {
     if (found) {
       setArticle(found);
       setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
+    } else {
+      // Direct Firestore fetch so desktop visitors immediately see new articles
+      getDoc(doc(db, 'articles', slug))
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            const artData = docSnap.data() as Article;
+            setArticle(artData);
+            setRelatedArticles(all.filter((a) => a.category === artData.category && a.id !== artData.id).slice(0, 4));
+          }
+        })
+        .catch(() => {});
     }
   }, [slug]);
 

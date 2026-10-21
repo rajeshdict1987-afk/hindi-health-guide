@@ -22,6 +22,8 @@ import { getStoredArticles, saveStoredArticles, getStoredAds, saveStoredAds, res
 import { SITE_CONFIG } from '@/src/config/site-config';
 import { generateSeoSuggestions, generateCleanSlug } from '@/src/lib/seoHelper';
 import { validateArticleSchema } from '@/src/types/firestore';
+import { doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -265,6 +267,18 @@ export default function AdminPage() {
 
     setArticles(updated);
     saveStoredArticles(updated);
+    
+    // Sync to Firestore by slug for instant availability on desktop and social crawlers
+    try {
+      const docRef = doc(db, 'articles', newArticle.slug);
+      setDoc(docRef, {
+        ...newArticle,
+        updatedAt: new Date().toISOString()
+      }, { merge: true }).catch((err) => console.warn('Firestore sync background note:', err));
+    } catch (e) {
+      console.warn('Firestore sync note:', e);
+    }
+
     setEditingArticleId(null);
     setArticleForm({
       title: '',
@@ -304,9 +318,15 @@ export default function AdminPage() {
 
   const handleDeleteArticle = (id: string) => {
     if (confirm('क्या आप वाकई इस आर्टिकल को हटाना चाहते हैं?')) {
+      const targetArt = articles.find(a => a.id === id);
       const updated = articles.filter(a => a.id !== id);
       setArticles(updated);
       saveStoredArticles(updated);
+      if (targetArt?.slug) {
+        try {
+          deleteDoc(doc(db, 'articles', targetArt.slug)).catch(() => {});
+        } catch {}
+      }
       showNotification('आर्टिकल हटा दिया गया है।');
     }
   };

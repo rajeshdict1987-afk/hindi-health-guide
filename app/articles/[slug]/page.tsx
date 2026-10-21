@@ -7,15 +7,12 @@ import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
 import { generateArticleSchema, generateFAQSchema } from '../../../src/lib/seoHelper';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type Props = {
   params: Promise<{ slug: string }> | { slug: string };
 };
-
-export async function generateStaticParams() {
-  return INITIAL_ARTICLES.map((art: Article) => ({
-    slug: art.slug,
-  }));
-}
 
 // फ़ंक्शन: स्लग या आईडी के आधार पर आर्टिकल प्राप्त करना (फ़ॉलबैक व बिल्ड समय हेतु)
 export async function getArticleData(slugParam: string): Promise<Article | undefined> {

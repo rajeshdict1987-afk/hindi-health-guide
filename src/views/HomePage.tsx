@@ -33,6 +33,8 @@ import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { AdDisplay } from '../components/AdDisplay';
 import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const getCleanAuthorName = (name?: string): string => {
   return (name || 'राजेश कुमार साहू')
@@ -145,6 +147,29 @@ export function HomePage() {
     if (loaded && loaded.length > 0) {
       setArticles(loaded);
     }
+
+    // Direct Firestore fetch so desktop visitors immediately see new articles
+    getDocs(collection(db, 'articles'))
+      .then((snapshot) => {
+        if (!snapshot.empty) {
+          const remoteArticles: Article[] = [];
+          snapshot.forEach((d) => {
+            const data = d.data() as Article;
+            if (data && data.title && data.slug) {
+              remoteArticles.push(data);
+            }
+          });
+          if (remoteArticles.length > 0) {
+            setArticles((prev) => {
+              const map = new Map<string, Article>();
+              prev.forEach((a) => map.set(a.slug, a));
+              remoteArticles.forEach((a) => map.set(a.slug, a));
+              return Array.from(map.values());
+            });
+          }
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {

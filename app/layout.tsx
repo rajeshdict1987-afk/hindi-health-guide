@@ -38,16 +38,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'hi_IN',
-    url: SITE_CONFIG.productionUrl,
-    siteName: SITE_CONFIG.hindiName,
+    url: 'https://www.hindihealthguide.org',
+    siteName: 'हिंदी हेल्थ गाइड',
     title: `${SITE_CONFIG.hindiName} – यौन एवं प्रजनन स्वास्थ्य की प्रामाणिक जानकारी`,
     description: SITE_CONFIG.description,
     images: [
       {
-        url: `${SITE_CONFIG.productionUrl}/og-image.jpg`,
+        url: 'https://www.hindihealthguide.org/logo.png',
         width: 1200,
         height: 630,
-        alt: SITE_CONFIG.hindiName,
+        alt: 'हिंदी हेल्थ गाइड',
       },
     ],
   },
@@ -55,6 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `${SITE_CONFIG.hindiName} – यौन एवं प्रजनन स्वास्थ्य`,
     description: 'वैज्ञानिक तथ्यों और चिकित्सा दिशानिर्देशों (WHO/NACO/MoHFW) पर आधारित हिंदी स्वास्थ्य जानकारी।',
+    images: ['https://www.hindihealthguide.org/logo.png'],
   },
   icons: {
     icon: '/logo.png',
@@ -104,8 +105,8 @@ const structuredSchema = {
       '@type': 'WebSite',
       '@id': `${SITE_CONFIG.productionUrl}#website`,
       url: SITE_CONFIG.productionUrl,
-      name: 'Hindi Health Guide',
-      alternateName: 'हिंदी हेल्थ गाइड',
+      name: 'हिंदी हेल्थ गाइड',
+      alternateName: 'Hindi Health Guide',
       publisher: {
         '@id': `${SITE_CONFIG.productionUrl}#organization`,
       },
@@ -150,6 +151,19 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-stone-50 text-stone-900 antialiased font-sans">
+        {/* Google Search Brand Display Name Schema (WebSite) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'हिंदी हेल्थ गाइड',
+              alternateName: 'Hindi Health Guide',
+              url: 'https://www.hindihealthguide.org',
+            }),
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredSchema) }}
