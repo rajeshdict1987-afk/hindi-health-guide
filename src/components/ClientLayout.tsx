@@ -147,7 +147,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           >
             <div className="inline-flex items-center bg-white rounded-xl shadow-xs border border-emerald-100/80 overflow-hidden">
               <Image
-                src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
+                src="/logo.png"
                 alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
                 width={1100}
                 height={230}
@@ -308,7 +308,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               <div className="mb-4">
                 <div className="inline-flex items-center bg-white rounded-xl shadow-xs border border-emerald-100/80 overflow-hidden">
                   <Image
-                    src="https://i.postimg.cc/C1pH7SX5/file-0000000031288211825e7df4d4768a89.png"
+                    src="/logo.png"
                     alt="हिंदी हेल्थ गाइड (Hindi Health Guide)"
                     width={400}
                     height={90}

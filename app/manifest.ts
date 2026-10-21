@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/?source=pwa',
     name: 'हिंदी हेल्थ गाइड - Hindi Health Guide',
-    short_name: 'हेल्थ गाइड',
+    short_name: 'हिंदी हेल्थ गाइड',
     description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच।',
     lang: 'hi',
     dir: 'ltr',
@@ -13,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     display_override: ['standalone', 'browser'],
     orientation: 'portrait-primary',
-    theme_color: '#DC2626',
+    theme_color: '#0f766e',
     background_color: '#FFFFFF',
     categories: ['health', 'medical', 'lifestyle'],
     prefer_related_applications: false,

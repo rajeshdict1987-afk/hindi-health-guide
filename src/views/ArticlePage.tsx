@@ -17,10 +17,11 @@ import { db } from '@/lib/firebase';
 
 interface ArticlePageProps {
   slug: string;
+  initialArticle?: Article | null;
 }
 
-export function ArticlePage({ slug }: ArticlePageProps) {
-  const [article, setArticle] = useState<Article | null>(null);
+export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
+  const [article, setArticle] = useState<Article | null>(initialArticle || null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [allArticles, setAllArticles] = useState<Article[]>([]);
   const [copied, setCopied] = useState(false);
@@ -28,40 +29,73 @@ export function ArticlePage({ slug }: ArticlePageProps) {
   useEffect(() => {
     const all = getStoredArticles();
     setAllArticles(all);
-    const decodedSlug = decodeURIComponent(slug).trim();
-    const normalizedTarget = decodedSlug.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
-    const found = all.find(
-      (a) =>
-        a.slug === slug ||
-        a.slug === decodedSlug ||
-        a.id === slug ||
-        a.slug.replace(/-+/g, '-').replace(/^-+|-+$/g, '') === normalizedTarget
-    );
-    if (found) {
-      setArticle(found);
-      setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
-    } else {
-      // Direct Firestore fetch so desktop visitors immediately see new articles
-      getDoc(doc(db, 'articles', slug))
-        .then((docSnap) => {
-          if (docSnap.exists()) {
-            const artData = docSnap.data() as Article;
-            setArticle(artData);
-            setRelatedArticles(all.filter((a) => a.category === artData.category && a.id !== artData.id).slice(0, 4));
-          }
-        })
-        .catch(() => {});
+
+    // If initialArticle passed from server, initialize immediately
+    if (initialArticle) {
+      setArticle(initialArticle);
+      setRelatedArticles(all.filter((a) => a.category === initialArticle.category && a.id !== initialArticle.id).slice(0, 4));
     }
-  }, [slug]);
+
+    // Always fetch latest server articles via API for fresh desktop/mobile sync
+    fetch('/api/articles')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
+          setAllArticles(data.articles);
+          const decodedSlug = decodeURIComponent(slug).trim().toLowerCase();
+          const target = data.articles.find(
+            (a: Article) => a.slug === slug || a.slug.toLowerCase() === decodedSlug || a.id === slug
+          );
+          if (target && !article) {
+            setArticle(target);
+            setRelatedArticles(data.articles.filter((a: Article) => a.category === target.category && a.id !== target.id).slice(0, 4));
+          }
+        }
+      })
+      .catch(() => {});
+
+    if (!initialArticle) {
+      const decodedSlug = decodeURIComponent(slug).trim();
+      const normalizedTarget = decodedSlug.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+      const found = all.find(
+        (a) =>
+          a.slug === slug ||
+          a.slug === decodedSlug ||
+          a.id === slug ||
+          a.slug.replace(/-+/g, '-').replace(/^-+|-+$/g, '') === normalizedTarget
+      );
+      if (found) {
+        setArticle(found);
+        setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
+      } else {
+        // Fallback to Firestore if needed
+        getDoc(doc(db, 'articles', slug))
+          .then((docSnap) => {
+            if (docSnap.exists()) {
+              const artData = docSnap.data() as Article;
+              setArticle(artData);
+              setRelatedArticles(all.filter((a) => a.category === artData.category && a.id !== artData.id).slice(0, 4));
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [slug, initialArticle]);
 
   const handleShare = () => {
+    const articleSlug = article?.slug || slug;
+    const shareUrl = `https://www.hindihealthguide.org/articles/${articleSlug}`;
+    const shareTitle = article?.title || 'हिंदी हेल्थ गाइड';
+    const shareText = `${shareUrl}\n\n*${shareTitle}*\n\n${article?.excerpt || ''}`;
+
     if (navigator.share) {
       navigator.share({
-        title: article?.title,
-        url: window.location.href,
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl,
       }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(`${shareTitle}\n${shareUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -407,13 +441,24 @@ export function ArticlePage({ slug }: ArticlePageProps) {
                 <span>✅ एआई फैक्ट-चेक वेरिफाइड</span>
               </span>
 
+              <a 
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`https://www.hindihealthguide.org/articles/${article.slug}\n\n*${article.title}*\n\n${article.excerpt || ''}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition font-medium"
+                title="WhatsApp पर शेयर करें"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
+              </a>
+
               <button 
                 onClick={handleShare}
                 className="flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-white px-3 py-1.5 rounded-lg transition cursor-pointer"
-                title="शेयर करें"
+                title="शेयर या लिंक कॉपी करें"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                {copied ? 'कॉपी हो गया!' : 'शेयर करें'}
+                {copied ? 'लिंक कॉपी हो गया!' : 'शेयर लिंक'}
               </button>
             </div>
           </div>

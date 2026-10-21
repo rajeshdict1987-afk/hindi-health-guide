@@ -137,18 +137,33 @@ const HERO_SLIDES = [
   },
 ];
 
-export function HomePage() {
-  const [articles, setArticles] = useState<Article[]>(INITIAL_ARTICLES);
+interface HomePageProps {
+  initialArticles?: Article[];
+}
+
+export function HomePage({ initialArticles }: HomePageProps = {}) {
+  const [articles, setArticles] = useState<Article[]>(initialArticles || INITIAL_ARTICLES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
+    // 1. Initial local store check
     const loaded = getStoredArticles();
     if (loaded && loaded.length > 0) {
       setArticles(loaded);
     }
 
-    // Direct Firestore fetch so desktop visitors immediately see new articles
+    // 2. Fetch fresh server articles via API for instant desktop/mobile synchronization
+    fetch('/api/articles')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
+          setArticles(data.articles);
+        }
+      })
+      .catch(() => {});
+
+    // 3. Direct Firestore fetch fallback
     getDocs(collection(db, 'articles'))
       .then((snapshot) => {
         if (!snapshot.empty) {

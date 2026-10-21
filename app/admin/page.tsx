@@ -70,8 +70,36 @@ export default function AdminPage() {
       if (sessionStorage.getItem('admin_auth') === 'true') {
         setIsAuthenticated(true);
       }
-      setArticles(getStoredArticles());
+      const localArticles = getStoredArticles();
+      setArticles(localArticles);
       setAds(getStoredAds());
+
+      // Auto-sync articles from local storage to server so desktop & mobile are always identical
+      if (localArticles && localArticles.length > 0) {
+        fetch('/api/articles/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ articles: localArticles }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data && data.success && Array.isArray(data.articles)) {
+              setArticles(data.articles);
+              saveStoredArticles(data.articles);
+            }
+          })
+          .catch(() => {});
+      } else {
+        fetch('/api/articles')
+          .then((res) => res.json())
+          .then((data) => {
+            if (data && data.success && Array.isArray(data.articles)) {
+              setArticles(data.articles);
+              saveStoredArticles(data.articles);
+            }
+          })
+          .catch(() => {});
+      }
     } catch (e) {
       console.error('Error loading stored data:', e);
     }
@@ -268,7 +296,22 @@ export default function AdminPage() {
     setArticles(updated);
     saveStoredArticles(updated);
     
-    // Sync to Firestore by slug for instant availability on desktop and social crawlers
+    // 1. Direct Server API save (guarantees desktop & social crawlers get the new article immediately)
+    fetch('/api/articles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ article: newArticle }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.articles)) {
+          setArticles(data.articles);
+          saveStoredArticles(data.articles);
+        }
+      })
+      .catch((err) => console.warn('Server article save note:', err));
+
+    // 2. Sync to Firestore by slug for backup
     try {
       const docRef = doc(db, 'articles', newArticle.slug);
       setDoc(docRef, {
@@ -322,6 +365,20 @@ export default function AdminPage() {
       const updated = articles.filter(a => a.id !== id);
       setArticles(updated);
       saveStoredArticles(updated);
+
+      // Delete from server API
+      fetch(`/api/articles?id=${encodeURIComponent(id)}&slug=${encodeURIComponent(targetArt?.slug || '')}`, {
+        method: 'DELETE',
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.success && Array.isArray(data.articles)) {
+            setArticles(data.articles);
+            saveStoredArticles(data.articles);
+          }
+        })
+        .catch((err) => console.warn('Server article delete note:', err));
+
       if (targetArt?.slug) {
         try {
           deleteDoc(doc(db, 'articles', targetArt.slug)).catch(() => {});

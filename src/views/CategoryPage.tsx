@@ -20,18 +20,32 @@ export function CategoryPage({ slug }: CategoryPageProps) {
   const category = SITE_CONFIG.categories.find((c: CategoryConfig) => c.slug === slug);
 
   useEffect(() => {
-    const all = getStoredArticles();
     const normalizedCategory = (itemCat: string) => {
       if (slug === 'sexual-education' && (itemCat === 'sex-education' || itemCat === 'sexual-education')) return true;
       if (slug === 'expert-advice-qa' && (itemCat === 'expert-advice-faq' || itemCat === 'expert-advice-qa')) return true;
       return itemCat === slug;
     };
+
+    const all = getStoredArticles();
     const filtered = all.filter((a) => normalizedCategory(a.category));
     if (filtered.length > 0) {
       setArticles(filtered);
     } else {
       setArticles(INITIAL_ARTICLES.filter((a) => normalizedCategory(a.category)));
     }
+
+    // Always fetch latest server articles
+    fetch('/api/articles')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.articles)) {
+          const freshFiltered = data.articles.filter((a: Article) => normalizedCategory(a.category));
+          if (freshFiltered.length > 0) {
+            setArticles(freshFiltered);
+          }
+        }
+      })
+      .catch(() => {});
   }, [slug]);
 
   if (!category) {
