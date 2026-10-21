@@ -350,6 +350,15 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
 
+        {/* Semantic H1 & Official Brand Identity for Google Site Name & SEO */}
+        <div className="w-full max-w-full relative z-10 px-4 sm:px-8 lg:px-12 mb-4">
+          <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 px-3 sm:px-4 py-1.5 rounded-full text-xs font-semibold text-emerald-200">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+            <span>हिंदी हेल्थ गाइड (Hindi Health Guide) • भारत का प्रामाणिक स्वास्थ्य मंच</span>
+          </div>
+          <h1 className="sr-only">हिंदी हेल्थ गाइड - वैज्ञानिक एवं प्रमाणिक स्वास्थ्य मार्गदर्शन | Hindi Health Guide</h1>
+        </div>
+
         {/* Carousel Slide Track */}
         <div className="w-full max-w-full relative z-10 px-4 sm:px-8 lg:px-12">
           <div className="relative min-h-[520px] sm:min-h-[440px] lg:min-h-[420px]">
@@ -371,9 +380,9 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                       <span>{slide.badge}</span>
                     </div>
 
-                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                    <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
                       {slide.title}
-                    </h1>
+                    </h2>
 
                     <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
                       {slide.description}

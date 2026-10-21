@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { SITE_CONFIG } from '../src/config/site-config';
-import { INITIAL_ARTICLES } from '../src/data/initialArticles';
+import { getAllServerArticles } from '../src/lib/serverArticles';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE_CONFIG.productionUrl;
@@ -65,12 +65,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  // 3. Published Articles
-  const articleRoutes: MetadataRoute.Sitemap = INITIAL_ARTICLES.filter(
+  // 3. Published Articles from Server Store & Initial Articles
+  const allArticles = getAllServerArticles();
+  const articleRoutes: MetadataRoute.Sitemap = allArticles.filter(
     (a) => a.status === 'published'
   ).map((a) => ({
     url: `${baseUrl}/articles/${a.slug}`,
-    lastModified: new Date(a.updatedAt || a.createdAt),
+    lastModified: new Date(a.updatedAt || a.createdAt || Date.now()),
     changeFrequency: 'weekly',
     priority: 0.85,
   }));
