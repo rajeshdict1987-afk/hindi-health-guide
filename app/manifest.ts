@@ -19,6 +19,24 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['health', 'medical', 'lifestyle'],
     prefer_related_applications: false,
     related_applications: [],
+    file_handlers: [],
+    protocol_handlers: [],
+    share_target: {
+      action: '/share-target/',
+      method: 'GET',
+      params: {
+        title: 'title',
+        text: 'text',
+        url: 'url',
+      },
+    },
+    iarc_rating_id: '',
+    widgets: [],
+    note_taking: {
+      new_note_url: '/note/new',
+    },
+    scope_extensions: [],
+
     icons: [
       {
         src: '/icon-192.png',
@@ -96,5 +114,6 @@ export default function manifest(): MetadataRoute.Manifest {
         ],
       },
     ],
-  };
+  } as MetadataRoute.Manifest;
 }
+
