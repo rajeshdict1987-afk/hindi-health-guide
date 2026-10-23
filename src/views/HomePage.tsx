@@ -281,9 +281,11 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                     src={article.image.url}
                     alt={article.image.alt || article.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition duration-500"
                     referrerPolicy="no-referrer"
                   />
+
                   <span className="absolute bottom-2 left-2 bg-stone-900/80 backdrop-blur text-white text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1">
                     <Clock className="w-3 h-3 text-rose-400" />
                     {article.readTime}
@@ -411,10 +413,12 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                         src={slide.imageUrl}
                         alt={slide.imageAlt}
                         fill
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                         className="object-cover"
                         referrerPolicy="no-referrer"
                         priority={idx === 0}
                       />
+
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-5 sm:p-6">
                         <div className="space-y-1">
                           <span className="text-[11px] uppercase tracking-widest text-emerald-300 font-bold">
@@ -536,10 +540,12 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                     src={articles[0].image.url}
                     alt={articles[0].image.alt || articles[0].title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 850px"
                     className="object-cover group-hover:scale-105 transition duration-500"
                     referrerPolicy="no-referrer"
                     priority
                   />
+
                   <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-rose-700 shadow">
                     विशेष आलेख • {articles[0].categoryHindi}
                   </div>
@@ -595,9 +601,11 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                           src={article.image.url}
                           alt={article.image.alt || article.title}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                           className="object-cover group-hover:scale-105 transition duration-500"
                           referrerPolicy="no-referrer"
                         />
+
                         <div className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur px-2.5 py-0.5 rounded-full text-[11px] font-semibold text-stone-800 shadow-xs">
                           {article.categoryHindi}
                         </div>

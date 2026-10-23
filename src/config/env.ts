@@ -6,25 +6,56 @@
  */
 
 function sanitizeUrl(rawUrl?: string): string {
+  const FALLBACK_URL = 'https://hindihealthguide.org';
   if (!rawUrl || typeof rawUrl !== 'string') {
-    return 'https://www.hindihealthguide.org';
+    return FALLBACK_URL;
   }
   let trimmed = rawUrl.trim();
+
+  // If passed markdown link e.g. [https://yourdomain.com](https://yourdomain.com) or [text](url)
+  const markdownMatch = trimmed.match(/\((https?:\/\/[^\s)]+)\)/);
+  if (markdownMatch && markdownMatch[1]) {
+    trimmed = markdownMatch[1];
+  }
+
+  // Strip brackets, quotes, backticks
+  trimmed = trimmed.replace(/^[\["'`]+|[\]"'`]+$/g, '').trim();
+
+  // Reject placeholder domains
+  if (
+    trimmed.includes('yourdomain.com') ||
+    trimmed.includes('example.com') ||
+    trimmed === '' ||
+    trimmed === 'undefined' ||
+    trimmed === 'null'
+  ) {
+    return FALLBACK_URL;
+  }
+
   if (trimmed.startsWith('http://')) {
     trimmed = `https://${trimmed.slice(7)}`;
   } else if (!trimmed.startsWith('https://')) {
     trimmed = `https://${trimmed}`;
   }
-  // Remove trailing slashes for consistent URL joining
-  return trimmed.replace(/\/+$/, '');
+
+  trimmed = trimmed.replace(/\/+$/, '');
+
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.origin;
+  } catch {
+    return FALLBACK_URL;
+  }
 }
 
 export const ENV = {
   /**
    * Primary canonical custom production URL:
-   * Pointing strictly to official domain: https://www.hindihealthguide.org
+   * Pointing strictly to official domain: https://hindihealthguide.org
    */
-  productionUrl: process.env.NEXT_PUBLIC_SITE_URL ? sanitizeUrl(process.env.NEXT_PUBLIC_SITE_URL) : 'https://www.hindihealthguide.org',
+  productionUrl: sanitizeUrl(process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL),
+
+
 
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',

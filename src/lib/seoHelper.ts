@@ -68,8 +68,14 @@ export function generateArticleSchema(article: Article) {
         '@type': 'Person',
         'name': (article.reviewedBy?.name || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू',
         'jobTitle': article.reviewedBy?.credentials || 'मुख्य संपादक एवं स्वास्थ्य विश्लेषक',
-        'url': `${SITE_CONFIG.productionUrl}/about`
+        'url': `${SITE_CONFIG.productionUrl}/about`,
+        'worksFor': {
+          '@type': 'MedicalOrganization',
+          'name': 'हिंदी हेल्थ गाइड क्लिनिकल रिव्यू बोर्ड (Hindi Health Guide Clinical Review Board)',
+          'url': `${SITE_CONFIG.productionUrl}/editorial-policy`
+        }
       },
+
       'medicalAudience': {
         '@type': 'MedicalAudience',
         'audienceType': 'Patient',

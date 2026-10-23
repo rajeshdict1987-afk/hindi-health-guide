@@ -35,8 +35,9 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const searchParams = req.nextUrl.searchParams;
     const id = searchParams.get('id') || searchParams.get('slug');
+
     if (!id) {
       return NextResponse.json({ success: false, error: 'Article ID or slug is required' }, { status: 400 });
     }

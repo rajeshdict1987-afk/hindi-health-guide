@@ -1,9 +1,18 @@
 import type { Metadata, Viewport } from 'next';
 import React from 'react';
 import Script from 'next/script';
+import { Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
 import { SITE_CONFIG } from '../src/config/site-config';
 import { ClientLayout } from '../src/components/ClientLayout';
+
+const notoSansDevanagari = Noto_Sans_Devanagari({
+  subsets: ['devanagari', 'latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-hindi',
+});
+
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -12,8 +21,20 @@ export const viewport: Viewport = {
   themeColor: '#0f766e',
 };
 
+function getSafeMetadataBase(): URL {
+  try {
+    const raw = SITE_CONFIG.productionUrl;
+    if (raw && typeof raw === 'string') {
+      const clean = raw.trim().replace(/^[\["'`]+|[\]"'`]+$/g, '');
+      return new URL(clean.startsWith('http') ? clean : `https://${clean}`);
+    }
+  } catch {}
+  return new URL('https://hindihealthguide.org');
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_CONFIG.productionUrl),
+  metadataBase: getSafeMetadataBase(),
+
   title: {
     default: `${SITE_CONFIG.hindiName} – यौन एवं प्रजनन स्वास्थ्य की प्रामाणिक जानकारी`,
     template: `%s | ${SITE_CONFIG.hindiName}`,
@@ -172,7 +193,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="hi" dir="ltr">
+    <html lang="hi" dir="ltr" suppressHydrationWarning>
+
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
@@ -205,7 +227,8 @@ export default function RootLayout({
           strategy="lazyOnload"
         />
       </head>
-      <body className="bg-stone-50 text-stone-900 antialiased font-sans">
+      <body className={`${notoSansDevanagari.className} bg-stone-50 text-stone-900 antialiased font-sans`}>
+
         {/* Google Search Central WebSite Schema for Site Name */}
         <script
           type="application/ld+json"

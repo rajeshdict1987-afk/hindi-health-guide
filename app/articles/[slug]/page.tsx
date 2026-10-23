@@ -8,8 +8,9 @@ import { Article } from '../../../src/types/article';
 import { generateArticleSchema, generateFAQSchema } from '../../../src/lib/seoHelper';
 import { getServerArticleBySlug } from '../../../src/lib/serverArticles';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Incremental Static Regeneration (ISR): CDN cache revalidated every 60 seconds
+export const revalidate = 60;
+
 
 type Props = {
   params: Promise<{ slug: string }> | { slug: string };
@@ -62,12 +63,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cleanContent = article?.content ? article.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
   const articleDesc = article?.excerpt || cleanContent.substring(0, 150) || 'स्वास्थ्य संबंधी प्रामाणिक जानकारी।';
   
-  let articleImage = (article as any)?.imageUrl || article?.image?.url || 'https://www.hindihealthguide.org/logo.png';
+  let articleImage = (article as any)?.imageUrl || article?.image?.url || 'https://hindihealthguide.org/logo.png';
   if (articleImage.startsWith('/')) {
-    articleImage = `https://www.hindihealthguide.org${articleImage}`;
+    articleImage = `https://hindihealthguide.org${articleImage}`;
   }
 
-  const pageUrl = `https://www.hindihealthguide.org/articles/${slug}`;
+  const pageUrl = `https://hindihealthguide.org/articles/${slug}`;
+
 
   return {
     title: articleTitle,

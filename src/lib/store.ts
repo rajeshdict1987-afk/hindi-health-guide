@@ -1,8 +1,9 @@
 'use client';
 
 import { Article } from '../types/article';
-import { Advertisement } from '../types/ad';
+import { Advertisement, AdSenseSettings, DEFAULT_ADSENSE_SETTINGS } from '../types/ad';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
+
 import { validateArticleSchema, articleToFirestore, articleFromFirestore } from '../types/firestore';
 import { generateCleanSlug } from './seoHelper';
 
@@ -125,13 +126,18 @@ export function saveStoredArticles(articles: Article[]): void {
   if (typeof window === 'undefined') return;
   try {
     // Enforce strict schema normalization matching Firestore constraints
+    // and guarantee NO Base64 strings enter localStorage
     const sanitized = articles.map((art) => {
       const firestoreDoc = articleToFirestore(art);
-      return articleFromFirestore(firestoreDoc);
+      const cleanArt = articleFromFirestore(firestoreDoc);
+      if (cleanArt.image?.url?.startsWith('data:image/')) {
+        cleanArt.image.url = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80';
+      }
+      return cleanArt;
     });
     localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(sanitized));
   } catch (e) {
-    console.error('Failed to save articles:', e);
+    console.error('Failed to save articles to localStorage:', e);
   }
 }
 
@@ -153,11 +159,42 @@ export function getStoredAds(): Advertisement[] {
 export function saveStoredAds(ads: Advertisement[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(ADS_STORAGE_KEY, JSON.stringify(ads));
+    // Strip Base64 to prevent QuotaExceededError
+    const sanitizedAds = ads.map(ad => {
+      if (ad.imageUrl?.startsWith('data:image/')) {
+        return { ...ad, imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80' };
+      }
+      return ad;
+    });
+    localStorage.setItem(ADS_STORAGE_KEY, JSON.stringify(sanitizedAds));
   } catch (e) {
     console.error('Failed to save ads:', e);
   }
 }
+
+const ADSENSE_STORAGE_KEY = 'hindi_health_guide_adsense_v1';
+
+export function getStoredAdSenseSettings(): AdSenseSettings {
+  if (typeof window === 'undefined') return DEFAULT_ADSENSE_SETTINGS;
+  try {
+    const item = localStorage.getItem(ADSENSE_STORAGE_KEY);
+    if (!item) return DEFAULT_ADSENSE_SETTINGS;
+    return { ...DEFAULT_ADSENSE_SETTINGS, ...JSON.parse(item) };
+  } catch {
+    return DEFAULT_ADSENSE_SETTINGS;
+  }
+}
+
+export function saveStoredAdSenseSettings(settings: AdSenseSettings): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(ADSENSE_STORAGE_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.error('Failed to save AdSense settings:', e);
+  }
+}
+
+
 
 export function resetToDefaults(): { articles: Article[], ads: Advertisement[] } {
   if (typeof window !== 'undefined') {

@@ -10,10 +10,12 @@ import { ArrowLeft, Clock, Calendar, CheckCircle2, ShieldCheck, Share2, Trending
 import { AdDisplay } from '../components/AdDisplay';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { ReadingProgressBar } from '../components/ReadingProgressBar';
+import { ClinicalReviewerBadge } from '../components/ClinicalReviewerBadge';
 import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+
 
 interface ArticlePageProps {
   slug: string;
@@ -490,10 +492,12 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
                     src={article.image.url}
                     alt={article.image.alt || article.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 850px"
                     className="object-cover"
                     referrerPolicy="no-referrer"
                     priority
                   />
+
                 </figure>
               )}
 
@@ -534,18 +538,9 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
                 </div>
               )}
 
-              {/* Medical Review Notice */}
-              <div className="bg-teal-50 border border-teal-200 p-6 rounded-2xl flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center shrink-0 mt-1">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-                <div className="space-y-1 text-sm text-teal-900">
-                  <h4 className="font-bold">विशेषज्ञ चिकित्सा समीक्षा (Medical Review)</h4>
-                  <p className="text-teal-800 leading-relaxed text-xs sm:text-sm">
-                    यह लेख भारत के प्रमाणित स्वास्थ्य विशेषज्ञों और संपादकीय टीम द्वारा विश्व स्वास्थ्य संगठन (WHO) के दिशा-निर्देशों के तहत सत्यापित किया गया है।
-                  </p>
-                </div>
-              </div>
+              {/* Clinical Reviewer, Medical Board & Mandatory Disclaimer (YMYL / E-E-A-T) */}
+              <ClinicalReviewerBadge article={article} />
+
 
               {/* FAQ Section */}
               {article.faqs && article.faqs.length > 0 && (

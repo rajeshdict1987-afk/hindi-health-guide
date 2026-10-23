@@ -108,9 +108,11 @@ export function CategoryPage({ slug }: CategoryPageProps) {
                     src={article.image.url}
                     alt={article.image.alt || article.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition duration-500"
                     referrerPolicy="no-referrer"
                   />
+
                 </div>
 
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">

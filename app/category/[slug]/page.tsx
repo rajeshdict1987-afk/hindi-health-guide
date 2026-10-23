@@ -7,7 +7,11 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+// Incremental Static Regeneration (ISR)
+export const revalidate = 60;
+
 export async function generateStaticParams() {
+
   return SITE_CONFIG.categories.map((cat: CategoryConfig) => ({
     slug: cat.slug,
   }));

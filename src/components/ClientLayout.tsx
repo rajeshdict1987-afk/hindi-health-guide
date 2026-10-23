@@ -23,6 +23,9 @@ import {
 } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site-config';
 import { AdDisplay } from './AdDisplay';
+import { PWAInstallButton } from './PWAInstallButton';
+import { OfflineIndicator } from './OfflineIndicator';
+
 import { generateWhoNacoResponse } from '../lib/whoNacoAssistant';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -171,6 +174,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3" />
             </form>
 
+            <PWAInstallButton className="hidden sm:inline-flex" />
+
             <button
               onClick={() => setAskAiOpen(true)}
               className="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-bold shadow hover:opacity-95 transition shrink-0"
@@ -179,6 +184,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               <span className="hidden sm:inline">एआई स्वास्थ्य मित्र</span>
               <span className="sm:hidden text-xs">एआई</span>
             </button>
+
           </div>
         </div>
 
@@ -251,6 +257,11 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 <Sparkles className="w-4 h-4 text-emerald-200" />
                 <span>एआई स्वास्थ्य मित्र से पूछें</span>
               </button>
+
+              <div className="mt-3">
+                <PWAInstallButton className="w-full justify-center py-2.5" />
+              </div>
+
 
               <div className="mt-6 space-y-1">
                 <Link
@@ -356,9 +367,21 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <div className="w-full max-w-full mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-400">
+          {/* Standardized Doctor-Grade Clinical & Public Health Disclaimer (WHO/NACO Compliance) */}
+          <div className="w-full max-w-full mt-8 p-5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-2 leading-relaxed">
+            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>महत्वपूर्ण चिकित्सकीय एवं जन-स्वास्थ्य अस्वीकरण (Standard Medical Disclaimer)</span>
+            </div>
+            <p>
+              <strong>हिंदी हेल्थ गाइड (hindihealthguide.org)</strong> पर प्रकाशित सभी लेख, गाइड एवं सामग्रियां केवल जन-स्वास्थ्य जागरूकता, स्वास्थ्य साक्षरता तथा सामान्य ज्ञानवर्धन के उद्देश्य से प्रदान की जाती हैं। यह सामग्री किसी भी रूप में किसी योग्य एवं पंजीकृत चिकित्सक (Registered Medical Practitioner/Doctor) के व्यक्तिगत चिकित्सीय परामर्श, क्लिनिकल निदान अथवा उपचार का विकल्प नहीं है। किसी भी शारीरिक या मानसिक स्वास्थ्य समस्या, लक्षण अथवा दवा सेवन से पहले अपने निकटतम चिकित्सक से प्रत्यक्ष सलाह अवश्य लें। हमारा संपादकीय बोर्ड विश्व स्वास्थ्य संगठन (WHO), राष्ट्रीय एड्स नियंत्रण संगठन (NACO) तथा भारतीय स्वास्थ्य मंत्रालय (MoHFW) के क्लिनिकल दिशानिर्देशों का कड़ाई से पालन करता है।
+            </p>
+          </div>
+
+          <div className="w-full max-w-full mt-6 pt-6 border-t border-slate-800 text-center text-xs text-slate-400">
             &copy; {new Date().getFullYear()} हिंदी हेल्थ गाइड (दरभंगा डिजिटल नेटवर्क) — आधिकारिक ईमेल: <a href="mailto:info@hindihealthguide.org" className="text-emerald-400 hover:underline">info@hindihealthguide.org</a> — सर्वाधिकार सुरक्षित।
           </div>
+
         </div>
       </footer>
 
@@ -493,6 +516,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
+      {/* Real-time Network Connectivity & Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }
+

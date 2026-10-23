@@ -2,8 +2,9 @@ import React from 'react';
 import { HomePage } from '../src/views/HomePage';
 import { getAllServerArticles } from '../src/lib/serverArticles';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Incremental Static Regeneration (ISR): cached for instant millisecond delivery
+export const revalidate = 60;
+
 
 export default function Page() {
   const articles = getAllServerArticles();

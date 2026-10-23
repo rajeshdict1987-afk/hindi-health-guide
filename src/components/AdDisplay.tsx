@@ -2,22 +2,53 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Advertisement } from '../types/ad';
-import { getStoredAds } from '../lib/store';
+import { Advertisement, AdSenseSettings, DEFAULT_ADSENSE_SETTINGS } from '../types/ad';
+import { getStoredAds, getStoredAdSenseSettings } from '../lib/store';
 import { ExternalLink, Megaphone } from 'lucide-react';
 
 interface AdDisplayProps {
-  position: 'footer' | 'bottom' | 'mid' | 'article-sidebar' | 'article-inline';
+  position: 'footer' | 'bottom' | 'mid' | 'article-sidebar' | 'article-inline' | 'header';
   className?: string;
 }
 
 export function AdDisplay({ position, className = '' }: AdDisplayProps) {
   const [ads, setAds] = useState<Advertisement[]>([]);
+  const [adSense, setAdSense] = useState<AdSenseSettings>(DEFAULT_ADSENSE_SETTINGS);
 
   useEffect(() => {
     const allAds = getStoredAds();
     setAds(allAds.filter(ad => ad.active && ad.position === position));
+    setAdSense(getStoredAdSenseSettings());
   }, [position]);
+
+  // Check if there is an AdSense code configured for this position
+  const getAdSenseSnippet = () => {
+    if (!adSense.adSenseEnabled) return null;
+    if (position === 'header' && (adSense.customHeaderCode || adSense.headerSlot)) {
+      return adSense.customHeaderCode || `<!-- Google AdSense Header Slot: ${adSense.headerSlot} -->`;
+    }
+    if ((position === 'article-inline' || position === 'mid') && (adSense.customInArticleCode || adSense.inArticleSlot)) {
+      return adSense.customInArticleCode || `<!-- Google AdSense In-Article Slot: ${adSense.inArticleSlot} -->`;
+    }
+    if ((position === 'article-sidebar' || position === 'bottom') && (adSense.customSidebarCode || adSense.sidebarSlot)) {
+      return adSense.customSidebarCode || `<!-- Google AdSense Sidebar Slot: ${adSense.sidebarSlot} -->`;
+    }
+    return null;
+  };
+
+  const adSenseSnippet = getAdSenseSnippet();
+
+  if (adSenseSnippet) {
+    return (
+      <div className={`not-prose my-6 p-3 bg-stone-100 rounded-2xl border border-stone-200 text-center ${className}`}>
+        <div className="text-[10px] uppercase font-bold text-stone-500 mb-2 tracking-wider flex items-center justify-center gap-1">
+          <Megaphone className="w-3 h-3 text-rose-500" />
+          <span>विज्ञापन (Advertisement)</span>
+        </div>
+        <div dangerouslySetInnerHTML={{ __html: adSenseSnippet }} />
+      </div>
+    );
+  }
 
   if (ads.length === 0) return null;
 
@@ -38,6 +69,7 @@ export function AdDisplay({ position, className = '' }: AdDisplayProps) {
               src={ad.imageUrl}
               alt={ad.title}
               fill
+              sizes="(max-width: 640px) 100vw, 176px"
               className="object-cover group-hover:scale-105 transition duration-500"
               referrerPolicy="no-referrer"
             />

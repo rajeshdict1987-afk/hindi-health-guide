@@ -4,8 +4,9 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/?source=pwa',
     name: 'हिंदी हेल्थ गाइड - Hindi Health Guide',
-    short_name: 'हिंदी हेल्थ गाइड',
+    short_name: 'हेल्थ गाइड',
     description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच।',
+
     lang: 'hi',
     dir: 'ltr',
     start_url: '/',
