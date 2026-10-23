@@ -2,118 +2,61 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    id: '/?source=pwa',
-    name: 'हिंदी हेल्थ गाइड - Hindi Health Guide',
-    short_name: 'हेल्थ गाइड',
-    description: 'भारत में वैज्ञानिक, प्रमाण-आधारित यौन एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाला समर्पित हिंदी मंच।',
-
-    lang: 'hi',
-    dir: 'ltr',
+    name: 'हिंदी हेल्थ गाइड',
+    short_name: 'हिंदी हेल्थ',
+    description: 'भारत में वैज्ञानिक, प्रमाण-आधारित योग एवं प्रजनन स्वास्थ्य शिक्षा प्रदान करने वाली समर्पित हिंदी मंश.',
     start_url: '/',
-    scope: '/',
     display: 'standalone',
-    display_override: ['standalone', 'browser'],
+    background_color: '#ffffff',
+    theme_color: '#0F172A',
     orientation: 'portrait-primary',
-    theme_color: '#0f766e',
-    background_color: '#FFFFFF',
-    categories: ['health', 'medical', 'lifestyle'],
-    prefer_related_applications: false,
-    related_applications: [],
-    file_handlers: [],
-    protocol_handlers: [],
-    share_target: {
-      action: '/share-target/',
-      method: 'GET',
-      params: {
-        title: 'title',
-        text: 'text',
-        url: 'url',
-      },
-    },
-    iarc_rating_id: '',
-    widgets: [],
-    note_taking: {
-      new_note_url: '/note/new',
-    },
-    scope_extensions: [],
-
+    dir: 'ltr',
+    lang: 'hi',
+    scope: '/',
+    categories: ['health', 'education', 'news'],
     icons: [
       {
-        src: '/icon-192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/icon-512.png',
+        src: '/icons/icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/icon-512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
+        purpose: 'any maskable' as any,
       },
     ],
     screenshots: [
       {
-        src: '/screenshot-desktop.png',
-        sizes: '1280x720',
+        src: '/icons/screenshot-1.png',
+        sizes: '1080x1920',
         type: 'image/png',
-        form_factor: 'wide',
-        label: 'हिंदी हेल्थ गाइड - डेस्कटॉप पोर्टल (Hindi Health Guide Desktop Portal)',
-      },
-      {
-        src: '/screenshot-mobile.png',
-        sizes: '750x1334',
-        type: 'image/png',
-        form_factor: 'narrow',
-        label: 'हिंदी हेल्थ गाइड - मोबाइल ऐप (Hindi Health Guide Mobile App)',
+        form_factor: 'narrow' as any,
+        label: 'Home Screen of Hindi Health Guide',
       },
     ],
     shortcuts: [
       {
-        name: 'त्वरित स्वास्थ्य टिप्स',
-        short_name: 'हेल्थ टिप्स',
-        description: 'दैनिक प्रमाणित स्वास्थ्य व सुरक्षा सुझाव',
-        url: '/#tips',
-        icons: [
-          {
-            src: '/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-        ],
+        name: 'होम पेज',
+        url: '/',
+        icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }],
       },
+    ],
+    launch_handler: {
+      client_mode: 'navigate-existing',
+    },
+    edge_side_panel: {
+      preferred_width: 400,
+    },
+    prefer_related_applications: false,
+    related_applications: [],
+    iarc_rating_id: 'urn:content-rating:deriva.org:rating-system:1.0',
+    file_handlers: [],
+    protocol_handlers: [],
+    widgets: [],
+    note_taking: {
+      new_note_url: '/',
+    },
+    scope_extensions: [
       {
-        name: 'ताजा स्वास्थ्य समाचार व लेख',
-        short_name: 'नवीनतम लेख',
-        description: 'नवीनतम क्लिनिकल लेख एवं गाइड',
-        url: '/#articles',
-        icons: [
-          {
-            src: '/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-        ],
-      },
-      {
-        name: 'शीर्ष स्वास्थ्य श्रेणियां',
-        short_name: 'श्रेणियां',
-        description: 'प्रजनन स्वास्थ्य एवं यौन शिक्षा श्रेणियां',
-        url: '/#categories',
-        icons: [
-          {
-            src: '/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-        ],
+        origin: 'https://hindilhealthguide.org',
       },
     ],
   } as MetadataRoute.Manifest;
 }
-
