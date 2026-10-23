@@ -22,41 +22,19 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any maskable' as any,
       },
     ],
-    screenshots: [
-      {
-        src: '/icons/screenshot-1.png',
-        sizes: '1080x1920',
-        type: 'image/png',
-        form_factor: 'narrow' as any,
-        label: 'Home Screen of Hindi Health Guide',
-      },
-    ],
     shortcuts: [
       {
         name: 'होम पेज',
         url: '/',
-        icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }],
+        icons: [
+          {
+            src: '/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+        ],
       },
     ],
-    launch_handler: {
-      client_mode: 'navigate-existing',
-    },
-    edge_side_panel: {
-      preferred_width: 400,
-    },
     prefer_related_applications: false,
-    related_applications: [],
-    iarc_rating_id: 'urn:content-rating:deriva.org:rating-system:1.0',
-    file_handlers: [],
-    protocol_handlers: [],
-    widgets: [],
-    note_taking: {
-      new_note_url: '/',
-    },
-    scope_extensions: [
-      {
-        origin: 'https://hindilhealthguide.org',
-      },
-    ],
-  } as MetadataRoute.Manifest;
+  };
 }
