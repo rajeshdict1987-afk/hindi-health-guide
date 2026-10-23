@@ -1,0 +1,26 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "हिंदी हेल्थ गाइड - दैनिक स्वास्थ्य सुझाव",
+      "weight": "Bolder",
+      "size": "Medium",
+      "color": "Accent"
+    },
+    {
+      "type": "TextBlock",
+      "text": "विश्व स्वास्थ्य संगठन (WHO) व राष्ट्रीय एड्स नियंत्रण संगठन (NACO) के मानकों पर आधारित प्रमाणित जानकारी।",
+      "wrap": true,
+      "size": "Small"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "गाइड पढ़ें",
+      "url": "https://hindihealthguide.org"
+    }
+  ]
+}

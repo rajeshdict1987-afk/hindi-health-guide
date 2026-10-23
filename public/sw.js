@@ -143,3 +143,74 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// Background Sync support (PWABuilder capability)
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-health-articles') {
+    event.waitUntil(
+      caches.open(DYNAMIC_CACHE).then((cache) => {
+        return fetch('/api/articles').then((res) => {
+          if (res && res.status === 200) {
+            return cache.put('/api/articles', res);
+          }
+        });
+      }).catch(() => {})
+    );
+  }
+});
+
+// Periodic Background Sync (PWABuilder capability)
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'daily-health-update') {
+    event.waitUntil(
+      caches.open(DYNAMIC_CACHE).then((cache) => {
+        return fetch('/api/articles').then((res) => {
+          if (res && res.status === 200) {
+            return cache.put('/api/articles', res);
+          }
+        });
+      }).catch(() => {})
+    );
+  }
+});
+
+// Push Notification event listener (PWABuilder capability)
+self.addEventListener('push', (event) => {
+  let title = 'हिंदी हेल्थ गाइड';
+  let body = 'नवीनतम स्वास्थ्य सुझाव उपलब्ध हैं।';
+  let url = '/';
+  try {
+    if (event.data) {
+      const data = event.data.json();
+      title = data.title || title;
+      body = data.body || body;
+      url = data.url || url;
+    }
+  } catch {}
+
+  const options = {
+    body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/favicon.png',
+    data: { url }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      const urlToOpen = event.notification.data?.url || '/';
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
