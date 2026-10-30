@@ -14,7 +14,7 @@ import { ClinicalReviewerBadge } from '../components/ClinicalReviewerBadge';
 import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 
 interface ArticlePageProps {
@@ -70,8 +70,8 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
       if (found) {
         setArticle(found);
         setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
-      } else {
-        // Fallback to Firestore if needed
+      } else if (isFirebaseConfigured && db) {
+        // Fallback to Firestore if needed and configured
         getDoc(doc(db, 'articles', slug))
           .then((docSnap) => {
             if (docSnap.exists()) {

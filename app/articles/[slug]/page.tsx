@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
 import { INITIAL_ARTICLES } from '../../../src/data/initialArticles';
 import { ArticlePage } from '../../../src/views/ArticlePage';
 import { Article } from '../../../src/types/article';
@@ -24,14 +24,16 @@ export async function getArticleData(slugParam: string): Promise<Article | undef
   const serverArt = getServerArticleBySlug(slugParam);
   if (serverArt) return serverArt;
 
-  // 2. यदि फ़ायरस्टोर में मौजूद हो
-  try {
-    const docRef = doc(db, 'articles', slugParam);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      return docSnap.data() as Article;
-    }
-  } catch {}
+  // 2. यदि फ़ायरस्टोर में मौजूद हो (केवल जब Firebase सक्रिय हो)
+  if (isFirebaseConfigured && db) {
+    try {
+      const docRef = doc(db, 'articles', slugParam);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data() as Article;
+      }
+    } catch {}
+  }
 
   // 3. फ़ॉलबैक: INITIAL_ARTICLES
   const decoded = decodeURIComponent(slugParam).trim();

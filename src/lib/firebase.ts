@@ -1,1 +1,1 @@
-export { db, storage, auth, default } from '../../lib/firebase';
+export { db, storage, auth, isFirebaseConfigured, default } from '../../lib/firebase';

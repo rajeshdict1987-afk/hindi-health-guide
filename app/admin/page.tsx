@@ -51,7 +51,7 @@ import { validateArticleSchema } from '@/src/types/firestore';
 import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth';
-import { db, storage, auth } from '@/lib/firebase';
+import { db, storage, auth, isFirebaseConfigured } from '@/lib/firebase';
 import { compressAndConvertToWebP } from '@/lib/imageOptimizer';
 
 export default function AdminPage() {
@@ -114,12 +114,14 @@ export default function AdminPage() {
         setIsAuthenticated(true);
       }
 
-      // 2. Firebase Auth state listener
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user && hasSession) {
-          setIsAuthenticated(true);
-        }
-      });
+      // 2. Firebase Auth state listener (if configured)
+      const unsubscribe = (isFirebaseConfigured && auth)
+        ? onAuthStateChanged(auth, (user) => {
+            if (user && hasSession) {
+              setIsAuthenticated(true);
+            }
+          })
+        : () => {};
 
       // 3. Load initial data
       const localArticles = getStoredArticles();
@@ -141,16 +143,18 @@ export default function AdminPage() {
         })
         .catch(() => {});
 
-      // Fetch AdSense settings from Firestore if saved
-      getDoc(doc(db, 'siteSettings', 'ads'))
-        .then((snap) => {
-          if (snap.exists()) {
-            const data = snap.data() as AdSenseSettings;
-            setAdSenseForm(prev => ({ ...prev, ...data }));
-            saveStoredAdSenseSettings({ ...DEFAULT_ADSENSE_SETTINGS, ...data });
-          }
-        })
-        .catch(() => {});
+      // Fetch AdSense settings from Firestore if saved and active
+      if (isFirebaseConfigured && db) {
+        getDoc(doc(db, 'siteSettings', 'ads'))
+          .then((snap) => {
+            if (snap.exists()) {
+              const data = snap.data() as AdSenseSettings;
+              setAdSenseForm(prev => ({ ...prev, ...data }));
+              saveStoredAdSenseSettings({ ...DEFAULT_ADSENSE_SETTINGS, ...data });
+            }
+          })
+          .catch(() => {});
+      }
 
       return () => unsubscribe();
     } catch (e) {
@@ -171,10 +175,12 @@ export default function AdminPage() {
       return;
     }
     if (loginPin.trim() === '8492') {
-      try {
-        await signInAnonymously(auth);
-      } catch (authErr) {
-        console.warn('Firebase Auth anonymous login note:', authErr);
+      if (isFirebaseConfigured && auth) {
+        try {
+          await signInAnonymously(auth);
+        } catch (authErr) {
+          console.warn('Firebase Auth anonymous login note:', authErr);
+        }
       }
       setIsAuthenticated(true);
       sessionStorage.setItem('admin_auth', 'true');
@@ -189,9 +195,13 @@ export default function AdminPage() {
   };
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch {}
+    if (isFirebaseConfigured && auth) {
+      try {
+        await signOut(auth);
+      } catch (e) {
+        console.warn('Sign out note:', e);
+      }
+    }
     sessionStorage.removeItem('admin_auth');
     sessionStorage.removeItem('admin_email');
     sessionStorage.removeItem('admin_name');
@@ -227,6 +237,12 @@ export default function AdminPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!isFirebaseConfigured || !storage) {
+      showNotification('Firebase Storage सक्रिय नहीं है। कृपया इमेज का सीधा वेब URL दर्ज करें।');
+      e.target.value = '';
+      return;
+    }
+
     setIsUploadingImage(true);
     showNotification('इमेज को ऑप्टिमाइज़ और WebP (<200KB) में कंप्रेस किया जा रहा है...');
 
@@ -256,7 +272,7 @@ export default function AdminPage() {
       showNotification('इमेज सफलतापूर्वक कंप्रेस होकर WebP फॉर्मेट (<200KB) में Firebase Storage में अपलोड हो गई!');
     } catch (error) {
       console.error("Upload Error:", error);
-      alert('इमेज अपलोड करने में विफल! कृपया इंटरनेट कनेक्शन व अनुमतियाँ जांचें।');
+      showNotification('इमेज अपलोड करने में विफल! कृपया सीधा वेब URL दर्ज करें।');
     } finally {
       setIsUploadingImage(false);
       // Reset input value
@@ -268,6 +284,12 @@ export default function AdminPage() {
   async function handleInlineImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!isFirebaseConfigured || !storage) {
+      showNotification('Firebase Storage सक्रिय नहीं है। कृपया इमेज का सीधा वेब URL उपयोग करें।');
+      if (inlineFileInputRef.current) inlineFileInputRef.current.value = '';
+      return;
+    }
 
     setIsUploadingInline(true);
     showNotification('इनलाइन इमेज को WebP (<200KB) में कंप्रेस व अपलोड किया जा रहा है...');
@@ -291,7 +313,7 @@ export default function AdminPage() {
       showNotification('इनलाइन इमेज सफलतापूर्वक आर्टिकल में जोड़ दी गई!');
     } catch (err) {
       console.error('Inline image upload error:', err);
-      alert('इनलाइन इमेज अपलोड करने में त्रुटि!');
+      showNotification('इनलाइन इमेज अपलोड करने में त्रुटि!');
     } finally {
       setIsUploadingInline(false);
       if (inlineFileInputRef.current) inlineFileInputRef.current.value = '';
@@ -430,15 +452,17 @@ export default function AdminPage() {
       setArticles(updated);
       saveStoredArticles(updated);
 
-      // 2. Background Firestore sync
-      try {
-        const docRef = doc(db, 'articles', newArticle.slug);
-        setDoc(docRef, {
-          ...newArticle,
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch((err) => console.warn('Firestore sync note:', err));
-      } catch (e) {
-        console.warn('Firestore sync note:', e);
+      // 2. Background Firestore sync (optional if active)
+      if (isFirebaseConfigured && db) {
+        try {
+          const docRef = doc(db, 'articles', newArticle.slug);
+          setDoc(docRef, {
+            ...newArticle,
+            updatedAt: new Date().toISOString()
+          }, { merge: true }).catch((err) => console.warn('Firestore sync note:', err));
+        } catch (e) {
+          console.warn('Firestore sync note:', e);
+        }
       }
 
       setEditingArticleId(null);
@@ -520,7 +544,7 @@ export default function AdminPage() {
         })
         .catch((err) => console.warn('Server article delete note:', err));
 
-      if (targetArt?.slug) {
+      if (targetArt?.slug && isFirebaseConfigured && db) {
         try {
           deleteDoc(doc(db, 'articles', targetArt.slug)).catch(() => {});
         } catch {}
@@ -558,10 +582,12 @@ export default function AdminPage() {
     setAds(updated);
     saveStoredAds(updated);
 
-    // Sync to Firestore
-    try {
-      setDoc(doc(db, 'advertisements', updatedAd.id), updatedAd, { merge: true }).catch(() => {});
-    } catch {}
+    // Sync to Firestore (optional if active)
+    if (isFirebaseConfigured && db) {
+      try {
+        setDoc(doc(db, 'advertisements', updatedAd.id), updatedAd, { merge: true }).catch(() => {});
+      } catch {}
+    }
 
     setEditingAdId(null);
     setAdForm({
@@ -593,9 +619,11 @@ export default function AdminPage() {
       const updated = ads.filter(ad => ad.id !== id);
       setAds(updated);
       saveStoredAds(updated);
-      try {
-        deleteDoc(doc(db, 'advertisements', id)).catch(() => {});
-      } catch {}
+      if (isFirebaseConfigured && db) {
+        try {
+          deleteDoc(doc(db, 'advertisements', id)).catch(() => {});
+        } catch {}
+      }
       showNotification('विज्ञापन हटा दिया गया है।');
     }
   };
@@ -605,13 +633,15 @@ export default function AdminPage() {
     e.preventDefault();
     saveStoredAdSenseSettings(adSenseForm);
 
-    try {
-      await setDoc(doc(db, 'siteSettings', 'ads'), {
-        ...adSenseForm,
-        updatedAt: new Date().toISOString(),
-      }, { merge: true });
-    } catch (err) {
-      console.warn('Firestore AdSense save note:', err);
+    if (isFirebaseConfigured && db) {
+      try {
+        await setDoc(doc(db, 'siteSettings', 'ads'), {
+          ...adSenseForm,
+          updatedAt: new Date().toISOString(),
+        }, { merge: true });
+      } catch (err) {
+        console.warn('Firestore AdSense save note:', err);
+      }
     }
 
     showNotification('Google AdSense सेटिंग्स सफलतापूर्वक सुरक्षित कर दी गईं!');

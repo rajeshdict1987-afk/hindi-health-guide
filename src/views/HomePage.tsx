@@ -34,7 +34,7 @@ import { AdDisplay } from '../components/AdDisplay';
 import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 const getCleanAuthorName = (name?: string): string => {
   return (name || 'राजेश कुमार साहू')
@@ -180,27 +180,29 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
       })
       .catch(() => {});
 
-    // 3. Direct Firestore fetch fallback
-    getDocs(collection(db, 'articles'))
-      .then((snapshot) => {
-        if (!snapshot.empty) {
-          const remoteArticles: Article[] = [];
-          snapshot.forEach((d) => {
-            const data = d.data() as Article;
-            if (data && data.title && data.slug) {
-              remoteArticles.push(data);
-            }
-          });
-          if (remoteArticles.length > 0) {
-            setArticles((prev) => {
-              const merged = mergeArticles(prev, remoteArticles);
-              saveStoredArticles(merged);
-              return merged;
+    // 3. Direct Firestore fetch fallback (only if Firebase is active)
+    if (isFirebaseConfigured && db) {
+      getDocs(collection(db, 'articles'))
+        .then((snapshot) => {
+          if (!snapshot.empty) {
+            const remoteArticles: Article[] = [];
+            snapshot.forEach((d) => {
+              const data = d.data() as Article;
+              if (data && data.title && data.slug) {
+                remoteArticles.push(data);
+              }
             });
+            if (remoteArticles.length > 0) {
+              setArticles((prev) => {
+                const merged = mergeArticles(prev, remoteArticles);
+                saveStoredArticles(merged);
+                return merged;
+              });
+            }
           }
-        }
-      })
-      .catch(() => {});
+        })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { SITE_CONFIG } from '../src/config/site-config';
 import { getAllServerArticles } from '../src/lib/serverArticles';
 import { collection, getDocs, query, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_CONFIG.productionUrl;
@@ -81,24 +81,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Fetch dynamic slugs from Firestore
-  try {
-    const articlesCol = collection(db, 'articles');
-    const q = query(articlesCol, limit(200));
-    const snapshot = await getDocs(q);
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      const slug = data.slug || doc.id;
-      if (slug && data.status !== 'draft' && data.status !== 'archived') {
-        const lastMod = data.updatedAt ? new Date(data.updatedAt) : new Date();
-        articleMap.set(slug, {
-          slug,
-          updatedAt: isNaN(lastMod.getTime()) ? new Date() : lastMod,
-        });
-      }
-    });
-  } catch (err) {
-    console.warn('Sitemap Firestore query note:', err);
+  // Fetch dynamic slugs from Firestore (only if configured)
+  if (isFirebaseConfigured && db) {
+    try {
+      const articlesCol = collection(db, 'articles');
+      const q = query(articlesCol, limit(200));
+      const snapshot = await getDocs(q);
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const slug = data.slug || doc.id;
+        if (slug && data.status !== 'draft' && data.status !== 'archived') {
+          const lastMod = data.updatedAt ? new Date(data.updatedAt) : new Date();
+          articleMap.set(slug, {
+            slug,
+            updatedAt: isNaN(lastMod.getTime()) ? new Date() : lastMod,
+          });
+        }
+      });
+    } catch (err) {
+      console.warn('Sitemap Firestore query note:', err);
+    }
   }
 
   const dynamicArticleRoutes: MetadataRoute.Sitemap = Array.from(articleMap.values()).map((item) => ({
