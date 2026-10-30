@@ -43,6 +43,38 @@ export const DEFAULT_ADS: Advertisement[] = [
   }
 ];
 
+export function mergeArticles(primary: Article[], secondary: Article[]): Article[] {
+  const map = new Map<string, Article>();
+
+  // Helper to get normalized timestamp for sorting
+  const getArticleTime = (a: Article) => {
+    return new Date(a.publishedAt || a.createdAt || a.updatedAt || 0).getTime();
+  };
+
+  // Primary articles take precedence
+  if (Array.isArray(primary)) {
+    for (const a of primary) {
+      if (!a) continue;
+      const key = (a.slug || a.id || '').trim().toLowerCase();
+      if (key) map.set(key, a);
+    }
+  }
+
+  // Secondary articles are added if not already present
+  if (Array.isArray(secondary)) {
+    for (const a of secondary) {
+      if (!a) continue;
+      const key = (a.slug || a.id || '').trim().toLowerCase();
+      if (key && !map.has(key)) {
+        map.set(key, a);
+      }
+    }
+  }
+
+  // Return unique articles sorted newest first
+  return Array.from(map.values()).sort((a, b) => getArticleTime(b) - getArticleTime(a));
+}
+
 export function getStoredArticles(): Article[] {
   if (typeof window === 'undefined') return INITIAL_ARTICLES;
   try {
@@ -56,10 +88,8 @@ export function getStoredArticles(): Article[] {
       localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(INITIAL_ARTICLES));
       return INITIAL_ARTICLES;
     }
-    // If user has fewer articles than initial seeded set, ensure all initial articles are present
-    const existingSlugs = new Set(parsed.map((a: Article) => a.slug));
-    const missing = INITIAL_ARTICLES.filter(a => !existingSlugs.has(a.slug));
-    const merged = [...parsed, ...missing];
+    // Merge stored articles with INITIAL_ARTICLES so none are lost
+    const merged = mergeArticles(parsed, INITIAL_ARTICLES);
 
     // Helper to completely purge any 'गुरु' prefix from editor name or article content
     const purgeGuru = (str: string | undefined): string => {

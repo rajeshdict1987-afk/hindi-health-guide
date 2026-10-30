@@ -29,13 +29,16 @@ import {
   Code2,
   LogOut,
   Sliders,
-  DollarSign
+  DollarSign,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import { Article } from '@/src/types/article';
 import { Advertisement, AdSenseSettings, DEFAULT_ADSENSE_SETTINGS } from '@/src/types/ad';
 import { 
   getStoredArticles, 
   saveStoredArticles, 
+  mergeArticles,
   getStoredAds, 
   saveStoredAds, 
   resetToDefaults,
@@ -96,6 +99,9 @@ export default function AdminPage() {
   const [message, setMessage] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingInline, setIsUploadingInline] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inlineFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -121,13 +127,16 @@ export default function AdminPage() {
       setAds(getStoredAds());
       setAdSenseForm(getStoredAdSenseSettings());
 
-      // Fetch latest articles from server
+      // Fetch latest articles from server and merge non-destructively
       fetch('/api/articles')
         .then((res) => res.json())
         .then((data) => {
           if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-            setArticles(data.articles);
-            saveStoredArticles(data.articles);
+            setArticles((prev) => {
+              const merged = mergeArticles(prev, data.articles);
+              saveStoredArticles(merged);
+              return merged;
+            });
           }
         })
         .catch(() => {});
@@ -305,11 +314,40 @@ export default function AdminPage() {
     showNotification('✨ AI SEO सुझाव (Meta Description, Tags & Slug) सफलतापूर्वक जनरेट हो गए!');
   };
 
-  // Save Article
-  const handleSaveArticle = (e: React.FormEvent) => {
+  // Manual Sync: Force sync all articles between Client and Server
+  const handleSyncAllToServer = async () => {
+    setIsSyncing(true);
+    showNotification('सर्वर व कैश के साथ सभी आर्टिकल्स सिंक किए जा रहे हैं...');
+    try {
+      const res = await fetch('/api/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sync: true, articles }),
+      });
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.articles)) {
+        const merged = mergeArticles(data.articles, articles);
+        setArticles(merged);
+        saveStoredArticles(merged);
+        showNotification(`✅ सभी ${merged.length} आर्टिकल्स सर्वर व कैश पर सफलतापूर्वक सिंक हो गए!`);
+      } else {
+        throw new Error(data.error || 'सिंक विफल');
+      }
+    } catch (err: any) {
+      console.warn('Sync error:', err);
+      showNotification('⚠️ सर्वर सिंक में समस्या आई, लेकिन आपके स्थानीय आर्टिकल्स सुरक्षित हैं।');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Save Article (Async, Verified, Next.js Cache Revalidated)
+  const handleSaveArticle = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!articleForm.title || !articleForm.content) {
-      alert('कृपया शीर्षक और सामग्री भरें।');
+    setValidationErrors([]);
+
+    if (!articleForm.title.trim() || !articleForm.content.trim()) {
+      setValidationErrors(['कृपया आर्टिकल शीर्षक और मुख्य सामग्री अवश्य भरें।']);
       return;
     }
 
@@ -329,19 +367,19 @@ export default function AdminPage() {
     const newArticle: Article = {
       id: editingArticleId || Date.now().toString(),
       slug,
-      title: articleForm.title,
-      excerpt: articleForm.excerpt || articleForm.title,
-      content: articleForm.content,
+      title: articleForm.title.trim(),
+      excerpt: articleForm.excerpt.trim() || articleForm.title.trim(),
+      content: articleForm.content.trim(),
       category: articleForm.category,
       categoryHindi: selectedCat ? selectedCat.hindiName : 'सामान्य स्वास्थ्य',
-      readTime: articleForm.readTime,
+      readTime: articleForm.readTime || '5 मिनट',
       publishedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       status: 'published',
       author: {
         name: (articleForm.authorName || 'राजेश कुमार साहू').replace(/गुरु\s*/gi, '').replace(/Guru\s*/gi, '').trim() || 'राजेश कुमार साहू',
-        role: articleForm.authorRole
+        role: articleForm.authorRole || 'मुख्य संपादक (Chief Editor)'
       },
       image: {
         url: safeImageUrl,
@@ -350,9 +388,9 @@ export default function AdminPage() {
       seo: {
         title: `${articleForm.title} | हिंदी हेल्थ गाइड`,
         metaDescription: articleForm.excerpt || articleForm.title,
-        keywords: articleForm.tags.split(',').map(t => t.trim())
+        keywords: articleForm.tags.split(',').map(t => t.trim()).filter(Boolean)
       },
-      tags: articleForm.tags.split(',').map(t => t.trim()),
+      tags: articleForm.tags.split(',').map(t => t.trim()).filter(Boolean),
       reviewedBy: {
         name: 'राजेश कुमार साहू',
         credentials: 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक'
@@ -361,66 +399,82 @@ export default function AdminPage() {
 
     const validation = validateArticleSchema(newArticle);
     if (!validation.valid) {
-      alert(`आर्टिकल स्कीमा सत्यापन त्रुटि (Schema Validation Error):\n• ${validation.errors.join('\n• ')}`);
+      setValidationErrors(validation.errors);
       return;
     }
 
-    let updated: Article[];
-    if (editingArticleId) {
-      updated = articles.map(a => a.id === editingArticleId ? newArticle : a);
-    } else {
-      updated = [newArticle, ...articles];
-    }
+    setIsPublishing(true);
+    showNotification('आर्टिकल सर्वर पर प्रकाशित किया जा रहा है...');
 
-    setArticles(updated);
-    saveStoredArticles(updated);
-    
-    // 1. Direct Server API save
-    fetch('/api/articles', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer admin_secret_token'
-      },
-      body: JSON.stringify({ article: newArticle }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.success && Array.isArray(data.articles)) {
-          setArticles(data.articles);
-          saveStoredArticles(data.articles);
-        }
-      })
-      .catch((err) => console.warn('Server article save note:', err));
-
-    // 2. Sync to Firestore
     try {
-      const docRef = doc(db, 'articles', newArticle.slug);
-      setDoc(docRef, {
-        ...newArticle,
-        updatedAt: new Date().toISOString()
-      }, { merge: true }).catch((err) => console.warn('Firestore sync note:', err));
-    } catch (e) {
-      console.warn('Firestore sync note:', e);
-    }
+      // 1. Direct Server API save with cache invalidation
+      const res = await fetch('/api/articles', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer admin_secret_token'
+        },
+        body: JSON.stringify({ article: newArticle }),
+      });
 
-    setEditingArticleId(null);
-    setArticleForm({
-      title: '',
-      slug: '',
-      excerpt: '',
-      content: '',
-      category: SITE_CONFIG.categories[0].slug,
-      categoryHindi: SITE_CONFIG.categories[0].hindiName,
-      readTime: '5 मिनट',
-      authorName: 'राजेश कुमार साहू',
-      authorRole: 'मुख्य संपादक (Chief Editor)',
-      imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
-      imageAlt: '',
-      tags: 'स्वास्थ्य, चिकित्सा'
-    });
-    setEditorMode('write');
-    showNotification('आर्टिकल सफलतापूर्वक सहेज लिया गया!');
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'सर्वर पर प्रकाशित करने में समस्या आई');
+      }
+
+      const serverArticles: Article[] = Array.isArray(data.articles) ? data.articles : [];
+      const updated = editingArticleId
+        ? mergeArticles([newArticle], serverArticles)
+        : mergeArticles([newArticle], serverArticles);
+
+      setArticles(updated);
+      saveStoredArticles(updated);
+
+      // 2. Background Firestore sync
+      try {
+        const docRef = doc(db, 'articles', newArticle.slug);
+        setDoc(docRef, {
+          ...newArticle,
+          updatedAt: new Date().toISOString()
+        }, { merge: true }).catch((err) => console.warn('Firestore sync note:', err));
+      } catch (e) {
+        console.warn('Firestore sync note:', e);
+      }
+
+      setEditingArticleId(null);
+      setArticleForm({
+        title: '',
+        slug: '',
+        excerpt: '',
+        content: '',
+        category: SITE_CONFIG.categories[0].slug,
+        categoryHindi: SITE_CONFIG.categories[0].hindiName,
+        readTime: '5 मिनट',
+        authorName: 'राजेश कुमार साहू',
+        authorRole: 'मुख्य संपादक (Chief Editor)',
+        imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
+        imageAlt: '',
+        tags: 'स्वास्थ्य, चिकित्सा'
+      });
+      setValidationErrors([]);
+      setEditorMode('write');
+      showNotification('✅ आर्टिकल सफलतापूर्वक प्रकाशित हो गया और पोर्टल पर तुरंत लाइव हो गया!');
+    } catch (err: any) {
+      console.error('Publish error:', err);
+      // Fallback: preserve in localStorage immediately so work is never lost
+      const localUpdated = editingArticleId
+        ? articles.map(a => a.id === editingArticleId ? newArticle : a)
+        : [newArticle, ...articles];
+      setArticles(localUpdated);
+      saveStoredArticles(localUpdated);
+
+      setValidationErrors([
+        `चेतावनी: आर्टिकल स्थानीय ब्राउज़र में सहेज लिया गया है, लेकिन सर्वर पर प्रकाशित करने में रुकावट आई: ${err.message || 'नेटवर्क समस्या'}।`,
+        'कृपया नीचे दिए गए "सर्वर से सिंक करें" बटन पर क्लिक करके पुनः प्रयास करें।'
+      ]);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   const handleEditArticle = (art: Article) => {
@@ -771,10 +825,51 @@ export default function AdminPage() {
                     type="text"
                     required
                     value={articleForm.title}
-                    onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      setArticleForm(prev => {
+                        const autoSlug = (!prev.slug || prev.slug.startsWith('article-') || prev.slug === generateCleanSlug(prev.title))
+                          ? generateCleanSlug(newTitle)
+                          : prev.slug;
+                        return { ...prev, title: newTitle, slug: autoSlug };
+                      });
+                    }}
                     placeholder="जैसे: सुरक्षित स्वास्थ्य, लक्षण और बचाव के उपाय"
                     className="w-full p-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-rose-500 focus:outline-none"
                   />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-stone-700">
+                      आर्टिकल URL स्लग (URL Slug in English)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (articleForm.title) {
+                          setArticleForm(prev => ({ ...prev, slug: generateCleanSlug(prev.title) }));
+                        }
+                      }}
+                      className="text-[11px] text-rose-600 font-bold hover:underline"
+                    >
+                      शीर्षक से ऑटो-जनरेट करें
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={articleForm.slug}
+                    onChange={(e) => {
+                      const clean = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+                      setArticleForm({ ...articleForm, slug: clean });
+                    }}
+                    placeholder="जैसे: kabz-ke-gharelu-upay या reproductive-health-guide"
+                    className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs font-mono text-stone-800 focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-stone-500 mt-1 truncate">
+                    🔗 लाइव यूआरएल: <span className="font-mono text-rose-600">https://hindihealthguide.org/articles/{articleForm.slug || 'slug-preview'}</span>
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1036,12 +1131,33 @@ export default function AdminPage() {
                   </div>
                 </div>
 
+                {validationErrors.length > 0 && (
+                  <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-1">
+                    <h5 className="text-xs font-bold text-rose-800">कृपया निम्नलिखित सुधारें:</h5>
+                    <ul className="text-xs text-rose-700 list-disc list-inside space-y-0.5">
+                      {validationErrors.map((err, idx) => (
+                        <li key={idx}>{err}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm"
+                  disabled={isPublishing}
+                  className="w-full bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm"
                 >
-                  <Save className="w-4 h-4" />
-                  <span>{editingArticleId ? 'अपडेट सुरक्षित करें' : 'आर्टिकल तुरंत प्रकाशित करें (Publish)'}</span>
+                  {isPublishing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>आर्टिकल प्रकाशित हो रहा है...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      <span>{editingArticleId ? 'अपडेट सुरक्षित करें' : 'आर्टिकल तुरंत प्रकाशित करें (Publish)'}</span>
+                    </>
+                  )}
                 </button>
               </form>
             </div>
@@ -1049,12 +1165,24 @@ export default function AdminPage() {
             {/* Right 5 Columns: Published Articles List */}
             <div className="lg:col-span-5 space-y-4">
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
-                <h4 className="font-bold text-base text-stone-900 mb-3 flex items-center justify-between">
-                  <span>प्रकाशित स्वास्थ्य आर्टिकल्स</span>
-                  <span className="text-xs bg-rose-100 text-rose-800 font-bold px-2.5 py-0.5 rounded-full">
-                    {articles.length} कुल
-                  </span>
-                </h4>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-base text-stone-900">प्रकाशित स्वास्थ्य आर्टिकल्स</h4>
+                    <span className="text-xs bg-rose-100 text-rose-800 font-bold px-2.5 py-0.5 rounded-full">
+                      {articles.length} कुल
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSyncAllToServer}
+                    disabled={isSyncing}
+                    className="flex items-center gap-1.5 text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl transition disabled:opacity-50"
+                    title="ब्राउज़र और सर्वर डेटाबेस को सिंक करें"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-rose-600' : ''}`} />
+                    <span>{isSyncing ? 'सिंक हो रहा...' : 'सर्वर सिंक'}</span>
+                  </button>
+                </div>
                 <div className="divide-y divide-stone-100 max-h-[750px] overflow-y-auto pr-1 space-y-3">
                   {articles.map((art) => (
                     <div key={art.id} className="pt-3 first:pt-0 flex items-start justify-between gap-3 group">

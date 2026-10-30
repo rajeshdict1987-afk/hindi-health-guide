@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { SITE_CONFIG, CategoryConfig } from '../config/site-config';
 import { Article } from '../types/article';
-import { getStoredArticles } from '../lib/store';
+import { getStoredArticles, mergeArticles } from '../lib/store';
 import { ArrowLeft, Clock, ArrowRight } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
 
@@ -34,12 +34,13 @@ export function CategoryPage({ slug }: CategoryPageProps) {
       setArticles(INITIAL_ARTICLES.filter((a) => normalizedCategory(a.category)));
     }
 
-    // Always fetch latest server articles
+    // Always fetch latest server articles and merge safely
     fetch('/api/articles')
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.articles)) {
-          const freshFiltered = data.articles.filter((a: Article) => normalizedCategory(a.category));
+          const mergedAll = mergeArticles(all, data.articles);
+          const freshFiltered = mergedAll.filter((a: Article) => normalizedCategory(a.category));
           if (freshFiltered.length > 0) {
             setArticles(freshFiltered);
           }

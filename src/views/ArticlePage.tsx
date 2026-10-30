@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Article } from '../types/article';
-import { getStoredArticles } from '../lib/store';
+import { getStoredArticles, mergeArticles } from '../lib/store';
 import { SITE_CONFIG } from '../config/site-config';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, ShieldCheck, Share2, TrendingUp, FolderTree, PhoneCall } from 'lucide-react';
 import { AdDisplay } from '../components/AdDisplay';
@@ -43,14 +43,15 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-          setAllArticles(data.articles);
+          const merged = mergeArticles(all, data.articles);
+          setAllArticles(merged);
           const decodedSlug = decodeURIComponent(slug).trim().toLowerCase();
-          const target = data.articles.find(
+          const target = merged.find(
             (a: Article) => a.slug === slug || a.slug.toLowerCase() === decodedSlug || a.id === slug
           );
           if (target && !article) {
             setArticle(target);
-            setRelatedArticles(data.articles.filter((a: Article) => a.category === target.category && a.id !== target.id).slice(0, 4));
+            setRelatedArticles(merged.filter((a: Article) => a.category === target.category && a.id !== target.id).slice(0, 4));
           }
         }
       })

@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { SITE_CONFIG, CategoryConfig } from '../config/site-config';
 import { Article } from '../types/article';
-import { getStoredArticles } from '../lib/store';
+import { getStoredArticles, saveStoredArticles, mergeArticles } from '../lib/store';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { AdDisplay } from '../components/AdDisplay';
 import AdsterraBanner from '../components/AdsterraBanner';
@@ -147,18 +147,35 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    // 1. Initial local store check
+    // 1. Initial local store check: immediately show local articles
     const loaded = getStoredArticles();
     if (loaded && loaded.length > 0) {
-      setArticles(loaded);
+      setArticles((prev) => mergeArticles(loaded, prev));
     }
 
-    // 2. Fetch fresh server articles via API for instant desktop/mobile synchronization
+    // 2. Fetch fresh server articles via API and merge non-destructively
     fetch('/api/articles')
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-          setArticles(data.articles);
+          setArticles((prev) => {
+            const merged = mergeArticles(prev, data.articles);
+            saveStoredArticles(merged);
+            return merged;
+          });
+
+          // If local has articles missing on server, auto-sync them to server store
+          if (loaded && loaded.length > 0) {
+            const serverSlugs = new Set(data.articles.map((a: Article) => a.slug));
+            const unsynced = loaded.filter((a) => a && a.slug && !serverSlugs.has(a.slug));
+            if (unsynced.length > 0) {
+              fetch('/api/articles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sync: true, articles: unsynced }),
+              }).catch(() => {});
+            }
+          }
         }
       })
       .catch(() => {});
@@ -176,10 +193,9 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
           });
           if (remoteArticles.length > 0) {
             setArticles((prev) => {
-              const map = new Map<string, Article>();
-              prev.forEach((a) => map.set(a.slug, a));
-              remoteArticles.forEach((a) => map.set(a.slug, a));
-              return Array.from(map.values());
+              const merged = mergeArticles(prev, remoteArticles);
+              saveStoredArticles(merged);
+              return merged;
             });
           }
         }

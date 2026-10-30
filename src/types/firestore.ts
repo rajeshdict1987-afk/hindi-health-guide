@@ -119,31 +119,31 @@ export function isFirestoreArticleDoc(obj: unknown): obj is FirestoreArticleDoc 
 export function validateArticleSchema(data: unknown): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   if (!data || typeof data !== 'object') {
-    return { valid: false, errors: ['डाटा एक ऑब्जेक्ट होना चाहिए (Data must be an object)'] };
+    return { valid: false, errors: ['डाटा अमान्य है (Data must be an object)'] };
   }
 
   const art = data as Record<string, unknown>;
 
   if (typeof art.id !== 'string' || art.id.length === 0 || art.id.length > 128) {
-    errors.push('id must be a string between 1 and 128 characters');
+    errors.push('आर्टिकल ID 1 से 128 अक्षरों के बीच होनी चाहिए (ID must be between 1 and 128 characters)');
   }
-  if (typeof art.title !== 'string' || art.title.length < 5 || art.title.length > 300) {
-    errors.push('title must be between 5 and 300 characters');
+  if (typeof art.title !== 'string' || art.title.trim().length < 5 || art.title.length > 300) {
+    errors.push('आर्टिकल शीर्षक (Title) कम से कम 5 अक्षरों का होना चाहिए');
   }
   if (typeof art.slug !== 'string' || !/^(?=.*[a-z0-9])[a-z0-9-]+$/.test(art.slug) || art.slug.length < 3 || art.slug.length > 160) {
-    errors.push('slug must be lowercase alphanumeric with hyphens between 3 and 160 characters');
+    errors.push('स्लग (Slug) केवल छोटे अंग्रेज़ी अक्षरों (a-z), अंकों (0-9) और हाइफ़न (-) में होना चाहिए (कम से कम 3 अक्षर)');
   }
-  if (typeof art.excerpt !== 'string' || art.excerpt.length > 600) {
-    errors.push('excerpt must be a string with maximum 600 characters');
+  if (typeof art.excerpt !== 'string' || art.excerpt.length > 1000) {
+    errors.push('संक्षिप्त सारांश (Excerpt) अधिकतम 1000 अक्षरों का हो सकता है');
   }
-  if (typeof art.content !== 'string' || art.content.length < 50 || art.content.length > 50000) {
-    errors.push('content must be between 50 and 50,000 characters');
+  if (typeof art.content !== 'string' || art.content.trim().length < 30 || art.content.length > 100000) {
+    errors.push('आर्टिकल सामग्री (Content) कम से कम 30 अक्षरों की होनी चाहिए');
   }
   if (typeof art.categorySlug !== 'string' && typeof art.category !== 'string') {
-    errors.push('categorySlug/category must be specified');
+    errors.push('श्रेणी (Category) चुनना अनिवार्य है');
   }
-  if (!['draft', 'published', 'archived'].includes(art.status as string)) {
-    errors.push("status must be 'draft', 'published', or 'archived'");
+  if (art.status && !['draft', 'published', 'archived'].includes(art.status as string)) {
+    errors.push("स्थिति (Status) केवल 'draft', 'published', या 'archived' हो सकती है");
   }
 
   return {
