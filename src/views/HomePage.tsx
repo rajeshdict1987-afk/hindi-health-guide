@@ -390,8 +390,8 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                   key={slide.id}
                   className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center transition-all duration-700 ease-in-out ${
                     isActive 
-                      ? 'opacity-100 relative z-10 pointer-events-auto translate-x-0' 
-                      : 'opacity-0 absolute inset-0 z-0 pointer-events-none -translate-x-4'
+                      ? 'opacity-100 relative z-10 pointer-events-auto translate-x-0 visible' 
+                      : 'opacity-0 absolute inset-0 z-0 pointer-events-none -translate-x-4 invisible'
                   }`}
                   aria-hidden={!isActive}
                 >

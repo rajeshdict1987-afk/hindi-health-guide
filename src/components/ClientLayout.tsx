@@ -188,15 +188,15 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Categories Bar (Desktop) with Home as first item */}
-        <nav className="hidden md:flex items-center justify-center gap-1 bg-emerald-50/40 border-t border-emerald-100 px-3 sm:px-6 py-2.5 overflow-x-auto text-sm w-full max-w-full">
+        {/* Categories Bar (Desktop & Desktop Mode) with Home as first item */}
+        <nav className="hidden md:flex items-center justify-start xl:justify-center gap-1.5 lg:gap-2 bg-emerald-50/50 border-t border-emerald-100 px-3 sm:px-6 py-2 overflow-x-auto text-xs lg:text-sm w-full max-w-full scroll-smooth">
           <Link
             href="/"
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition whitespace-nowrap shrink-0 ${
               pathname === '/' ? 'bg-teal-700 text-white shadow-xs' : 'text-slate-700 hover:bg-emerald-100/70'
             }`}
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-4 h-4 shrink-0" />
             <span>होम</span>
           </Link>
           {SITE_CONFIG.categories.map((cat) => {
@@ -205,12 +205,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition whitespace-nowrap shrink-0 ${
                   isActive ? 'bg-teal-700 text-white shadow-xs' : 'text-slate-700 hover:bg-emerald-100/70'
                 }`}
               >
-                {getCategoryIcon(cat.icon)}
-                <span>{cat.hindiName}</span>
+                <span className="shrink-0">{getCategoryIcon(cat.icon)}</span>
+                <span className="shrink-0">{cat.hindiName}</span>
               </Link>
             );
           })}
