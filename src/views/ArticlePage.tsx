@@ -144,7 +144,8 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
     </div>
   );
 
-  // Balanced, Even In-Article Ad Insertion Engine
+  // Balanced, Non-destructive In-Article Ad & Content Renderer
+  // Supports short articles up to 3,000+ words long-form articles without ANY truncation
   const renderMilestoneContent = (rawHtmlContent: string) => {
     if (!rawHtmlContent) return null;
 
@@ -155,62 +156,34 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
       .replace(/Guru\s*Rajesh\s*Kumar\s*Sahu/gi, 'Rajesh Kumar Sahu')
       .replace(/Guru\s*Rajesh/gi, 'Rajesh');
 
-    const countWords = (text: string) =>
-      text.replace(/<[^>]*>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
-
-    const totalWords = countWords(htmlContent);
     const isHtml = /<[a-z][\s\S]*>/i.test(htmlContent);
 
     // =========================================================================
-    // BRANCH A: Plain text content (paragraphs separated by double newlines)
+    // BRANCH A: Plain text (not wrapped in HTML)
     // =========================================================================
     if (!isHtml) {
-      const paras = htmlContent
-        .split(/\n\s*\n/)
-        .map(p => p.trim())
-        .filter(p => p.length > 0);
-
+      const rawParas = htmlContent.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      const paras = rawParas.length > 1 ? rawParas : htmlContent.split(/\n+/).map(p => p.trim()).filter(Boolean);
       const totalParas = paras.length;
 
-      // If short article (< 4 paragraphs), no in-between ads (only bottom ad)
-      if (totalParas <= 3) {
-        return (
-          <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6">
-            {paras.map((para, idx) => (
-              <div key={idx}>{para}</div>
-            ))}
-            <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
-              <AdsterraNative />
-            </div>
-          </div>
-        );
-      }
-
-      // Distribute max 2 or 3 ads evenly across paragraphs:
-      // Minimum gap: at least 3 full paragraphs between ads
-      const targetAdCount = totalParas >= 9 ? 3 : 2;
-      const targetPositions = targetAdCount === 3
-        ? [Math.max(2, Math.floor(totalParas * 0.25)), Math.floor(totalParas * 0.55), Math.floor(totalParas * 0.8)]
-        : [Math.max(2, Math.floor(totalParas * 0.35)), Math.floor(totalParas * 0.7)];
-
-      // Ensure strict gap of at least 2-3 paragraphs between positions
-      const validPositions: number[] = [];
-      let lastPos = -999;
-      for (const pos of targetPositions) {
-        if (pos - lastPos >= 3 && pos < totalParas - 1) {
-          validPositions.push(pos);
-          lastPos = pos;
-        }
+      // Distribute ads across paragraphs for long articles (up to 3000 words)
+      const adPositions: number[] = [];
+      if (totalParas >= 12) {
+        adPositions.push(Math.floor(totalParas * 0.25), Math.floor(totalParas * 0.55), Math.floor(totalParas * 0.8));
+      } else if (totalParas >= 7) {
+        adPositions.push(Math.floor(totalParas * 0.35), Math.floor(totalParas * 0.7));
+      } else if (totalParas >= 4) {
+        adPositions.push(Math.floor(totalParas * 0.5));
       }
 
       return (
-        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6">
+        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed space-y-6">
           {paras.map((para, idx) => (
             <React.Fragment key={idx}>
-              <div>{para}</div>
-              {validPositions[0] === idx && <InArticleBanner1 />}
-              {validPositions[1] === idx && (validPositions.length === 3 ? <InArticleNative /> : <InArticleBanner2 />)}
-              {validPositions[2] === idx && <InArticleBanner2 />}
+              <p className="text-gray-800 leading-relaxed text-base sm:text-lg">{para}</p>
+              {adPositions[0] === idx && <InArticleBanner1 />}
+              {adPositions[1] === idx && <InArticleNative />}
+              {adPositions[2] === idx && <InArticleBanner2 />}
             </React.Fragment>
           ))}
           <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
@@ -221,67 +194,20 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
     }
 
     // =========================================================================
-    // BRANCH B: HTML formatted articles
+    // BRANCH B: HTML formatted articles (supports 3000+ words seamlessly)
     // =========================================================================
-    
-    // Short article guard (< 250 words): do not cram ads, show only bottom ad
-    if (totalWords < 250) {
-      return (
-        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
-          <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
-            <AdsterraNative />
-          </div>
-        </div>
-      );
-    }
-
-    // Target maximum 2 or 3 in-article ads distributed evenly:
-    // ~25% (First Third), ~55% (Middle), ~80% (Lower Third)
-    let maxAds = 2;
-    let targetPercentages = [0.35, 0.7];
-
-    if (totalWords >= 1000) {
-      maxAds = 3;
-      targetPercentages = [0.25, 0.55, 0.8];
-    } else if (totalWords < 450) {
-      maxAds = 1;
-      targetPercentages = [0.5];
-    }
-
-    // Find all closing </p> positions that are valid insertion boundaries
     const pRegex = /<\/p>/gi;
-    const candidateSplitPoints: number[] = [];
+    const splitIndices: number[] = [];
     let match: RegExpExecArray | null;
 
     while ((match = pRegex.exec(htmlContent)) !== null) {
-      const point = match.index + match[0].length;
-      const prefix = htmlContent.slice(0, point);
-
-      // Rule: Do NOT insert inside lists (<ul>, <ol>, <li>)
-      const lastUlOpen = prefix.lastIndexOf('<ul');
-      const lastUlClose = prefix.lastIndexOf('</ul>');
-      const lastOlOpen = prefix.lastIndexOf('<ol');
-      const lastOlClose = prefix.lastIndexOf('</ol>');
-      const insideList =
-        (lastUlOpen !== -1 && lastUlOpen > lastUlClose) ||
-        (lastOlOpen !== -1 && lastOlOpen > lastOlClose);
-
-      if (insideList) continue;
-
-      // Rule: Do NOT insert immediately before subheadings (<h3>, <h4>)
-      const afterText = htmlContent.slice(point).trim();
-      if (/^<h[34][\s>]/i.test(afterText)) {
-        continue;
-      }
-
-      candidateSplitPoints.push(point);
+      splitIndices.push(match.index + match[0].length);
     }
 
-    // If no <p> tags found, fallback to graceful rendering
-    if (candidateSplitPoints.length < 2) {
+    // If fewer than 4 paragraphs, render entire content in one single complete div
+    if (splitIndices.length < 4) {
       return (
-        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
+        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-gray-800 [&>h3]:mt-6 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:space-y-2 [&>p]:leading-relaxed [&>p]:mb-4">
           <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
           <InArticleBanner1 />
           <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
@@ -291,86 +217,41 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
       );
     }
 
-    // Select optimal split points closest to target percentages
-    // with strict minimum word gap enforcement (at least 250 words between ads,
-    // at least 150 words before first ad, at least 100 words before article end)
-    const MIN_GAP_WORDS = 250;
-    const MIN_FIRST_WORDS = 150;
-    const MIN_REMAINING_WORDS = 100;
-
-    const chosenSplitPoints: number[] = [];
-    let lastWordMarker = 0;
-
-    for (let i = 0; i < maxAds; i++) {
-      const idealWordMark = Math.floor(totalWords * targetPercentages[i]);
-      let bestPoint = -1;
-      let smallestDiff = Infinity;
-
-      for (const pt of candidateSplitPoints) {
-        if (chosenSplitPoints.includes(pt)) continue;
-
-        const wordsUpToPoint = countWords(htmlContent.slice(0, pt));
-        const wordsLeft = totalWords - wordsUpToPoint;
-
-        // Strict constraints:
-        if (wordsUpToPoint < MIN_FIRST_WORDS) continue;
-        if (wordsLeft < MIN_REMAINING_WORDS) continue;
-        if (chosenSplitPoints.length > 0 && wordsUpToPoint - lastWordMarker < MIN_GAP_WORDS) continue;
-
-        const diff = Math.abs(wordsUpToPoint - idealWordMark);
-        if (diff < smallestDiff) {
-          smallestDiff = diff;
-          bestPoint = pt;
-        }
-      }
-
-      if (bestPoint !== -1) {
-        chosenSplitPoints.push(bestPoint);
-        lastWordMarker = countWords(htmlContent.slice(0, bestPoint));
-      }
-    }
-
-    chosenSplitPoints.sort((a, b) => a - b);
-
-    // If not enough space for in-article ads, render cleanly with only bottom ad
-    if (chosenSplitPoints.length === 0) {
-      return (
-        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
-          <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
-            <AdsterraNative />
-          </div>
-        </div>
+    // For longer articles with 4+ paragraphs (including 3000 words):
+    const totalP = splitIndices.length;
+    const selectedPoints: number[] = [];
+    if (totalP >= 10) {
+      selectedPoints.push(
+        splitIndices[Math.floor(totalP * 0.25)],
+        splitIndices[Math.floor(totalP * 0.55)],
+        splitIndices[Math.floor(totalP * 0.8)]
+      );
+    } else {
+      selectedPoints.push(
+        splitIndices[Math.floor(totalP * 0.35)],
+        splitIndices[Math.floor(totalP * 0.7)]
       );
     }
 
-    // Split HTML content into distinct, clean chunks
-    const htmlChunks: string[] = [];
-    let startIdx = 0;
-    for (const splitPt of chosenSplitPoints) {
-      htmlChunks.push(htmlContent.slice(startIdx, splitPt));
-      startIdx = splitPt;
-    }
-    htmlChunks.push(htmlContent.slice(startIdx));
-
-    // Map ad slots
-    const getAdSlot = (index: number, count: number) => {
-      if (count === 1) return <InArticleBanner1 />;
-      if (count === 2) {
-        return index === 0 ? <InArticleBanner1 /> : <InArticleBanner2 />;
+    // Slice cleanly at verified </p> boundaries with zero content loss
+    const chunks: string[] = [];
+    let prev = 0;
+    for (const pt of selectedPoints) {
+      if (pt > prev && pt < htmlContent.length) {
+        chunks.push(htmlContent.substring(prev, pt));
+        prev = pt;
       }
-      // 3 ads:
-      if (index === 0) return <InArticleBanner1 />;
-      if (index === 1) return <InArticleNative />;
-      return <InArticleBanner2 />;
-    };
+    }
+    chunks.push(htmlContent.substring(prev));
 
     return (
-      <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>p]:leading-relaxed">
-        {htmlChunks.map((chunk, idx) => (
+      <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-gray-800 [&>h3]:mt-6 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-2 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:space-y-2 [&>p]:leading-relaxed [&>p]:mb-4">
+        {chunks.map((chunk, idx) => (
           <React.Fragment key={idx}>
             <div dangerouslySetInnerHTML={{ __html: chunk }} />
-            {idx < htmlChunks.length - 1 && getAdSlot(idx, chosenSplitPoints.length)}
+            {idx === 0 && selectedPoints.length > 0 && <InArticleBanner1 />}
+            {idx === 1 && selectedPoints.length >= 2 && (selectedPoints.length >= 3 ? <InArticleNative /> : <InArticleBanner2 />)}
+            {idx === 2 && selectedPoints.length >= 3 && <InArticleBanner2 />}
           </React.Fragment>
         ))}
         <div className="mt-8 pt-4 border-t border-stone-200 not-prose">

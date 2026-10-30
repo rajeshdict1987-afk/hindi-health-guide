@@ -127,17 +127,17 @@ export function validateArticleSchema(data: unknown): { valid: boolean; errors: 
   if (typeof art.id !== 'string' || art.id.length === 0 || art.id.length > 128) {
     errors.push('आर्टिकल ID 1 से 128 अक्षरों के बीच होनी चाहिए (ID must be between 1 and 128 characters)');
   }
-  if (typeof art.title !== 'string' || art.title.trim().length < 5 || art.title.length > 300) {
-    errors.push('आर्टिकल शीर्षक (Title) कम से कम 5 अक्षरों का होना चाहिए');
+  if (typeof art.title !== 'string' || art.title.trim().length < 3 || art.title.length > 500) {
+    errors.push('आर्टिकल शीर्षक (Title) कम से कम 3 अक्षरों का होना चाहिए');
   }
-  if (typeof art.slug !== 'string' || !/^(?=.*[a-z0-9])[a-z0-9-]+$/.test(art.slug) || art.slug.length < 3 || art.slug.length > 160) {
+  if (typeof art.slug !== 'string' || !/^(?=.*[a-z0-9])[a-z0-9-]+$/.test(art.slug) || art.slug.length < 3 || art.slug.length > 200) {
     errors.push('स्लग (Slug) केवल छोटे अंग्रेज़ी अक्षरों (a-z), अंकों (0-9) और हाइफ़न (-) में होना चाहिए (कम से कम 3 अक्षर)');
   }
-  if (typeof art.excerpt !== 'string' || art.excerpt.length > 1000) {
-    errors.push('संक्षिप्त सारांश (Excerpt) अधिकतम 1000 अक्षरों का हो सकता है');
+  if (typeof art.excerpt !== 'string' || art.excerpt.length > 5000) {
+    errors.push('संक्षिप्त सारांश (Excerpt) अधिकतम 5000 अक्षरों का हो सकता है');
   }
-  if (typeof art.content !== 'string' || art.content.trim().length < 30 || art.content.length > 100000) {
-    errors.push('आर्टिकल सामग्री (Content) कम से कम 30 अक्षरों की होनी चाहिए');
+  if (typeof art.content !== 'string' || art.content.trim().length < 10 || art.content.length > 500000) {
+    errors.push('आर्टिकल सामग्री (Content) कम से कम 10 अक्षरों और अधिकतम 5,00,000 अक्षरों (3,000+ शब्दों) की हो सकती है');
   }
   if (typeof art.categorySlug !== 'string' && typeof art.category !== 'string') {
     errors.push('श्रेणी (Category) चुनना अनिवार्य है');

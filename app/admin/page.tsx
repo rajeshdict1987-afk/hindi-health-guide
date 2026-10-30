@@ -104,6 +104,8 @@ export default function AdminPage() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inlineFileInputRef = useRef<HTMLInputElement>(null);
+  const featuredFileInputRef = useRef<HTMLInputElement>(null);
+  const adFileInputRef = useRef<HTMLInputElement>(null);
 
   // Authentication & Initialization
   useEffect(() => {
@@ -134,11 +136,36 @@ export default function AdminPage() {
         .then((res) => res.json())
         .then((data) => {
           if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-            setArticles((prev) => {
-              const merged = mergeArticles(prev, data.articles);
-              saveStoredArticles(merged);
-              return merged;
-            });
+            const serverSlugs = new Set(data.articles.map((a: Article) => a.slug));
+            const serverIds = new Set(data.articles.map((a: Article) => a.id));
+
+            // Check if user has articles saved in mobile localStorage that are missing from server
+            const unsyncedFromMobile = localArticles.filter(
+              (a) => a && a.slug && !serverSlugs.has(a.slug) && !serverIds.has(a.id)
+            );
+
+            if (unsyncedFromMobile.length > 0) {
+              console.log('Auto-pushing mobile articles to portal server:', unsyncedFromMobile.length);
+              fetch('/api/articles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sync: true, articles: localArticles }),
+              })
+                .then((r) => r.json())
+                .then((syncRes) => {
+                  if (syncRes && syncRes.success && Array.isArray(syncRes.articles)) {
+                    setArticles(syncRes.articles);
+                    saveStoredArticles(syncRes.articles);
+                  }
+                })
+                .catch(() => {});
+            } else {
+              setArticles((prev) => {
+                const merged = mergeArticles(prev, data.articles);
+                saveStoredArticles(merged);
+                return merged;
+              });
+            }
           }
         })
         .catch(() => {});
@@ -231,51 +258,82 @@ export default function AdminPage() {
     }, 50);
   };
 
-  // Handle Main Featured Image & Ad Image Upload
-  // Enforces WebP compression (max 1200px, max 500KB) and direct Firebase Storage upload
+  // Helper to count words
+  const getWordCount = (text: string) => {
+    if (!text) return 0;
+    const clean = text.replace(/<[^>]*>/g, ' ').trim();
+    return clean ? clean.split(/\s+/).filter(Boolean).length : 0;
+  };
+
+  // Handle Main Featured Image & Ad Image Upload (Mobile & Desktop)
+  // Compresses via HTML5 Canvas WebP and uploads to /api/upload
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'article' | 'ad' = 'article') {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!isFirebaseConfigured || !storage) {
-      showNotification('Firebase Storage सक्रिय नहीं है। कृपया इमेज का सीधा वेब URL दर्ज करें।');
-      e.target.value = '';
-      return;
-    }
-
     setIsUploadingImage(true);
-    showNotification('इमेज को ऑप्टिमाइज़ और WebP (<200KB) में कंप्रेस किया जा रहा है...');
+    showNotification('फोटो को ऑप्टिमाइज़ और पोर्टल पर अपलोड किया जा रहा है...');
 
     try {
-      // 1. Client-Side WebP Compression (Strict <= 1200px width & <= 200KB)
-      const optimizedFile = await compressAndConvertToWebP(file, {
-        maxWidth: 1200,
-        maxHeight: 1200,
-        quality: 0.8,
-        maxSizeBytes: 200 * 1024 // Strict 200KB limit for Core Web Vitals
-      });
-
-      // 2. Upload strictly to Firebase Storage
-      const folder = type === 'article' ? 'articles' : 'ads';
-      const storageRef = ref(storage, `${folder}/${Date.now()}_${optimizedFile.name}`);
-      const snapshot = await uploadBytes(storageRef, optimizedFile);
-      
-      // 3. Obtain public CDN download URL (No Base64 in state or localStorage)
-      const downloadURL = await getDownloadURL(snapshot.ref);
-
-      if (type === 'article') {
-        setArticleForm(prev => ({ ...prev, imageUrl: downloadURL }));
-      } else {
-        setAdForm(prev => ({ ...prev, imageUrl: downloadURL }));
+      // 1. Client-Side WebP Compression (Strict <= 1200px width & <= 300KB)
+      let uploadFile: File = file;
+      try {
+        uploadFile = await compressAndConvertToWebP(file, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.8,
+          maxSizeBytes: 300 * 1024
+        });
+      } catch (compErr) {
+        console.warn('Compression fallback to original file:', compErr);
       }
 
-      showNotification('इमेज सफलतापूर्वक कंप्रेस होकर WebP फॉर्मेट (<200KB) में Firebase Storage में अपलोड हो गई!');
-    } catch (error) {
+      // 2. Upload to server storage /api/upload
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.url) {
+        throw new Error(data.error || 'सर्वर अपलोड विफल');
+      }
+
+      const photoUrl = data.url;
+
+      if (type === 'article') {
+        setArticleForm(prev => ({ ...prev, imageUrl: photoUrl }));
+      } else {
+        setAdForm(prev => ({ ...prev, imageUrl: photoUrl }));
+      }
+
+      showNotification('✅ फोटो सफलतापूर्वक अपलोड हो गई और पोर्टल के लिए सेव हो गई!');
+    } catch (error: any) {
       console.error("Upload Error:", error);
-      showNotification('इमेज अपलोड करने में विफल! कृपया सीधा वेब URL दर्ज करें।');
+      // Fallback: convert to base64 Data URL so user never loses their chosen picture
+      try {
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          const base64Url = re.target?.result as string;
+          if (base64Url) {
+            if (type === 'article') {
+              setArticleForm(prev => ({ ...prev, imageUrl: base64Url }));
+            } else {
+              setAdForm(prev => ({ ...prev, imageUrl: base64Url }));
+            }
+            showNotification('✅ फोटो चुन ली गई!');
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch {
+        showNotification('फोटो प्रोसेस करने में समस्या आई। कृपया दोबारा प्रयास करें।');
+      }
     } finally {
       setIsUploadingImage(false);
-      // Reset input value
+      // Reset input value so re-selecting same file works
       e.target.value = '';
     }
   }
@@ -285,33 +343,41 @@ export default function AdminPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!isFirebaseConfigured || !storage) {
-      showNotification('Firebase Storage सक्रिय नहीं है। कृपया इमेज का सीधा वेब URL उपयोग करें।');
-      if (inlineFileInputRef.current) inlineFileInputRef.current.value = '';
-      return;
-    }
-
     setIsUploadingInline(true);
-    showNotification('इनलाइन इमेज को WebP (<200KB) में कंप्रेस व अपलोड किया जा रहा है...');
+    showNotification('इनलाइन इमेज को कंप्रेस व अपलोड किया जा रहा है...');
 
     try {
-      const optimizedFile = await compressAndConvertToWebP(file, {
-        maxWidth: 1000,
-        maxHeight: 1000,
-        quality: 0.8,
-        maxSizeBytes: 200 * 1024 // 200KB limit
+      let uploadFile: File = file;
+      try {
+        uploadFile = await compressAndConvertToWebP(file, {
+          maxWidth: 1000,
+          maxHeight: 1000,
+          quality: 0.8,
+          maxSizeBytes: 250 * 1024
+        });
+      } catch (compErr) {
+        console.warn('Inline compression fallback:', compErr);
+      }
+
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      const storageRef = ref(storage, `articles/inline_${Date.now()}_${optimizedFile.name}`);
-      const snapshot = await uploadBytes(storageRef, optimizedFile);
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.url) {
+        throw new Error(data.error || 'इनलाइन अपलोड विफल');
+      }
 
-      const downloadURL = await getDownloadURL(snapshot.ref);
-
-      const inlineHtml = `\n<figure class="my-6">\n  <img src="${downloadURL}" alt="${file.name.replace(/\.[^/.]+$/, '')}" class="rounded-2xl shadow-md w-full object-cover max-h-[450px]" loading="lazy" />\n  <figcaption class="text-xs text-stone-500 mt-2 text-center">चित्र: ${file.name.replace(/\.[^/.]+$/, '')}</figcaption>\n</figure>\n`;
+      const cleanAlt = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_\u0900-\u097F\s-]/g, '');
+      const inlineHtml = `\n<figure class="my-6">\n  <img src="${data.url}" alt="${cleanAlt}" class="rounded-2xl shadow-md w-full object-cover max-h-[450px]" loading="lazy" />\n  <figcaption class="text-xs text-stone-500 mt-2 text-center">चित्र: ${cleanAlt}</figcaption>\n</figure>\n`;
 
       insertFormatting(inlineHtml, '');
-      showNotification('इनलाइन इमेज सफलतापूर्वक आर्टिकल में जोड़ दी गई!');
-    } catch (err) {
+      showNotification('✅ इनलाइन इमेज सफलतापूर्वक आर्टिकल में जोड़ दी गई!');
+    } catch (err: any) {
       console.error('Inline image upload error:', err);
       showNotification('इनलाइन इमेज अपलोड करने में त्रुटि!');
     } finally {
@@ -380,11 +446,29 @@ export default function AdminPage() {
 
     const selectedCat = SITE_CONFIG.categories.find(c => c.slug === articleForm.category);
 
-    // Ensure NO base64 image enters storage
-    let safeImageUrl = articleForm.imageUrl;
+    // Ensure image is clean, uploaded, and persistent across portal
+    let safeImageUrl = articleForm.imageUrl.trim();
     if (safeImageUrl.startsWith('data:image/')) {
+      try {
+        const upRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64: safeImageUrl, filename: `${slug || 'article'}.webp` }),
+        });
+        const upData = await upRes.json();
+        if (upData && upData.success && upData.url) {
+          safeImageUrl = upData.url;
+        }
+      } catch (upErr) {
+        console.warn('Base64 auto-save to server note:', upErr);
+      }
+    }
+    if (!safeImageUrl) {
       safeImageUrl = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80';
     }
+
+    const totalWords = getWordCount(articleForm.content);
+    const computedReadTime = `${Math.max(1, Math.ceil(totalWords / 200))} मिनट`;
 
     const newArticle: Article = {
       id: editingArticleId || Date.now().toString(),
@@ -394,7 +478,7 @@ export default function AdminPage() {
       content: articleForm.content.trim(),
       category: articleForm.category,
       categoryHindi: selectedCat ? selectedCat.hindiName : 'सामान्य स्वास्थ्य',
-      readTime: articleForm.readTime || '5 मिनट',
+      readTime: articleForm.readTime || computedReadTime,
       publishedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -426,10 +510,10 @@ export default function AdminPage() {
     }
 
     setIsPublishing(true);
-    showNotification('आर्टिकल सर्वर पर प्रकाशित किया जा रहा है...');
+    showNotification('आर्टिकल पूरे पोर्टल (सर्वर) पर प्रकाशित किया जा रहा है...');
 
     try {
-      // 1. Direct Server API save with cache invalidation
+      // 1. Direct Server API save with global persistent file storage and cache invalidation
       const res = await fetch('/api/articles', {
         method: 'POST',
         headers: { 
@@ -482,7 +566,7 @@ export default function AdminPage() {
       });
       setValidationErrors([]);
       setEditorMode('write');
-      showNotification('✅ आर्टिकल सफलतापूर्वक प्रकाशित हो गया और पोर्टल पर तुरंत लाइव हो गया!');
+      showNotification('✅ आर्टिकल पूरे पोर्टल पर सफलतापूर्वक प्रकाशित हो गया! यह सभी मोबाइल और कंप्यूटर विजिटर्स के लिए तुरंत लाइव है।');
     } catch (err: any) {
       console.error('Publish error:', err);
       // Fallback: preserve in localStorage immediately so work is never lost
@@ -721,6 +805,10 @@ export default function AdminPage() {
     );
   }
 
+  const currentWordCount = getWordCount(articleForm.content);
+  const currentCharCount = articleForm.content.length;
+  const estimatedReadMins = Math.max(1, Math.ceil(currentWordCount / 200));
+
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900 pb-20 font-sans">
       {/* Top Admin Header */}
@@ -935,31 +1023,101 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Featured Image with strict WebP compression and Firebase Storage upload */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-bold text-stone-700">मुख्य फ़ीचर्ड इमेज (WebP &lt; 500KB Auto-Compress &amp; Storage)</label>
+                {/* Featured Image with Choice Photo (Mobile & Desktop) */}
+                <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 sm:p-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800">
+                        मुख्य फ़ीचर्ड फोटो (Featured Photo)
+                      </label>
+                      <p className="text-[11px] text-stone-500">
+                        मोबाइल गैलरी या कैमरा से फोटो चुनें — फोटो पूरे पोर्टल पर ऑटोमैटिकली सेव होगी
+                      </p>
+                    </div>
                     {isUploadingImage && (
-                      <span className="text-[11px] font-bold text-rose-600 animate-pulse">⚡ Firebase Storage में अपलोड हो रहा है...</span>
+                      <span className="text-xs font-bold text-rose-600 flex items-center gap-1.5 animate-pulse">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> फोटो अपलोड हो रही है...
+                      </span>
                     )}
                   </div>
+
+                  {/* Hidden standard file input */}
                   <input
+                    ref={featuredFileInputRef}
                     type="file"
                     accept="image/*"
                     disabled={isUploadingImage}
                     onChange={(e) => handleImageUpload(e, 'article')}
-                    className="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 mb-2 disabled:opacity-50"
+                    className="hidden"
+                    id="featured-photo-picker"
                   />
-                  <input
-                    type="text"
-                    value={articleForm.imageUrl}
-                    onChange={(e) => setArticleForm({ ...articleForm, imageUrl: e.target.value })}
-                    placeholder="Firebase Storage URL या इमेज लिंक"
-                    className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs focus:outline-none"
-                  />
-                  <p className="text-[11px] text-stone-500 mt-1">
-                    🔒 कोई भी Base64 स्ट्रिंग localStorage में नहीं जाएगी। इमेज ऑटोमैटिकली 1200px / 500KB WebP में कंप्रेस होकर Firebase Storage CDN URL बन जाएगी।
-                  </p>
+
+                  {/* Photo Preview & Selection Controls */}
+                  <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                    {/* Preview Box */}
+                    <div className="relative w-full sm:w-48 h-32 rounded-xl overflow-hidden bg-stone-200 border-2 border-dashed border-stone-300 shrink-0 shadow-inner flex items-center justify-center">
+                      {articleForm.imageUrl ? (
+                        <>
+                          <img
+                            src={articleForm.imageUrl}
+                            alt="चयनित फोटो"
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute bottom-1 right-1 bg-emerald-700/90 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                            ✓ फोटो चुनी गई
+                          </span>
+                        </>
+                      ) : (
+                        <div className="text-center p-3 text-stone-400">
+                          <ImageIcon className="w-8 h-8 mx-auto mb-1 opacity-60" />
+                          <span className="text-[11px] font-medium">कोई फोटो चयनित नहीं</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Button Controls */}
+                    <div className="flex-1 space-y-2.5 w-full">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => featuredFileInputRef.current?.click()}
+                          disabled={isUploadingImage}
+                          className="flex-1 min-w-[160px] bg-rose-600 hover:bg-rose-700 active:scale-95 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          <span>{articleForm.imageUrl ? '📷 चॉइस फोटो / फोटो बदलें' : '📷 चॉइस फोटो (Choose Photo)'}</span>
+                        </button>
+
+                        {articleForm.imageUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setArticleForm(prev => ({ ...prev, imageUrl: '' }))}
+                            className="px-3.5 py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold rounded-xl text-xs transition"
+                            title="फोटो हटाएं"
+                          >
+                            हटाएं
+                          </button>
+                        )}
+                      </div>
+
+                      <p className="text-[11px] text-stone-500">
+                        🔒 मोबाइल के कैमरे या गैलरी से 5MB-15MB तक की फोटो चुनें। सिस्टम इसे अपने आप कंप्रेस कर पूरे पोर्टल के लिए सुरक्षित कर लेगा।
+                      </p>
+
+                      <details className="text-xs text-stone-600 pt-1">
+                        <summary className="cursor-pointer hover:text-stone-900 font-semibold text-[11px]">
+                          🔗 या इमेज का सीधा वेब लिंक (URL) दर्ज करें
+                        </summary>
+                        <input
+                          type="text"
+                          value={articleForm.imageUrl}
+                          onChange={(e) => setArticleForm({ ...articleForm, imageUrl: e.target.value })}
+                          placeholder="https://... इमेज का लिंक या /uploads/... पाथ"
+                          className="w-full p-2.5 mt-2 bg-white border border-stone-300 rounded-xl text-xs focus:ring-1 focus:ring-rose-500 focus:outline-none"
+                        />
+                      </details>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -975,10 +1133,15 @@ export default function AdminPage() {
 
                 {/* Rich Editor Toolbar & Content */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-bold text-stone-700">
-                      मुख्य लेख सामग्री (Rich Hindi Article Body)
-                    </label>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800">
+                        मुख्य लेख सामग्री (Rich Hindi Article Body)
+                      </label>
+                      <p className="text-[11px] text-stone-500">
+                        3,000+ शब्दों तक का संपूर्ण लेख लिखें या पेस्ट करें (कोई शब्द नहीं कटेगा)
+                      </p>
+                    </div>
                     <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
                       <button
                         type="button"
@@ -1104,18 +1267,60 @@ export default function AdminPage() {
                   {editorMode === 'write' ? (
                     <textarea
                       ref={textareaRef}
-                      rows={12}
+                      rows={16}
                       required
                       value={articleForm.content}
                       onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
-                      placeholder="<h2>परिचय</h2><p>यहाँ विस्तार से वैज्ञानिक स्वास्थ्य जानकारी लिखें...</p>"
-                      className="w-full p-4 bg-stone-50 border border-t-0 border-stone-300 rounded-b-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-rose-500 leading-relaxed"
+                      placeholder="<h2>परिचय</h2><p>यहाँ विस्तार से वैज्ञानिक स्वास्थ्य जानकारी लिखें (3,000+ शब्दों तक का सम्पूर्ण लेख)...</p>"
+                      className="w-full p-4 bg-stone-50 border border-t-0 border-stone-300 rounded-b-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-rose-500 leading-relaxed min-h-[350px]"
                     />
                   ) : (
-                    <div className="p-6 bg-stone-50 border border-stone-300 rounded-xl min-h-[300px] prose prose-rose max-w-none">
+                    <div className="p-6 bg-stone-50 border border-stone-300 rounded-xl min-h-[350px] prose prose-rose max-w-none">
                       <div dangerouslySetInnerHTML={{ __html: articleForm.content || '<p class="text-stone-400 italic">पूर्वावलोकन देखने के लिए सामग्री दर्ज करें...</p>' }} />
                     </div>
                   )}
+
+                  {/* Live Word & Character Counter (3,000 Words Supported) */}
+                  <div className="mt-2.5 p-3.5 bg-gradient-to-r from-stone-50 via-rose-50/40 to-stone-50 border border-stone-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center flex-wrap gap-3">
+                      <div className="flex items-center gap-1.5 font-bold text-stone-800">
+                        <span className="text-rose-600 font-black text-sm">{currentWordCount.toLocaleString('hi-IN')}</span>
+                        <span>शब्द (Word Count)</span>
+                        <span className="text-stone-400 font-normal">/ 3,000 शब्द लक्ष्य</span>
+                      </div>
+                      <div className="text-stone-500">
+                        • कुल अक्षर: <strong className="text-stone-700">{currentCharCount.toLocaleString('hi-IN')}</strong>
+                      </div>
+                      <div className="text-stone-500">
+                        • पढ़ने का समय: <strong className="text-stone-700">{estimatedReadMins} मिनट</strong>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {currentWordCount >= 3000 ? (
+                        <span className="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-300">
+                          🌟 3,000+ शब्द (विस्तृत महा-आलेख)
+                        </span>
+                      ) : currentWordCount >= 500 ? (
+                        <span className="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-blue-300">
+                          ✅ आदर्श स्वास्थ्य आलेख ({currentWordCount} / 3000)
+                        </span>
+                      ) : (
+                        <span className="bg-amber-100 text-amber-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-300">
+                          📝 {currentWordCount} शब्द • 3,000 शब्दों तक पूर्ण समर्थित
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => setArticleForm(prev => ({ ...prev, readTime: `${estimatedReadMins} मिनट` }))}
+                        className="text-[11px] text-rose-600 font-bold hover:underline ml-1"
+                        title="पढ़ने का समय ऑटो-सेट करें"
+                      >
+                        समय ऑटो-सेट करें
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Tags and AI Auto SEO */}
@@ -1446,27 +1651,80 @@ export default function AdminPage() {
                   />
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-stone-700">विज्ञापन फोटो अपलोड करें (WebP Auto-Compress)</label>
+                {/* Ad Image with Choice Photo (Mobile & Desktop) */}
+                <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800">
+                        विज्ञापन फोटो (Ad Banner Photo)
+                      </label>
+                      <p className="text-[11px] text-stone-500">
+                        मोबाइल या कंप्यूटर से फोटो चुनें
+                      </p>
+                    </div>
                     {isUploadingImage && (
-                      <span className="text-[11px] font-bold text-teal-600 animate-pulse">⚡ कंप्रेस व अपलोड हो रहा है...</span>
+                      <span className="text-xs font-bold text-teal-600 flex items-center gap-1.5 animate-pulse">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> फोटो अपलोड हो रही है...
+                      </span>
                     )}
                   </div>
+
                   <input
+                    ref={adFileInputRef}
                     type="file"
                     accept="image/*"
                     disabled={isUploadingImage}
                     onChange={(e) => handleImageUpload(e, 'ad')}
-                    className="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 mb-2 disabled:opacity-50"
+                    className="hidden"
+                    id="ad-photo-picker"
                   />
-                  <input
-                    type="text"
-                    value={adForm.imageUrl}
-                    onChange={(e) => setAdForm({ ...adForm, imageUrl: e.target.value })}
-                    placeholder="या इमेज URL यहाँ पेस्ट करें"
-                    className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs focus:outline-none"
-                  />
+
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div className="relative w-full sm:w-40 h-24 rounded-xl overflow-hidden bg-stone-200 border-2 border-dashed border-stone-300 shrink-0 shadow-inner flex items-center justify-center">
+                      {adForm.imageUrl ? (
+                        <>
+                          <img
+                            src={adForm.imageUrl}
+                            alt="विज्ञापन फोटो"
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute bottom-1 right-1 bg-teal-700/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow">
+                            ✓ चुनी गई
+                          </span>
+                        </>
+                      ) : (
+                        <div className="text-center p-2 text-stone-400">
+                          <ImageIcon className="w-6 h-6 mx-auto mb-0.5 opacity-60" />
+                          <span className="text-[10px]">फोटो नहीं</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 space-y-2 w-full">
+                      <button
+                        type="button"
+                        onClick={() => adFileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                        className="w-full bg-teal-600 hover:bg-teal-700 active:scale-95 disabled:opacity-50 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                        <span>{adForm.imageUrl ? '📷 चॉइस फोटो / बदलें' : '📷 चॉइस फोटो (Choose Photo)'}</span>
+                      </button>
+
+                      <details className="text-xs text-stone-600 pt-1">
+                        <summary className="cursor-pointer hover:text-stone-900 font-semibold text-[11px]">
+                          🔗 या इमेज URL पेस्ट करें
+                        </summary>
+                        <input
+                          type="text"
+                          value={adForm.imageUrl}
+                          onChange={(e) => setAdForm({ ...adForm, imageUrl: e.target.value })}
+                          placeholder="https://... इमेज URL"
+                          className="w-full p-2 mt-1.5 bg-white border border-stone-300 rounded-xl text-xs focus:outline-none"
+                        />
+                      </details>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
