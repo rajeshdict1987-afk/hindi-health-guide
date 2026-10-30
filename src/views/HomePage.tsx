@@ -302,6 +302,7 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition duration-500"
                     referrerPolicy="no-referrer"
+                    unoptimized={article.image.url?.startsWith('data:') || article.image.url?.startsWith('/uploads/')}
                   />
 
                   <span className="absolute bottom-2 left-2 bg-stone-900/80 backdrop-blur text-white text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1">
@@ -561,6 +562,7 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                     sizes="(max-width: 1024px) 100vw, 850px"
                     className="object-cover group-hover:scale-105 transition duration-500"
                     referrerPolicy="no-referrer"
+                    unoptimized={articles[0].image.url?.startsWith('data:') || articles[0].image.url?.startsWith('/uploads/')}
                     priority
                   />
 
@@ -622,6 +624,7 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                           className="object-cover group-hover:scale-105 transition duration-500"
                           referrerPolicy="no-referrer"
+                          unoptimized={article.image.url?.startsWith('data:') || article.image.url?.startsWith('/uploads/')}
                         />
 
                         <div className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur px-2.5 py-0.5 rounded-full text-[11px] font-semibold text-stone-800 shadow-xs">

@@ -160,8 +160,12 @@ export function saveStoredArticles(articles: Article[]): void {
     const sanitized = articles.map((art) => {
       const firestoreDoc = articleToFirestore(art);
       const cleanArt = articleFromFirestore(firestoreDoc);
-      if (cleanArt.image?.url?.startsWith('data:image/')) {
-        cleanArt.image.url = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80';
+      // Preserve the user's selected image URL (whether /uploads/..., https://..., or data:image/...)
+      if (art.image?.url) {
+        cleanArt.image = {
+          url: art.image.url,
+          alt: art.image.alt || art.title,
+        };
       }
       return cleanArt;
     });
@@ -191,9 +195,6 @@ export function saveStoredAds(ads: Advertisement[]): void {
   try {
     // Strip Base64 to prevent QuotaExceededError
     const sanitizedAds = ads.map(ad => {
-      if (ad.imageUrl?.startsWith('data:image/')) {
-        return { ...ad, imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80' };
-      }
       return ad;
     });
     localStorage.setItem(ADS_STORAGE_KEY, JSON.stringify(sanitizedAds));

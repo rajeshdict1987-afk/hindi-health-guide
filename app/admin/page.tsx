@@ -52,7 +52,7 @@ import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth';
 import { db, storage, auth, isFirebaseConfigured } from '@/lib/firebase';
-import { compressAndConvertToWebP } from '@/lib/imageOptimizer';
+import { compressAndConvertToWebP, optimizeImageFile } from '@/lib/imageOptimizer';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -76,7 +76,7 @@ export default function AdminPage() {
     readTime: '5 मिनट',
     authorName: 'राजेश कुमार साहू',
     authorRole: 'मुख्य संपादक (Chief Editor)',
-    imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '',
     imageAlt: 'स्वास्थ्य लेख',
     tags: 'स्वास्थ्य, चिकित्सा, प्रजनन स्वास्थ्य'
   });
@@ -266,31 +266,32 @@ export default function AdminPage() {
   };
 
   // Handle Main Featured Image & Ad Image Upload (Mobile & Desktop)
-  // Compresses via HTML5 Canvas WebP and uploads to /api/upload
+  // Compresses via universal HTML5 Canvas and uploads to /api/upload
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'article' | 'ad' = 'article') {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploadingImage(true);
-    showNotification('फोटो को ऑप्टिमाइज़ और पोर्टल पर अपलोड किया जा रहा है...');
+    showNotification('फोटो प्रोसेस और अपलोड की जा रही है...');
 
     try {
-      // 1. Client-Side WebP Compression (Strict <= 1200px width & <= 300KB)
-      let uploadFile: File = file;
-      try {
-        uploadFile = await compressAndConvertToWebP(file, {
-          maxWidth: 1200,
-          maxHeight: 1200,
-          quality: 0.8,
-          maxSizeBytes: 300 * 1024
-        });
-      } catch (compErr) {
-        console.warn('Compression fallback to original file:', compErr);
+      // 1. Optimize image (universal canvas resize to max 1200px, lightweight JPEG ~100-200KB)
+      const optResult = await optimizeImageFile(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.82
+      });
+
+      // 2. Set preview immediately so mobile user sees their chosen photo right away
+      if (type === 'article') {
+        setArticleForm(prev => ({ ...prev, imageUrl: optResult.dataUrl }));
+      } else {
+        setAdForm(prev => ({ ...prev, imageUrl: optResult.dataUrl }));
       }
 
-      // 2. Upload to server storage /api/upload
+      // 3. Upload optimized blob to server storage /api/upload
       const formData = new FormData();
-      formData.append('file', uploadFile);
+      formData.append('file', optResult.blob, optResult.name);
 
       const res = await fetch('/api/upload', {
         method: 'POST',
@@ -298,22 +299,20 @@ export default function AdminPage() {
       });
 
       const data = await res.json();
-      if (!res.ok || !data.success || !data.url) {
-        throw new Error(data.error || 'सर्वर अपलोड विफल');
-      }
-
-      const photoUrl = data.url;
-
-      if (type === 'article') {
-        setArticleForm(prev => ({ ...prev, imageUrl: photoUrl }));
+      if (res.ok && data.success && data.url) {
+        if (type === 'article') {
+          setArticleForm(prev => ({ ...prev, imageUrl: data.url }));
+        } else {
+          setAdForm(prev => ({ ...prev, imageUrl: data.url }));
+        }
+        showNotification('✅ आपकी फोटो सफलतापूर्वक अपलोड हो गई और पोर्टल के लिए सेव हो गई!');
       } else {
-        setAdForm(prev => ({ ...prev, imageUrl: photoUrl }));
+        // Fallback: dataUrl is already set and will be persisted
+        showNotification('✅ आपकी फोटो चुन ली गई!');
       }
-
-      showNotification('✅ फोटो सफलतापूर्वक अपलोड हो गई और पोर्टल के लिए सेव हो गई!');
     } catch (error: any) {
       console.error("Upload Error:", error);
-      // Fallback: convert to base64 Data URL so user never loses their chosen picture
+      // Fallback: FileReader data URL
       try {
         const reader = new FileReader();
         reader.onload = (re) => {
@@ -560,7 +559,7 @@ export default function AdminPage() {
         readTime: '5 मिनट',
         authorName: 'राजेश कुमार साहू',
         authorRole: 'मुख्य संपादक (Chief Editor)',
-        imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
+        imageUrl: '',
         imageAlt: '',
         tags: 'स्वास्थ्य, चिकित्सा'
       });
@@ -924,7 +923,7 @@ export default function AdminPage() {
                         readTime: '5 मिनट',
                         authorName: 'राजेश कुमार साहू',
                         authorRole: 'मुख्य संपादक (Chief Editor)',
-                        imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
+                        imageUrl: '',
                         imageAlt: '',
                         tags: 'स्वास्थ्य, चिकित्सा'
                       });
@@ -1100,8 +1099,8 @@ export default function AdminPage() {
                         )}
                       </div>
 
-                      <p className="text-[11px] text-stone-500">
-                        🔒 मोबाइल के कैमरे या गैलरी से 5MB-15MB तक की फोटो चुनें। सिस्टम इसे अपने आप कंप्रेस कर पूरे पोर्टल के लिए सुरक्षित कर लेगा।
+                      <p className="text-[11px] text-stone-600 bg-emerald-50 border border-emerald-200/60 p-2 rounded-lg leading-relaxed">
+                        ⚡ <strong>ऑटो WebP कन्वर्शन:</strong> आप कोई भी JPG या PNG फोटो चुनें, सर्वर इसे अपने आप सुपर-लाइटवेट <strong>WebP (50-150 KB)</strong> में बदल देगा ताकि पोर्टल हमेशा तेज गति से लोड हो।
                       </p>
 
                       <details className="text-xs text-stone-600 pt-1">

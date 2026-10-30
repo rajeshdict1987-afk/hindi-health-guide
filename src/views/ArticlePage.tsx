@@ -377,6 +377,7 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
                     sizes="(max-width: 1024px) 100vw, 850px"
                     className="object-cover"
                     referrerPolicy="no-referrer"
+                    unoptimized={article.image.url.startsWith('data:') || article.image.url.startsWith('/uploads/')}
                     priority
                   />
 
