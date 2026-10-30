@@ -15,6 +15,7 @@ import AdsterraBanner from '../components/AdsterraBanner';
 import AdsterraNative from '../components/AdsterraNative';
 import { doc, getDoc } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
+import { formatHindiArticleContent } from '../lib/contentFormatter';
 
 
 interface ArticlePageProps {
@@ -145,57 +146,13 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
   );
 
   // Balanced, Non-destructive In-Article Ad & Content Renderer
-  // Supports short articles up to 3,000+ words long-form articles without ANY truncation
+  // Formats any raw, pasted, or HTML text into structured Step-by-Step magazine layout
   const renderMilestoneContent = (rawHtmlContent: string) => {
     if (!rawHtmlContent) return null;
 
-    // Purge any 'गुरु' prefix from content
-    const htmlContent = rawHtmlContent
-      .replace(/गुरु\s*राजेश\s*कुमार\s*साहू/g, 'राजेश कुमार साहू')
-      .replace(/गुरु\s*राजेश/g, 'राजेश')
-      .replace(/Guru\s*Rajesh\s*Kumar\s*Sahu/gi, 'Rajesh Kumar Sahu')
-      .replace(/Guru\s*Rajesh/gi, 'Rajesh');
+    // Apply intelligent Step-by-Step formatting
+    const htmlContent = formatHindiArticleContent(rawHtmlContent);
 
-    const isHtml = /<[a-z][\s\S]*>/i.test(htmlContent);
-
-    // =========================================================================
-    // BRANCH A: Plain text (not wrapped in HTML)
-    // =========================================================================
-    if (!isHtml) {
-      const rawParas = htmlContent.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
-      const paras = rawParas.length > 1 ? rawParas : htmlContent.split(/\n+/).map(p => p.trim()).filter(Boolean);
-      const totalParas = paras.length;
-
-      // Distribute ads across paragraphs for long articles (up to 3000 words)
-      const adPositions: number[] = [];
-      if (totalParas >= 12) {
-        adPositions.push(Math.floor(totalParas * 0.25), Math.floor(totalParas * 0.55), Math.floor(totalParas * 0.8));
-      } else if (totalParas >= 7) {
-        adPositions.push(Math.floor(totalParas * 0.35), Math.floor(totalParas * 0.7));
-      } else if (totalParas >= 4) {
-        adPositions.push(Math.floor(totalParas * 0.5));
-      }
-
-      return (
-        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed space-y-6">
-          {paras.map((para, idx) => (
-            <React.Fragment key={idx}>
-              <p className="text-gray-800 leading-relaxed text-base sm:text-lg">{para}</p>
-              {adPositions[0] === idx && <InArticleBanner1 />}
-              {adPositions[1] === idx && <InArticleNative />}
-              {adPositions[2] === idx && <InArticleBanner2 />}
-            </React.Fragment>
-          ))}
-          <div className="mt-8 pt-4 border-t border-stone-200 not-prose">
-            <AdsterraNative />
-          </div>
-        </div>
-      );
-    }
-
-    // =========================================================================
-    // BRANCH B: HTML formatted articles (supports 3000+ words seamlessly)
-    // =========================================================================
     const pRegex = /<\/p>/gi;
     const splitIndices: number[] = [];
     let match: RegExpExecArray | null;

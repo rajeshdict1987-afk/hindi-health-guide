@@ -6,6 +6,7 @@ import { INITIAL_ARTICLES } from '../data/initialArticles';
 
 import { validateArticleSchema, articleToFirestore, articleFromFirestore } from '../types/firestore';
 import { generateCleanSlug } from './seoHelper';
+import { formatHindiArticleContent } from './contentFormatter';
 
 const ARTICLES_STORAGE_KEY = 'hindi_health_guide_articles_v4';
 const ADS_STORAGE_KEY = 'hindi_health_guide_ads_v4';
@@ -160,6 +161,10 @@ export function saveStoredArticles(articles: Article[]): void {
     const sanitized = articles.map((art) => {
       const firestoreDoc = articleToFirestore(art);
       const cleanArt = articleFromFirestore(firestoreDoc);
+      // Format content into clean step-by-step layout
+      if (art.content) {
+        cleanArt.content = formatHindiArticleContent(art.content);
+      }
       // Preserve the user's selected image URL (whether /uploads/..., https://..., or data:image/...)
       if (art.image?.url) {
         cleanArt.image = {

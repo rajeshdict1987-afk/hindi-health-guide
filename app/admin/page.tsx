@@ -53,6 +53,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth';
 import { db, storage, auth, isFirebaseConfigured } from '@/lib/firebase';
 import { compressAndConvertToWebP, optimizeImageFile } from '@/lib/imageOptimizer';
+import { formatHindiArticleContent } from '@/src/lib/contentFormatter';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -468,13 +469,14 @@ export default function AdminPage() {
 
     const totalWords = getWordCount(articleForm.content);
     const computedReadTime = `${Math.max(1, Math.ceil(totalWords / 200))} मिनट`;
+    const structuredContent = formatHindiArticleContent(articleForm.content.trim());
 
     const newArticle: Article = {
       id: editingArticleId || Date.now().toString(),
       slug,
       title: articleForm.title.trim(),
       excerpt: articleForm.excerpt.trim() || articleForm.title.trim(),
-      content: articleForm.content.trim(),
+      content: structuredContent,
       category: articleForm.category,
       categoryHindi: selectedCat ? selectedCat.hindiName : 'सामान्य स्वास्थ्य',
       readTime: articleForm.readTime || computedReadTime,
@@ -1260,6 +1262,25 @@ export default function AdminPage() {
                         onChange={handleInlineImageUpload}
                         className="hidden"
                       />
+
+                      {/* Step-by-Step Auto Format Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!articleForm.content.trim()) {
+                            showNotification('कृपया पहले लेख सामग्री दर्ज या पेस्ट करें।');
+                            return;
+                          }
+                          const formatted = formatHindiArticleContent(articleForm.content);
+                          setArticleForm(prev => ({ ...prev, content: formatted }));
+                          showNotification('✨ लेख को स्टेप-बाय-स्टेप और हेडिंग्स में सजा दिया गया है!');
+                        }}
+                        className="ml-auto px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                        title="सादे लेख को ऑटोमैटिकली स्टेप-बाय-स्टेप हेडिंग्स, कार्ड्स और पॉइंट्स में बदलें"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                        <span>✨ ऑटो-फॉर्मेट (स्टेप बाय स्टेप)</span>
+                      </button>
                     </div>
                   )}
 
@@ -1270,12 +1291,12 @@ export default function AdminPage() {
                       required
                       value={articleForm.content}
                       onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
-                      placeholder="<h2>परिचय</h2><p>यहाँ विस्तार से वैज्ञानिक स्वास्थ्य जानकारी लिखें (3,000+ शब्दों तक का सम्पूर्ण लेख)...</p>"
-                      className="w-full p-4 bg-stone-50 border border-t-0 border-stone-300 rounded-b-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-rose-500 leading-relaxed min-h-[350px]"
+                      placeholder="यहाँ अपना पूरा लेख लिखें या पेस्ट करें... सिस्टम इसे अपने आप स्टेप-बाय-स्टेप कार्ड्स और हेडिंग्स में सजा देगा।"
+                      className="w-full p-4 bg-stone-50 border border-t-0 border-stone-300 rounded-b-xl text-sm font-sans focus:outline-none focus:ring-1 focus:ring-rose-500 leading-relaxed min-h-[350px]"
                     />
                   ) : (
                     <div className="p-6 bg-stone-50 border border-stone-300 rounded-xl min-h-[350px] prose prose-rose max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: articleForm.content || '<p class="text-stone-400 italic">पूर्वावलोकन देखने के लिए सामग्री दर्ज करें...</p>' }} />
+                      <div dangerouslySetInnerHTML={{ __html: formatHindiArticleContent(articleForm.content) || '<p class="text-stone-400 italic">पूर्वावलोकन देखने के लिए सामग्री दर्ज करें...</p>' }} />
                     </div>
                   )}
 

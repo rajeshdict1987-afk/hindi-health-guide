@@ -3,6 +3,7 @@ import path from 'path';
 import { Article } from '../types/article';
 import { INITIAL_ARTICLES } from '../data/initialArticles';
 import { generateCleanSlug } from './seoHelper';
+import { formatHindiArticleContent } from './contentFormatter';
 
 const STORE_PATH = path.join(process.cwd(), 'src/data/articles-store.json');
 
@@ -45,7 +46,7 @@ export const sanitizeArticle = (art: Article): Article => {
     slug: cleanSlug,
     title: purgeGuru(art.title),
     excerpt: purgeGuru(art.excerpt),
-    content: purgeGuru(art.content),
+    content: formatHindiArticleContent(purgeGuru(art.content)),
     author: {
       name: authorName,
       role: art.author?.role || 'मुख्य संपादक (Chief Editor) एवं स्वास्थ्य विश्लेषक',
