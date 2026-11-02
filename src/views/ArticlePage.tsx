@@ -30,60 +30,43 @@ export function ArticlePage({ slug, initialArticle }: ArticlePageProps) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const all = getStoredArticles();
-    setAllArticles(all);
-
-    // If initialArticle passed from server, initialize immediately
+    // If initialArticle passed from server (SSR), initialize immediately
     if (initialArticle) {
       setArticle(initialArticle);
-      setRelatedArticles(all.filter((a) => a.category === initialArticle.category && a.id !== initialArticle.id).slice(0, 4));
     }
 
-    // Always fetch latest server articles via API for fresh desktop/mobile sync
-    fetch('/api/articles')
+    // Always fetch latest server articles via API for fresh desktop/mobile sync (100% server driven)
+    fetch('/api/articles?t=' + Date.now())
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-          const merged = mergeArticles(all, data.articles);
-          setAllArticles(merged);
+          const serverArticles: Article[] = data.articles;
+          setAllArticles(serverArticles);
+
           const decodedSlug = decodeURIComponent(slug).trim().toLowerCase();
-          const target = merged.find(
-            (a: Article) => a.slug === slug || a.slug.toLowerCase() === decodedSlug || a.id === slug
+          const normalizedTarget = decodedSlug.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+
+          const target = serverArticles.find(
+            (a: Article) =>
+              a.slug === slug ||
+              a.slug.toLowerCase() === decodedSlug ||
+              a.id === slug ||
+              a.slug.replace(/-+/g, '-').replace(/^-+|-+$/g, '') === normalizedTarget
           );
-          if (target && !article) {
+
+          if (target) {
             setArticle(target);
-            setRelatedArticles(merged.filter((a: Article) => a.category === target.category && a.id !== target.id).slice(0, 4));
+            setRelatedArticles(
+              serverArticles.filter((a: Article) => a.category === target.category && a.id !== target.id).slice(0, 4)
+            );
+          } else if (initialArticle) {
+            setRelatedArticles(
+              serverArticles.filter((a: Article) => a.category === initialArticle.category && a.id !== initialArticle.id).slice(0, 4)
+            );
           }
         }
       })
-      .catch(() => {});
-
-    if (!initialArticle) {
-      const decodedSlug = decodeURIComponent(slug).trim();
-      const normalizedTarget = decodedSlug.replace(/-+/g, '-').replace(/^-+|-+$/g, '');
-      const found = all.find(
-        (a) =>
-          a.slug === slug ||
-          a.slug === decodedSlug ||
-          a.id === slug ||
-          a.slug.replace(/-+/g, '-').replace(/^-+|-+$/g, '') === normalizedTarget
-      );
-      if (found) {
-        setArticle(found);
-        setRelatedArticles(all.filter((a) => a.category === found.category && a.id !== found.id).slice(0, 4));
-      } else if (isFirebaseConfigured && db) {
-        // Fallback to Firestore if needed and configured
-        getDoc(doc(db, 'articles', slug))
-          .then((docSnap) => {
-            if (docSnap.exists()) {
-              const artData = docSnap.data() as Article;
-              setArticle(artData);
-              setRelatedArticles(all.filter((a) => a.category === artData.category && a.id !== artData.id).slice(0, 4));
-            }
-          })
-          .catch(() => {});
-      }
-    }
+      .catch((err) => console.error('ArticlePage fetch error:', err));
   }, [slug, initialArticle]);
 
   const handleShare = () => {

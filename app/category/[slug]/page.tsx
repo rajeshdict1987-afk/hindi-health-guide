@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import { SITE_CONFIG, CategoryConfig } from '../../../src/config/site-config';
 import { CategoryPage } from '../../../src/views/CategoryPage';
+import { getAllServerArticles } from '../../../src/lib/serverArticles';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -112,7 +113,7 @@ export default async function Page({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryJsonLd) }}
         />
       )}
-      <CategoryPage slug={slug} />
+      <CategoryPage slug={slug} initialArticles={getAllServerArticles()} />
     </>
   );
 }

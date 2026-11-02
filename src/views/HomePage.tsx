@@ -147,62 +147,35 @@ export function HomePage({ initialArticles }: HomePageProps = {}) {
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    // 1. Initial local store check: immediately show local articles
-    const loaded = getStoredArticles();
-    if (loaded && loaded.length > 0) {
-      setArticles((prev) => mergeArticles(loaded, prev));
+    // 1. One-time auto-migration: if this device has legacy articles in localStorage,
+    // sync them once to the server store, then completely delete localStorage for articles.
+    if (typeof window !== 'undefined') {
+      try {
+        const legacy = localStorage.getItem('hindi_health_guide_articles_v4');
+        if (legacy) {
+          const parsed = JSON.parse(legacy);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            fetch('/api/articles', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sync: true, articles: parsed }),
+            }).catch(() => {});
+          }
+          localStorage.removeItem('hindi_health_guide_articles_v4');
+          localStorage.removeItem('hindi_health_guide_articles_v3');
+        }
+      } catch {}
     }
 
-    // 2. Fetch fresh server articles via API and merge non-destructively
-    fetch('/api/articles')
+    // 2. Fetch fresh server articles directly from /api/articles (100% Server Driven)
+    fetch('/api/articles?t=' + Date.now())
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-          setArticles((prev) => {
-            const merged = mergeArticles(prev, data.articles);
-            saveStoredArticles(merged);
-            return merged;
-          });
-
-          // If local has articles missing on server, auto-sync them to server store
-          if (loaded && loaded.length > 0) {
-            const serverSlugs = new Set(data.articles.map((a: Article) => a.slug));
-            const unsynced = loaded.filter((a) => a && a.slug && !serverSlugs.has(a.slug));
-            if (unsynced.length > 0) {
-              fetch('/api/articles', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sync: true, articles: unsynced }),
-              }).catch(() => {});
-            }
-          }
+          setArticles(data.articles);
         }
       })
-      .catch(() => {});
-
-    // 3. Direct Firestore fetch fallback (only if Firebase is active)
-    if (isFirebaseConfigured && db) {
-      getDocs(collection(db, 'articles'))
-        .then((snapshot) => {
-          if (!snapshot.empty) {
-            const remoteArticles: Article[] = [];
-            snapshot.forEach((d) => {
-              const data = d.data() as Article;
-              if (data && data.title && data.slug) {
-                remoteArticles.push(data);
-              }
-            });
-            if (remoteArticles.length > 0) {
-              setArticles((prev) => {
-                const merged = mergeArticles(prev, remoteArticles);
-                saveStoredArticles(merged);
-                return merged;
-              });
-            }
-          }
-        })
-        .catch(() => {});
-    }
+      .catch((err) => console.error('HomePage fetch articles note:', err));
   }, []);
 
   useEffect(() => {

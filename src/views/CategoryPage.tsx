@@ -13,40 +13,34 @@ import { INITIAL_ARTICLES } from '../data/initialArticles';
 
 interface CategoryPageProps {
   slug: string;
+  initialArticles?: Article[];
 }
 
-export function CategoryPage({ slug }: CategoryPageProps) {
-  const [articles, setArticles] = useState<Article[]>([]);
+export function CategoryPage({ slug, initialArticles }: CategoryPageProps) {
+  const normalizedCategory = (itemCat: string) => {
+    if (slug === 'sexual-education' && (itemCat === 'sex-education' || itemCat === 'sexual-education')) return true;
+    if (slug === 'expert-advice-qa' && (itemCat === 'expert-advice-faq' || itemCat === 'expert-advice-qa')) return true;
+    return itemCat === slug;
+  };
+
+  const [articles, setArticles] = useState<Article[]>(() => {
+    const base = initialArticles || INITIAL_ARTICLES;
+    return base.filter((a) => normalizedCategory(a.category));
+  });
+
   const category = SITE_CONFIG.categories.find((c: CategoryConfig) => c.slug === slug);
 
   useEffect(() => {
-    const normalizedCategory = (itemCat: string) => {
-      if (slug === 'sexual-education' && (itemCat === 'sex-education' || itemCat === 'sexual-education')) return true;
-      if (slug === 'expert-advice-qa' && (itemCat === 'expert-advice-faq' || itemCat === 'expert-advice-qa')) return true;
-      return itemCat === slug;
-    };
-
-    const all = getStoredArticles();
-    const filtered = all.filter((a) => normalizedCategory(a.category));
-    if (filtered.length > 0) {
-      setArticles(filtered);
-    } else {
-      setArticles(INITIAL_ARTICLES.filter((a) => normalizedCategory(a.category)));
-    }
-
-    // Always fetch latest server articles and merge safely
-    fetch('/api/articles')
+    // 100% Server Driven: Fetch latest articles from /api/articles
+    fetch('/api/articles?t=' + Date.now())
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.articles)) {
-          const mergedAll = mergeArticles(all, data.articles);
-          const freshFiltered = mergedAll.filter((a: Article) => normalizedCategory(a.category));
-          if (freshFiltered.length > 0) {
-            setArticles(freshFiltered);
-          }
+          const freshFiltered = data.articles.filter((a: Article) => normalizedCategory(a.category));
+          setArticles(freshFiltered);
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error('CategoryPage fetch error:', err));
   }, [slug]);
 
   if (!category) {

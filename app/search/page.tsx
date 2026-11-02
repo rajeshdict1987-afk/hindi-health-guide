@@ -13,25 +13,18 @@ function SearchContent() {
   const rawQuery = searchParams?.get('q') || '';
   const query = rawQuery.trim();
 
-  // Combine stored articles and initial articles for comprehensive search
+  // 100% Server Driven articles for search
   const [allArticles, setAllArticles] = React.useState<any[]>(INITIAL_ARTICLES);
 
   React.useEffect(() => {
-    try {
-      const stored = getStoredArticles();
-      if (stored && stored.length > 0) {
-        setAllArticles(stored);
-      } else {
-        fetch('/api/articles')
-          .then((res) => res.json())
-          .then((data) => {
-            if (Array.isArray(data) && data.length > 0) setAllArticles(data);
-          })
-          .catch(() => {});
-      }
-    } catch {
-      // fallback to INITIAL_ARTICLES
-    }
+    fetch('/api/articles?t=' + Date.now())
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.articles)) {
+          setAllArticles(data.articles);
+        }
+      })
+      .catch((err) => console.error('Search fetch error:', err));
   }, []);
 
   const searchTerms = query.toLowerCase().split(/\s+/).filter(Boolean);

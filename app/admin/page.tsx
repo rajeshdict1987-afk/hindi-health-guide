@@ -126,50 +126,46 @@ export default function AdminPage() {
           })
         : () => {};
 
-      // 3. Load initial data
-      const localArticles = getStoredArticles();
-      setArticles(localArticles);
+      // 3. Load initial data (Ads & AdSense)
       setAds(getStoredAds());
       setAdSenseForm(getStoredAdSenseSettings());
 
-      // Fetch latest articles from server and merge non-destructively
-      fetch('/api/articles')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.success && Array.isArray(data.articles) && data.articles.length > 0) {
-            const serverSlugs = new Set(data.articles.map((a: Article) => a.slug));
-            const serverIds = new Set(data.articles.map((a: Article) => a.id));
-
-            // Check if user has articles saved in mobile localStorage that are missing from server
-            const unsyncedFromMobile = localArticles.filter(
-              (a) => a && a.slug && !serverSlugs.has(a.slug) && !serverIds.has(a.id)
-            );
-
-            if (unsyncedFromMobile.length > 0) {
-              console.log('Auto-pushing mobile articles to portal server:', unsyncedFromMobile.length);
+      // 4. One-time auto-migration: if mobile browser has legacy articles in localStorage,
+      // push them to the central server store, then completely wipe the legacy key
+      if (typeof window !== 'undefined') {
+        try {
+          const legacy = localStorage.getItem('hindi_health_guide_articles_v4');
+          if (legacy) {
+            const parsed = JSON.parse(legacy);
+            if (Array.isArray(parsed) && parsed.length > 0) {
               fetch('/api/articles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sync: true, articles: localArticles }),
+                body: JSON.stringify({ sync: true, articles: parsed }),
               })
                 .then((r) => r.json())
                 .then((syncRes) => {
                   if (syncRes && syncRes.success && Array.isArray(syncRes.articles)) {
                     setArticles(syncRes.articles);
-                    saveStoredArticles(syncRes.articles);
                   }
                 })
                 .catch(() => {});
-            } else {
-              setArticles((prev) => {
-                const merged = mergeArticles(prev, data.articles);
-                saveStoredArticles(merged);
-                return merged;
-              });
             }
+            localStorage.removeItem('hindi_health_guide_articles_v4');
+            localStorage.removeItem('hindi_health_guide_articles_v3');
+          }
+        } catch {}
+      }
+
+      // 5. Fetch fresh articles directly from central server API (100% Server & Central Store Driven)
+      fetch('/api/articles?t=' + Date.now())
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.success && Array.isArray(data.articles)) {
+            setArticles(data.articles);
           }
         })
-        .catch(() => {});
+        .catch((err) => console.error('Admin fetch articles error:', err));
 
       // Fetch AdSense settings from Firestore if saved and active
       if (isFirebaseConfigured && db) {
@@ -407,23 +403,17 @@ export default function AdminPage() {
     setIsSyncing(true);
     showNotification('सर्वर व कैश के साथ सभी आर्टिकल्स सिंक किए जा रहे हैं...');
     try {
-      const res = await fetch('/api/articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sync: true, articles }),
-      });
+      const res = await fetch('/api/articles?t=' + Date.now());
       const data = await res.json();
       if (data && data.success && Array.isArray(data.articles)) {
-        const merged = mergeArticles(data.articles, articles);
-        setArticles(merged);
-        saveStoredArticles(merged);
-        showNotification(`✅ सभी ${merged.length} आर्टिकल्स सर्वर व कैश पर सफलतापूर्वक सिंक हो गए!`);
+        setArticles(data.articles);
+        showNotification(`✅ सभी ${data.articles.length} आर्टिकल्स सेंट्रल सर्वर से सफलतापूर्वक अपडेट हो गए!`);
       } else {
-        throw new Error(data.error || 'सिंक विफल');
+        throw new Error(data.error || 'सर्वर से आर्टिकल्स प्राप्त नहीं हो सके');
       }
     } catch (err: any) {
       console.warn('Sync error:', err);
-      showNotification('⚠️ सर्वर सिंक में समस्या आई, लेकिन आपके स्थानीय आर्टिकल्स सुरक्षित हैं।');
+      showNotification('⚠️ सर्वर सिंक में समस्या आई। कृपया नेटवर्क जांचें।');
     } finally {
       setIsSyncing(false);
     }
@@ -530,12 +520,7 @@ export default function AdminPage() {
       }
 
       const serverArticles: Article[] = Array.isArray(data.articles) ? data.articles : [];
-      const updated = editingArticleId
-        ? mergeArticles([newArticle], serverArticles)
-        : mergeArticles([newArticle], serverArticles);
-
-      setArticles(updated);
-      saveStoredArticles(updated);
+      setArticles(serverArticles);
 
       // 2. Background Firestore sync (optional if active)
       if (isFirebaseConfigured && db) {
@@ -567,19 +552,12 @@ export default function AdminPage() {
       });
       setValidationErrors([]);
       setEditorMode('write');
-      showNotification('✅ आर्टिकल पूरे पोर्टल पर सफलतापूर्वक प्रकाशित हो गया! यह सभी मोबाइल और कंप्यूटर विजिटर्स के लिए तुरंत लाइव है।');
+      showNotification('✅ आर्टिकल पूरे पोर्टल के सेंट्रल सर्वर पर सफलतापूर्वक सेव व प्रकाशित हो गया! यह सभी मोबाइल और कंप्यूटर विजिटर्स के लिए तुरंत लाइव है।');
     } catch (err: any) {
       console.error('Publish error:', err);
-      // Fallback: preserve in localStorage immediately so work is never lost
-      const localUpdated = editingArticleId
-        ? articles.map(a => a.id === editingArticleId ? newArticle : a)
-        : [newArticle, ...articles];
-      setArticles(localUpdated);
-      saveStoredArticles(localUpdated);
-
       setValidationErrors([
-        `चेतावनी: आर्टिकल स्थानीय ब्राउज़र में सहेज लिया गया है, लेकिन सर्वर पर प्रकाशित करने में रुकावट आई: ${err.message || 'नेटवर्क समस्या'}।`,
-        'कृपया नीचे दिए गए "सर्वर से सिंक करें" बटन पर क्लिक करके पुनः प्रयास करें।'
+        `त्रुटि: आर्टिकल सर्वर पर प्रकाशित नहीं हो सका: ${err.message || 'नेटवर्क समस्या'}।`,
+        'कृपया अपना इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।'
       ]);
     } finally {
       setIsPublishing(false);
@@ -611,7 +589,6 @@ export default function AdminPage() {
       const targetArt = articles.find(a => a.id === id);
       const updated = articles.filter(a => a.id !== id);
       setArticles(updated);
-      saveStoredArticles(updated);
 
       // Delete from server API
       fetch(`/api/articles?id=${encodeURIComponent(id)}&slug=${encodeURIComponent(targetArt?.slug || '')}`, {
@@ -624,7 +601,6 @@ export default function AdminPage() {
         .then((data) => {
           if (data && data.success && Array.isArray(data.articles)) {
             setArticles(data.articles);
-            saveStoredArticles(data.articles);
           }
         })
         .catch((err) => console.warn('Server article delete note:', err));
@@ -864,6 +840,29 @@ export default function AdminPage() {
 
       {/* Main Container */}
       <div className="w-full max-w-full px-4 sm:px-6 mt-6">
+        {/* Server & Global Storage Status Badge */}
+        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 mb-5 flex items-center justify-between flex-wrap gap-3 text-xs shadow-xs">
+          <div className="flex items-center gap-2.5 text-emerald-900 font-semibold flex-wrap">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+            </span>
+            <span>🌐 100% सेंट्रल सर्वर एवं फाइल स्टोर सक्रिय</span>
+            <span className="text-emerald-700 font-normal">
+              — लोकल स्टोरेज खत्म कर दिया गया है; यहाँ पब्लिश किया गया हर आर्टिकल सभी मोबाइल, कंप्यूटर व अन्य डिवाइस पर तुरंत लाइव दिखता है।
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleSyncAllToServer}
+            disabled={isSyncing}
+            className="text-xs bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-semibold px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+          >
+            <RotateCcw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>{isSyncing ? 'अपडेट हो रहा है...' : 'सर्वर रिफ्रेश करें'}</span>
+          </button>
+        </div>
+
         {/* Navigation Tabs */}
         <div className="flex gap-3 border-b border-stone-300 pb-4 mb-6 overflow-x-auto">
           <button
